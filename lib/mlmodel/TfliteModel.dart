@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api, depend_on_referenced_packages
+
 import 'dart:io';
 import 'package:okrai/mainscreens/Home.dart';
 import 'package:permission_handler/permission_handler.dart';

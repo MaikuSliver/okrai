@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:lastfinalsqliteimgae/widgets/viewpage.dart';
+
 
 import 'Insert.dart';
+import 'viewpage.dart';
 
 
 class DashBoard extends StatefulWidget {

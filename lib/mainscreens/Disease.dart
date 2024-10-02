@@ -1,5 +1,7 @@
 ///File download from FlutterViz- Drag and drop a tools. For more details visit https://flutterviz.io/
 
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
 import 'package:okrai/disease/curl.dart';
 import 'package:okrai/disease/early.dart';

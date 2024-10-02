@@ -4,25 +4,27 @@ import 'package:flutter/material.dart';
 
 
 class splash extends StatelessWidget {
+  const splash({super.key});
+
 
 @override
 Widget build(BuildContext context) {
 return Scaffold(
-backgroundColor: Color(0xffffffff),
+backgroundColor: const Color(0xffffffff),
 body:Container(
-margin:EdgeInsets.all(0),
-padding:EdgeInsets.all(0),
+margin:const EdgeInsets.all(0),
+padding:const EdgeInsets.all(0),
 width:MediaQuery.of(context).size.width,
 height:MediaQuery.of(context).size.height,
 decoration: BoxDecoration(
-color:Color(0xffffffff),
+color:const Color(0xffffffff),
 shape:BoxShape.rectangle,
 borderRadius:BorderRadius.zero,
-border:Border.all(color:Color(0x4d9e9e9e),width:1),
+border:Border.all(color:const Color(0x4d9e9e9e),width:1),
 ),
 child:
 
-Stack(
+const Stack(
 alignment:Alignment.center,
 children: [
 ///***If you have exported images you must have to copy those images in assets/images directory.

@@ -5,8 +5,8 @@ import 'package:okrai/mainscreens/Home.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:tflite/tflite.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:tensorflow_lite_flutter/tensorflow_lite_flutter.dart';
 import '../mainscreens/myokra.dart';
 
 class TfliteModel extends StatefulWidget {
@@ -32,7 +32,7 @@ class _TfliteModelState extends State<TfliteModel> {
     Tflite.close();
     String res;
     res = (await Tflite.loadModel(
-        model: "assets/model.tflite", labels: "assextts/labels.txt"))!;
+        model: "assets/model.tflite", labels: "assets/labels.txt"))!;
     print("Models loading status: $res");
   }
 
@@ -50,31 +50,31 @@ class _TfliteModelState extends State<TfliteModel> {
       imageSelect = true;
     });
   }
-  Future<void> pickImageWithPermission() async {
-    PermissionStatus cameraPermissionStatus = await Permission.camera.status;
-    PermissionStatus storagePermissionStatus = await Permission.storage.status;
+  // Future<void> pickImageWithPermission() async {
+  //   PermissionStatus cameraPermissionStatus = await Permission.camera.status;
+  //   PermissionStatus storagePermissionStatus = await Permission.storage.status;
 
-    if (cameraPermissionStatus.isGranted && storagePermissionStatus.isGranted) {
-      // Permissions are already granted, proceed to pick file
-      pickImageC();
-      pickImage();
-    } else {
-      Map<Permission, PermissionStatus> permissionStatuses = await [
-        Permission.camera,
-        Permission.storage,
-      ].request();
+  //   if (cameraPermissionStatus.isGranted && storagePermissionStatus.isGranted) {
+  //     // Permissions are already granted, proceed to pick file
+  //     pickImageC();
+  //     pickImage();
+  //   } else {
+  //     Map<Permission, PermissionStatus> permissionStatuses = await [
+  //       Permission.camera,
+  //       Permission.storage,
+  //     ].request();
 
-      if (permissionStatuses[Permission.camera]!.isGranted &&
-          permissionStatuses[Permission.storage]!.isGranted) {
-        // Permissions granted, proceed to pick file
-        pickImageC();
-        pickImage();
-      } else {
-        // Permissions denied, handle accordingly (show an error message, request again, or emit your bloc state.)
-        // ...
-      }
-    }
-  }
+  //     if (permissionStatuses[Permission.camera]!.isGranted &&
+  //         permissionStatuses[Permission.storage]!.isGranted) {
+  //       // Permissions granted, proceed to pick file
+  //       pickImageC();
+  //       pickImage();
+  //     } else {
+  //       // Permissions denied, handle accordingly (show an error message, request again, or emit your bloc state.)
+  //       // ...
+  //     }
+  //   }
+  // }
   @override
   Widget build(BuildContext context) {
     return Scaffold(

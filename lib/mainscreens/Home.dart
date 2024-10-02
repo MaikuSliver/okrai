@@ -130,7 +130,7 @@ mainAxisSize:MainAxisSize.max,
 children:[
 
 Padding(
-padding:const EdgeInsets.fromLTRB(20, 0, 5, 0),
+padding:const EdgeInsets.fromLTRB(10 , 0, 0, 0),
 child:///***If you have exported images you must have to copy those images in assets/images directory.
 IconButton(
  icon: Image.asset(
@@ -146,7 +146,7 @@ IconButton(
 ),
 ),
 Padding(
-padding:const EdgeInsets.fromLTRB(10, 0, 5, 0),
+padding:const EdgeInsets.fromLTRB(0, 0, 0, 0),
 child:///***If you have exported images you must have to copy those images in assets/images directory.
 IconButton(
  icon: Image.asset(
@@ -183,7 +183,7 @@ color:Color(0xff000000),
 ),
 ),
 Padding(
-padding:EdgeInsets.fromLTRB(14, 0, 5, 0),
+padding:EdgeInsets.fromLTRB(25, 0, 5, 0),
 child:Text(
 "Disease",
 textAlign: TextAlign.start,
@@ -318,8 +318,8 @@ Expanded(
       children: [
         Image(
         image:AssetImage("assets/images/smartphone.png"),
-        height:80,
-        width:80,
+        height:50,
+        width:50,
         fit:BoxFit.fitHeight,
         ),
         SizedBox(height: 25,),
@@ -348,14 +348,14 @@ Expanded(
       ],
     ),
     SizedBox(width: 15,),
-    Text('>',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 75),),
+    Text('>',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 50),),
     SizedBox(width: 20,),
      Column(
        children: [
          Image(
     image:AssetImage("assets/images/research.png"),
-    height:80,
-    width:80,
+    height:50,
+        width:50,
     fit:BoxFit.fitHeight,
     ),
     SizedBox(height: 25,),
@@ -384,14 +384,14 @@ Expanded(
        ],
      ),
   SizedBox(width: 15,),
-     Text('>',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 75),),
+     Text('>',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 50),),
     SizedBox(width: 20,),
    Column(
      children: [
        Image(
         image:AssetImage("assets/images/report.png"),
-        height:80,
-        width:80,
+        height:50,
+        width:50,
         fit:BoxFit.fitHeight,
         ),
         SizedBox(height: 25,),
@@ -644,7 +644,7 @@ Row(
 mainAxisAlignment:MainAxisAlignment.end,
 children: [
 Padding(
-padding:EdgeInsets.only(left:300),
+padding:EdgeInsets.only(left:150),
 child:///***If you have exported images you must have to copy those images in assets/images directory.
 Image(
 image:AssetImage("assets/images/cloud.png"),

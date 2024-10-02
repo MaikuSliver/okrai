@@ -60,9 +60,8 @@ Widget listCard(okra okras) => Card(        //box of each item call
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xfff5f5f5),
       appBar: AppBar(title: const Center(child: Text('My Okra List', 
-      style: TextStyle(fontWeight: FontWeight.bold),)), 
+      style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),)), 
       backgroundColor: const Color(0xff43c175),
       leading: const Icon(Icons.android, color:Color(0xff43c175),),
       leadingWidth: 8,

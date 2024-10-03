@@ -38,7 +38,7 @@ class DatabaseHelper {
     _database = await openDatabase(path, version: dbVersion, onCreate: onCreate);
     return _database;
   }
-
+//id,name, img, status, date, 
   Future<void> onCreate(Database db, int version) async {
     print("Creating the database table");
     await db.execute('''
@@ -56,6 +56,7 @@ class DatabaseHelper {
   // insert method
   Future<int?> insertRecord(Map<String, dynamic> row) async {
     Database? db = await instance.database;
+    print('add successfully');
     return await db?.insert(dbTable, row);
   }
 

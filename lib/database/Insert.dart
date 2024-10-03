@@ -101,7 +101,7 @@ class _InsertPageState extends State<InsertPage> {
                 child: TextField(
                   controller: emailController,
                   decoration: const InputDecoration(
-                    hintText: "Email",
+                    hintText: "Email", //status
                   ),
                 ),
               ),
@@ -111,7 +111,7 @@ class _InsertPageState extends State<InsertPage> {
                 child: TextField(
                   controller: contactController,
                   decoration: const InputDecoration(
-                    hintText: "Contact",
+                    hintText: "Contact", //date
                   ),
                 ),
               ),
@@ -130,8 +130,8 @@ class _InsertPageState extends State<InsertPage> {
                       // Insert record into SQLite with the image path
                       await DatabaseHelper.instance.insertRecord({
                         DatabaseHelper.columnName: nameController.text,
-                        DatabaseHelper.columnEmail: emailController.text,
-                        DatabaseHelper.columnContact: contactController.text,
+                        DatabaseHelper.columnEmail: emailController.text, //status
+                        DatabaseHelper.columnContact: contactController.text, //date
                         DatabaseHelper.columnImagePath: imagePath,
                       });
 

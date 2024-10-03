@@ -17,6 +17,7 @@ class ViewPage extends StatefulWidget {
 
 class _ViewPageState extends State<ViewPage> {
 
+/////////////////////////////////////////////////////////////
   File? _image;
   final ImagePicker _picker = ImagePicker();
 
@@ -29,7 +30,7 @@ class _ViewPageState extends State<ViewPage> {
       });
     }
   }
-
+///////////////////////////////////////////////////////////////
 
   List<Map<String, dynamic>> _viewDataList = [];
   bool _isLoading = true;
@@ -47,19 +48,21 @@ class _ViewPageState extends State<ViewPage> {
     super.initState();
     _refreshJournals();
   }
-
+///////////////////////////////////////////////////////////////////////////////////////////
   final TextEditingController updateNameController = TextEditingController();
-  final TextEditingController updateEmailController = TextEditingController();
-  final TextEditingController updateContactController = TextEditingController();
+  final TextEditingController updateEmailController = TextEditingController();//status
+  final TextEditingController updateContactController = TextEditingController(); //date
   var updatePic;
+
   void _showForm(int? id) async {
     if (id != null) {
       final existingJournal = _viewDataList.firstWhere((element) => element['id'] == id);
       updatePic = existingJournal['pic'];
       updateNameController.text = existingJournal['name'];
-      updateEmailController.text = existingJournal['email'];
-      updateContactController.text = existingJournal['contact'];
+      updateEmailController.text = existingJournal['email']; //status
+      updateContactController.text = existingJournal['contact']; //date
     }
+
 
     showModalBottomSheet(
       context: context,
@@ -108,11 +111,11 @@ class _ViewPageState extends State<ViewPage> {
               ),
               TextField(
                 controller: updateEmailController,
-                decoration: const InputDecoration(hintText: 'Email'),
+                decoration: const InputDecoration(hintText: 'Email'), //status
               ),
               TextField(
                 controller: updateContactController,
-                decoration: const InputDecoration(hintText: 'Contact'),
+                decoration: const InputDecoration(hintText: 'Contact'), //date
               ),
               const SizedBox(
                 height: 20,
@@ -121,8 +124,8 @@ class _ViewPageState extends State<ViewPage> {
                 onPressed: () async {
                   await _updateItem(id);
                   updateNameController.text = '';
-                  updateEmailController.text = '';
-                  updateContactController.text = '';
+                  updateEmailController.text = ''; //status
+                  updateContactController.text = ''; //date
                   Navigator.of(context).pop();
                 },
                 style: ElevatedButton.styleFrom(
@@ -223,6 +226,7 @@ class _ViewPageState extends State<ViewPage> {
               ),
             ),
           );
+          
         },
       ),
     );

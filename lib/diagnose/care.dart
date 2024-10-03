@@ -1,5 +1,7 @@
 // ignore_for_file: camel_case_types
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:okrai/diagnose/progress.dart';
 import 'package:okrai/mainscreens/myokra.dart';
@@ -78,7 +80,7 @@ child:Align(
 alignment:Alignment.center,
 child:///***If you have exported images you must have to copy those images in assets/images directory.
 Image(
-image:AssetImage(okraimg),
+image: FileImage(File(okraimg)),
 height:150,
 width:150,
 fit:BoxFit.cover,

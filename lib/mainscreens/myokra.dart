@@ -7,8 +7,9 @@ import 'package:okrai/mainscreens/settings.dart';
 import 'package:okrai/okraimodels/okra.dart';
 import 'package:okrai/okraimodels/okralist.dart';
 import 'package:page_transition/page_transition.dart';
+import '../database/db_helper.dart';
 import 'Home.dart';
-
+import 'dart:io';
 
 class myokra extends StatefulWidget {
   const myokra({super.key});
@@ -18,44 +19,27 @@ class myokra extends StatefulWidget {
 }
 
 class _myokraState extends State<myokra> {
-  OkraList okras = OkraList();
+    List<Map<String, dynamic>> _viewDataList = [];
+  bool _isLoading = true;
 
-Widget listCard(okra okras) => Card(        //box of each item call
-  child: Padding(
-    padding: const EdgeInsets.all(8.0),
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-     
-        Image.asset(
-          okras.image,
-          width: MediaQuery.of(context).size.width,
-          height: 190,
-          ),
-        Text(
-          'Status: ${okras.type}',
-          softWrap: false,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis, //... if the text is too long
-          style: const TextStyle(fontSize: 15),
-          ),
-          buttons(okras),
-      ],
-    ),)
-);
+  void _refreshJournals() async {
+    final data = await DatabaseHelper.instance.queryDatabase();
+    setState(() {
+      _viewDataList = data ?? [];
+      _isLoading = false;
+    });
+  }
 
- Widget buttons(okra okras) => Column(
-  children: [
-       IconButton(
-                                      icon: const Icon(Icons.arrow_forward),
-                                      onPressed: () {  Navigator.pushReplacement(context,
-                                            PageTransition(type: PageTransitionType.fade, child: care(type: okras.type,img:okras.image)));},
-                                      color: const Color(0xff5ac46d),
-                                      iconSize: 24,
-                                    ),
-  ],
- );
+  @override
+  void initState() {
+    super.initState();
+    _refreshJournals();
+  }
+  
+
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -105,15 +89,61 @@ Widget listCard(okra okras) => Card(        //box of each item call
         ),
       ),
       body: 
-        GridView.builder(
+      _isLoading? const Center(child: CircularProgressIndicator())
+      :GridView.builder(
         physics: const BouncingScrollPhysics(),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,   //no of columns
           mainAxisExtent: 360, //size
         ), 
-        itemCount: okras.okraList.length,
-        itemBuilder: (BuildContext ctx, index){
-          return listCard(okras.okraList[index]);
+        itemCount: _viewDataList.length,
+        itemBuilder: (context, index){
+         final id = _viewDataList[index]['id'].toString();
+          final imagepath = _viewDataList[index]['pic']as String?;
+          final name = _viewDataList[index]['name'] as String;
+          final email = _viewDataList[index]['email'] as String;  //status
+    
+return Card(        //box of each item call
+  child: Padding(
+    padding: const EdgeInsets.all(8.0),
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+     
+        Image(
+          image: FileImage(File(imagepath!)),
+          width: MediaQuery.of(context).size.width,
+          height: 190,
+          ),
+        Text(
+          'Name: $name',
+          softWrap: false,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis, //... if the text is too long
+          style: const TextStyle(fontSize: 15),
+          ),
+          Text(
+          'Status: $email',
+          softWrap: false,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis, //... if the text is too long
+          style: const TextStyle(fontSize: 15),
+          ),
+            Column(
+  children: [
+       IconButton(
+                  icon: const Icon(Icons.arrow_forward),
+                  onPressed: () {  Navigator.pushReplacement(context,
+                  PageTransition(type: PageTransitionType.fade, child: care(type: email,img: imagepath)));},
+                  color: const Color(0xff5ac46d),
+                  iconSize: 24,
+                  ),
+  ],
+ ),
+      ],
+    ),)
+);
         },
         ),
     );

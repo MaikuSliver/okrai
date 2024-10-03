@@ -2,11 +2,13 @@
 
 import 'dart:io';
 import 'package:okrai/mainscreens/Home.dart';
-import 'package:permission_handler/permission_handler.dart';
+//import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:tensorflow_lite_flutter/tensorflow_lite_flutter.dart';
+import '../database/db_helper.dart';
 import '../mainscreens/myokra.dart';
 
 class TfliteModel extends StatefulWidget {
@@ -18,6 +20,11 @@ class TfliteModel extends StatefulWidget {
 
 class _TfliteModelState extends State<TfliteModel> {
 
+  var nameController = TextEditingController();
+  var emailController = TextEditingController(); //status
+  var contactController = TextEditingController(); //date
+ 
+  String? okraPlantResult; 
   late File _image;
   late List _results;
   bool imageSelect = false;
@@ -50,31 +57,26 @@ class _TfliteModelState extends State<TfliteModel> {
       imageSelect = true;
     });
   }
-  // Future<void> pickImageWithPermission() async {
-  //   PermissionStatus cameraPermissionStatus = await Permission.camera.status;
-  //   PermissionStatus storagePermissionStatus = await Permission.storage.status;
 
-  //   if (cameraPermissionStatus.isGranted && storagePermissionStatus.isGranted) {
-  //     // Permissions are already granted, proceed to pick file
-  //     pickImageC();
-  //     pickImage();
-  //   } else {
-  //     Map<Permission, PermissionStatus> permissionStatuses = await [
-  //       Permission.camera,
-  //       Permission.storage,
-  //     ].request();
 
-  //     if (permissionStatuses[Permission.camera]!.isGranted &&
-  //         permissionStatuses[Permission.storage]!.isGranted) {
-  //       // Permissions granted, proceed to pick file
-  //       pickImageC();
-  //       pickImage();
-  //     } else {
-  //       // Permissions denied, handle accordingly (show an error message, request again, or emit your bloc state.)
-  //       // ...
-  //     }
-  //   }
-  // }
+    Future pickImage() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(
+      source: ImageSource.gallery,maxHeight: 400, maxWidth: 400
+    );
+    File images = File(image!.path);
+    imageClassification(images);
+  }
+
+  Future pickImageC() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? photo = await picker.pickImage(
+      source: ImageSource.camera, maxHeight: 400, maxWidth: 400
+    );
+    File imageC = File(photo!.path);
+    imageClassification(imageC);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -176,6 +178,9 @@ class _TfliteModelState extends State<TfliteModel> {
                             SingleChildScrollView(
                               child: Column(
                                 children: (imageSelect) ? _results.map((result) {
+                                // Set the label text to the variable
+                                 okraPlantResult = result['label'];
+                                 
                                   return Card(
                                     child: Container(
                                       margin: const EdgeInsets.all(10),
@@ -185,11 +190,32 @@ class _TfliteModelState extends State<TfliteModel> {
                                             fontSize: 20),
                                       ),
                                     ),
+                                    
                                   );
                                 }).toList() : [],
 
                               ),
-                            )
+                            ),
+                            Container(
+                                width: MediaQuery.of(context).size.width,
+                                margin: const EdgeInsets.all(15),
+                                child: TextField(
+                                  controller: nameController,
+                                  decoration: const InputDecoration(
+                                  hintText: "Name",
+                                        ),
+                                      ),
+                            ),
+                            Container(
+                                width: MediaQuery.of(context).size.width,
+                                margin: const EdgeInsets.all(15),
+                                child: TextField(
+                                  controller: contactController,
+                                  decoration: const InputDecoration(
+                                  hintText: "Date",
+                                        ),
+                                      ),
+                            ),
                           ],
                         ),
                       ),
@@ -208,9 +234,22 @@ class _TfliteModelState extends State<TfliteModel> {
                         child: Align(
                           alignment: const Alignment(0.0, 0.0),
                           child: MaterialButton(
-                            onPressed: () {
-                              Navigator.pushReplacement(context, PageTransition(type: PageTransitionType.fade, child: const myokra()));
-                            },
+                            onPressed: () async {
+                    // Save the image to the app's documents directory
+                    final appDocDir = await getApplicationDocumentsDirectory();
+                    final imagePath = '${appDocDir.path}/image_${DateTime.now().millisecondsSinceEpoch}.png';
+                    await _image.copy(imagePath);
+
+                    // Insert record into SQLite with the image path
+                    await DatabaseHelper.instance.insertRecord({
+                      DatabaseHelper.columnName: nameController.text,
+                      DatabaseHelper.columnEmail: okraPlantResult, //status
+                      DatabaseHelper.columnContact: contactController.text, //date
+                      DatabaseHelper.columnImagePath: imagePath,
+                    });
+
+                       Navigator.pushReplacement(context, PageTransition(type: PageTransitionType.fade, child: const myokra()));
+                                              },
                             color: const Color(0xff67bb74),
                             elevation: 0,
                             shape: RoundedRectangleBorder(
@@ -243,21 +282,29 @@ class _TfliteModelState extends State<TfliteModel> {
       ),
     );
   }
-  Future pickImage() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(
-      source: ImageSource.gallery,maxHeight: 400, maxWidth: 400
-    );
-    File images = File(image!.path);
-    imageClassification(images);
-  }
+  // Future<void> pickImageWithPermission() async {
+  //   PermissionStatus cameraPermissionStatus = await Permission.camera.status;
+  //   PermissionStatus storagePermissionStatus = await Permission.storage.status;
 
-  Future pickImageC() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? photo = await picker.pickImage(
-      source: ImageSource.camera, maxHeight: 400, maxWidth: 400
-    );
-    File imageC = File(photo!.path);
-    imageClassification(imageC);
-  }
+  //   if (cameraPermissionStatus.isGranted && storagePermissionStatus.isGranted) {
+  //     // Permissions are already granted, proceed to pick file
+  //     pickImageC();
+  //     pickImage();
+  //   } else {
+  //     Map<Permission, PermissionStatus> permissionStatuses = await [
+  //       Permission.camera,
+  //       Permission.storage,
+  //     ].request();
+
+  //     if (permissionStatuses[Permission.camera]!.isGranted &&
+  //         permissionStatuses[Permission.storage]!.isGranted) {
+  //       // Permissions granted, proceed to pick file
+  //       pickImageC();
+  //       pickImage();
+  //     } else {
+  //       // Permissions denied, handle accordingly (show an error message, request again, or emit your bloc state.)
+  //       // ...
+  //     }
+  //   }
+  // }
 }

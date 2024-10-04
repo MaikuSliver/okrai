@@ -8,10 +8,20 @@ import 'package:okrai/mainscreens/myokra.dart';
 import 'package:page_transition/page_transition.dart';
 
 class care extends StatefulWidget {
-  const care({Key? key, required this.type, required this.img}) : super(key: key);
+  const care({Key? key, 
+  required this.type, 
+  required this.img, 
+  required this.id, 
+  required this.name, 
+  required this.pest, 
+  required this.date}) : super(key: key);
 
+final int id;
+final String name;
 final String type;
 final String img;
+final String pest;
+final String date;
 
   @override
   State<care> createState() => _careState();
@@ -21,12 +31,20 @@ class _careState extends State<care> {
 
 late String okratype;
 late String okraimg;
+late int okraid;
+late String okraname;
+late String okrapest;
+late String okradate;
 
 @override
   void initState() {
     super.initState();
     okratype = widget.type;
     okraimg = widget.img;
+    okraid =  widget.id;
+    okraname = widget.name;
+    okrapest = widget.pest;
+    okradate = widget.date;
   }
 
   
@@ -87,15 +105,15 @@ fit:BoxFit.cover,
 ),
 ),
 ),
-const Padding(
-padding:EdgeInsets.symmetric(vertical: 16,horizontal:0),
+Padding(
+padding:const EdgeInsets.symmetric(vertical: 16,horizontal:0),
 child:Row(
 mainAxisAlignment:MainAxisAlignment.start,
 crossAxisAlignment:CrossAxisAlignment.start,
 mainAxisSize:MainAxisSize.max,
 children:[
 
-Expanded(
+const Expanded(
 flex: 1,
 child: Text(
 "Status: Diseased",
@@ -115,7 +133,7 @@ crossAxisAlignment:CrossAxisAlignment.end,
 mainAxisSize:MainAxisSize.max,
 children:[
 
-Text(
+const Text(
 "Added: ",
 textAlign: TextAlign.start,
 overflow:TextOverflow.clip,
@@ -127,10 +145,10 @@ color:Color(0xff000000),
 ),
 ),
 Text(
-"05/29/24",
+okradate,
 textAlign: TextAlign.start,
 overflow:TextOverflow.clip,
-style:TextStyle(
+style:const TextStyle(
 fontWeight:FontWeight.w400,
 fontStyle:FontStyle.normal,
 fontSize:10,
@@ -541,7 +559,14 @@ child:Align(
 alignment:Alignment.bottomCenter,
 child:MaterialButton(
   onPressed: () {
-    Navigator.push(context, PageTransition(type: PageTransitionType.fade, child: const Progress()));
+    Navigator.push(context, PageTransition(type: PageTransitionType.fade, child: Progress(
+      id:okraid,
+      name:okraname,
+      type:okratype,
+      img:okraimg,
+      pest:okrapest,
+      date:okradate,
+    )));
   },
 color:const Color(0xff67bd74),
 elevation:0,

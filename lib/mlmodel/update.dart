@@ -11,19 +11,43 @@ import 'package:tensorflow_lite_flutter/tensorflow_lite_flutter.dart';
 import '../database/db_helper.dart';
 import '../mainscreens/myokra.dart';
 
-class TfliteModel extends StatefulWidget {
-  const TfliteModel({Key? key}) : super(key: key);
+class Update extends StatefulWidget {
+  const Update({Key? key, 
+  required this.id, 
+  required this.name, 
+  required this.type, 
+  required this.img, 
+  required this.pest, 
+  required this.date}) : 
+  super(key: key);
+
+final int id;
+final String name;
+final String type;
+final String img;
+final String pest;
+final String date;
 
   @override
-  _TfliteModelState createState() => _TfliteModelState();
+  _UpdateState createState() => _UpdateState();
 }
 
-class _TfliteModelState extends State<TfliteModel> {
+class _UpdateState extends State<Update> {
+
+late String okratype;
+late String okraimg;
+late int okraid;
+late String okraname;
+late String okrapest;
+late String okradate;
 
   var nameController = TextEditingController();
   var emailController = TextEditingController(); //status
   var contactController = TextEditingController(); //date
   var pestController = TextEditingController(); //pesticide
+  var updatePic;
+
+
  
   String? okraPlantResult; 
   late File _image;
@@ -33,6 +57,12 @@ class _TfliteModelState extends State<TfliteModel> {
   @override
   void initState() {
     super.initState();
+    okratype = widget.type;
+    okraimg = widget.img;
+    okraid =  widget.id;
+    okraname = widget.name;
+    okrapest = widget.pest;
+    okradate = widget.date;
     loadModel();
   }
 
@@ -252,7 +282,9 @@ class _TfliteModelState extends State<TfliteModel> {
                     await _image.copy(imagePath);
 
                     // Insert record into SQLite with the image path
-                    await DatabaseHelper.instance.insertRecord({
+                    
+                    await DatabaseHelper.instance.updateRecord({
+                      DatabaseHelper.columnId: okraid,
                       DatabaseHelper.columnName: nameController.text,
                       DatabaseHelper.columnEmail: okraPlantResult, //status
                       DatabaseHelper.columnContact: contactController.text, //date
@@ -274,7 +306,7 @@ class _TfliteModelState extends State<TfliteModel> {
                             height: 40,
                             minWidth: 140,
                             child: const Text(
-                              "Add this Plant",
+                              "Update this Plant",
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,

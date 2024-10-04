@@ -1,23 +1,58 @@
 import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
+import 'package:okrai/mlmodel/update.dart';
+import 'package:page_transition/page_transition.dart';
 
 class Progress extends StatefulWidget {
-  const Progress({super.key});
+  const Progress({super.key, 
+  required this.id, 
+  required this.name, 
+  required this.type, 
+  required this.img, 
+  required this.pest, 
+  required this.date});
+
+final int id;
+final String name;
+final String type;
+final String img;
+final String pest;
+final String date;
 
   @override
   State<Progress> createState() => _ProgressState();
 }
 
+
 final List<String> imageList = [
-  "https://cdn.pixabay.com/photo/2017/12/03/18/04/christmas-balls-2995437_960_720.jpg",
-  "https://cdn.pixabay.com/photo/2017/12/13/00/23/christmas-3015776_960_720.jpg",
-  "https://cdn.pixabay.com/photo/2019/12/19/10/55/christmas-market-4705877_960_720.jpg",
-  "https://cdn.pixabay.com/photo/2019/12/20/00/03/road-4707345_960_720.jpg",
-  "https://cdn.pixabay.com/photo/2019/12/22/04/18/x-mas-4711785__340.jpg",
-  "https://cdn.pixabay.com/photo/2016/11/22/07/09/spruce-1848543__340.jpg"
+  "assets/images/c1.jpg",
+  "assets/images/c2.jpg",
+  "assets/images/c3.jpg",
+  "assets/images/c4.jpg",
+  "assets/images/c5.jpg",
+  "assets/images/e1.jpg"
 ];
 
 class _ProgressState extends State<Progress> {
+
+late String okratype;
+late String okraimg;
+late int okraid;
+late String okraname;
+late String okrapest;
+late String okradate;
+
+@override
+  void initState() {
+    super.initState();
+    okratype = widget.type;
+    okraimg = widget.img;
+    okraid =  widget.id;
+    okraname = widget.name;
+    okrapest = widget.pest;
+    okradate = widget.date;
+  }
+
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
@@ -64,27 +99,30 @@ class _ProgressState extends State<Progress> {
                 )
                 ),
                  Container(
-                margin: const EdgeInsets.symmetric(horizontal: 20) ,
+                margin: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   children: [
-                     GFItemsCarousel(
-         rowCount: 3,
-         children: imageList.map(
-           (url) {
-        return Container(
-          margin: const EdgeInsets.all(5.0),
-          child: ClipRRect(
-          borderRadius: const BorderRadius.all(Radius.circular(5.0)),
-          child:
-            Image.network(url, fit: BoxFit.cover, width: 1000.0),
-           ),
-        );
-           },
-         ).toList(),
-      ),
+                    GFItemsCarousel(
+                      rowCount: 3,
+                      children: imageList.map(
+                        (url) {
+                          return Container(
+                            margin: const EdgeInsets.all(5.0),
+                            child: ClipRRect(
+                              borderRadius: const BorderRadius.all(Radius.circular(5.0)),
+                              child: Image.asset(
+                                url,
+                                fit: BoxFit.cover,
+                                width: 100.0,
+                              ),
+                            ),
+                          );
+                        },
+                      ).toList(),
+                    ),
                   ],
                 ),
-                ),
+              ),
                  Container(
                 margin: const EdgeInsets.symmetric(horizontal: 20,vertical: 15) ,
                 child: const Column(
@@ -107,7 +145,14 @@ child:Align(
 alignment:Alignment.bottomCenter,
 child:MaterialButton(
   onPressed: () {
-    
+    Navigator.push(context, PageTransition(type: PageTransitionType.fade, child: Update(
+      id:okraid,
+      name:okraname,
+      type:okratype,
+      img:okraimg,
+      pest:okrapest,
+      date:okradate,
+    )));
   },
 color:const Color(0xff67bd74),
 elevation:0,

@@ -4,8 +4,6 @@
 import 'package:flutter/material.dart';
 import 'package:okrai/diagnose/care.dart';
 import 'package:okrai/mainscreens/settings.dart';
-import 'package:okrai/okraimodels/okra.dart';
-import 'package:okrai/okraimodels/okralist.dart';
 import 'package:page_transition/page_transition.dart';
 import '../database/db_helper.dart';
 import 'Home.dart';
@@ -98,10 +96,12 @@ class _myokraState extends State<myokra> {
         ), 
         itemCount: _viewDataList.length,
         itemBuilder: (context, index){
-         final id = _viewDataList[index]['id'].toString();
+          final id = _viewDataList[index]['id'];
           final imagepath = _viewDataList[index]['pic']as String?;
           final name = _viewDataList[index]['name'] as String;
-          final email = _viewDataList[index]['email'] as String;  //status
+          final email = _viewDataList[index]['email'] as String;
+           final pest = _viewDataList[index]['pest'] as String;
+           final date = _viewDataList[index]['contact'] as String; //status
     
 return Card(        //box of each item call
   child: Padding(
@@ -132,13 +132,33 @@ return Card(        //box of each item call
           ),
             Column(
   children: [
-       IconButton(
-                  icon: const Icon(Icons.arrow_forward),
-                  onPressed: () {  Navigator.pushReplacement(context,
-                  PageTransition(type: PageTransitionType.fade, child: care(type: email,img: imagepath)));},
-                  color: const Color(0xff5ac46d),
-                  iconSize: 24,
-                  ),
+       Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+         children: [
+           IconButton(
+                      icon: const Icon(Icons.arrow_forward),
+                      onPressed: () {  Navigator.pushReplacement(context,
+                      PageTransition(type: PageTransitionType.fade, child: care(
+                        type: email,
+                        img: imagepath,
+                        id: id, 
+                        name: name,
+                        pest: pest,
+                        date: date,
+                        )));},
+                      color: const Color(0xff5ac46d),
+                      iconSize: 24,
+                      ),
+                      IconButton(
+                      icon: const Icon(Icons.delete),
+                      onPressed: () {  
+                           _deleteItem(id);
+                      },
+                      color: const Color.fromARGB(255, 255, 0, 0),
+                      iconSize: 24,
+                      ),
+         ],
+       ),
   ],
  ),
       ],
@@ -147,5 +167,9 @@ return Card(        //box of each item call
         },
         ),
     );
+  }
+   Future<void> _deleteItem(int id) async {
+    await DatabaseHelper.instance.deleteRecord(id);
+    _refreshJournals(); // Refresh the list after deleting
   }
 }

@@ -246,22 +246,37 @@ class _TfliteModelState extends State<TfliteModel> {
                           alignment: const Alignment(0.0, 0.0),
                           child: MaterialButton(
                             onPressed: () async {
-                    // Save the image to the app's documents directory
-                    final appDocDir = await getApplicationDocumentsDirectory();
-                    final imagePath = '${appDocDir.path}/image_${DateTime.now().millisecondsSinceEpoch}.png';
-                    await _image.copy(imagePath);
+  // Save the image to the app's documents directory
+  final appDocDir = await getApplicationDocumentsDirectory();
+  final imagePath = '${appDocDir.path}/image_${DateTime.now().millisecondsSinceEpoch}.png';
+  await _image.copy(imagePath);
 
-                    // Insert record into SQLite with the image path
-                    await DatabaseHelper.instance.insertRecord({
-                      DatabaseHelper.columnName: nameController.text,
-                      DatabaseHelper.columnEmail: okraPlantResult, //status
-                      DatabaseHelper.columnContact: contactController.text, //date
-                      DatabaseHelper.columnImagePath: imagePath,
-                      DatabaseHelper.columnPest: pestController.text,
-                    });
+  // Insert record into the 'plants' table and get the newly inserted plantId
+  int? plantId = await DatabaseHelper.instance.insertRecord({
+    DatabaseHelper.columnName: nameController.text,
+    DatabaseHelper.columnEmail: okraPlantResult,  // status (okra plant result)
+    DatabaseHelper.columnContact: contactController.text,  // date
+    DatabaseHelper.columnImagePath: imagePath,  // image path
+    DatabaseHelper.columnPest: pestController.text,  // pesticide info
+  });
 
-                       Navigator.pushReplacement(context, PageTransition(type: PageTransitionType.fade, child: const myokra()));
-                                              },
+  // Ensure the plantId is valid
+  if (plantId != null) {
+    // Now insert into the 'progress' table using the newly generated plantId
+    await DatabaseHelper.instance.insertProgress({
+      DatabaseHelper.plantId: plantId,  // Use the new plantId from the 'plants' table
+      DatabaseHelper.progressDate: contactController.text,  // date
+      DatabaseHelper.progressImages: imagePath,  // image path
+      DatabaseHelper.progressPest: pestController.text,  // pesticide info
+    });
+
+    // Navigate to the 'myokra' page
+    Navigator.pushReplacement(context, PageTransition(type: PageTransitionType.fade, child: const myokra()));
+  } else {
+    // Handle the error, e.g., show a message to the user
+    print('Failed to insert record into the plants table.');
+  }
+},
                             color: const Color(0xff67bb74),
                             elevation: 0,
                             shape: RoundedRectangleBorder(

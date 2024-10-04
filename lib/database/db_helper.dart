@@ -21,6 +21,7 @@ class DatabaseHelper {
   static const plantId = "plantid";  // Foreign key referencing myTable id
   static const progressImages = "images";  // Path to images
   static const progressDate = "date";  // Date of the progress entry
+  static const progressPest = "listpest"; 
 
   // constructor
   static final DatabaseHelper instance = DatabaseHelper();
@@ -70,6 +71,7 @@ class DatabaseHelper {
       $plantId INTEGER NOT NULL,
       $progressImages TEXT NOT NULL,
       $progressDate TEXT NOT NULL,
+      $progressPest TEXT NOT NULL,
       FOREIGN KEY ($plantId) REFERENCES $dbTable($columnId) ON DELETE CASCADE
       )
     ''');
@@ -124,7 +126,7 @@ class DatabaseHelper {
     // Query to get all progress entries for the specific plantId
     return await db?.query(
       progressTable,
-      columns: [progressImages, progressDate], // Select only the image and date columns
+      columns: [progressImages, progressDate, progressPest], // Select only the image and date columns
       where: '$DatabaseHelper.plantId = ?',   // Filter by plantId
       whereArgs: [plantId],                   // Pass the plantId as an argument
     );

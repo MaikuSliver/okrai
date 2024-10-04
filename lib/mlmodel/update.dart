@@ -291,7 +291,12 @@ late String okradate;
                       DatabaseHelper.columnImagePath: imagePath,
                       DatabaseHelper.columnPest: pestController.text,
                     });
-
+ await DatabaseHelper.instance.insertProgress({
+    DatabaseHelper.plantId: okraid,  // Use the new plant ID here
+    DatabaseHelper.progressDate: contactController.text, //date
+    DatabaseHelper.progressImages: imagePath,
+    DatabaseHelper.progressPest: pestController.text,
+  });
                        Navigator.pushReplacement(context, PageTransition(type: PageTransitionType.fade, child: const myokra()));
                                               },
                             color: const Color(0xff67bb74),

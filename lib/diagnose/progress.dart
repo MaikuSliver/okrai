@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:okrai/mlmodel/update.dart';
 import 'package:page_transition/page_transition.dart';
+
+import '../database/db_helper.dart';
 
 class Progress extends StatefulWidget {
   const Progress({super.key, 
@@ -24,17 +28,20 @@ final String date;
 }
 
 
-final List<String> imageList = [
-  "assets/images/c1.jpg",
-  "assets/images/c2.jpg",
-  "assets/images/c3.jpg",
-  "assets/images/c4.jpg",
-  "assets/images/c5.jpg",
-  "assets/images/e1.jpg"
-];
 
 class _ProgressState extends State<Progress> {
 
+   List<Map<String, dynamic>> _viewDataList = [];
+  bool _isLoading = true;
+
+  void _refreshJournals() async {
+    final data = await DatabaseHelper.instance.queryProgress(okraid);
+    setState(() {
+      _viewDataList = data ?? [];
+      _isLoading = false;
+    });
+  }
+  
 late String okratype;
 late String okraimg;
 late int okraid;
@@ -51,6 +58,7 @@ late String okradate;
     okraname = widget.name;
     okrapest = widget.pest;
     okradate = widget.date;
+     _refreshJournals();
   }
 
   @override
@@ -98,47 +106,76 @@ late String okradate;
                   ],
                 )
                 ),
-                 Container(
+                    Container(
                 margin: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   children: [
-                    GFItemsCarousel(
-                      rowCount: 3,
-                      children: imageList.map(
-                        (url) {
-                          return Container(
-                            margin: const EdgeInsets.all(5.0),
-                            child: ClipRRect(
-                              borderRadius: const BorderRadius.all(Radius.circular(5.0)),
-                              child: Image.asset(
-                                url,
-                                fit: BoxFit.cover,
-                                width: 100.0,
-                              ),
-                            ),
-                          );
-                        },
-                      ).toList(),
-                    ),
+                  GFItemsCarousel(
+  rowCount: 3, // Display 3 images per row
+  children: _viewDataList.map((data) {
+    String imagePath = data['images']; // Get the image path from data
+    String date = data['date']; // Assuming you have a date key in your data
+    return Container(
+      margin: const EdgeInsets.all(5.0),
+      child: Stack(
+        children: [
+          ClipRRect(
+            borderRadius: const BorderRadius.all(Radius.circular(5.0)),
+            child: Image.file(
+              File(imagePath), // Display the image using File
+              fit: BoxFit.cover,
+              width: 150.0, // Keep the width the same
+            ),
+          ),
+          Positioned(
+            bottom: 0,
+            left: 0, // Align to the left
+            right: 0, // Align to the right
+            child: Container(
+              color: Colors.black54, // Background color for better readability
+              padding: const EdgeInsets.all(4.0),
+              alignment: Alignment.center, // Center the text
+              child: Text(
+                date, // Display the date
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }).toList(),
+),
                   ],
                 ),
               ),
-                 Container(
-                margin: const EdgeInsets.symmetric(horizontal: 20,vertical: 15) ,
-                child: const Column(
-                  children: [
-                    Text('INFO', style: TextStyle(fontWeight: FontWeight.bold,),),
-                    SizedBox(height: 10,),
-                    Text('Lorem Ipsum is simply dummy text of the printing and typesetting industry.'
-                    'Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, whe'
-                   ' n an unknown printer took a galley of type and scrambled it to make a type specimen book'
-                    '. It has survived not only five centuries, but also the leap into electronic typesetting, remai'
-                    'ning essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets cont'
-                   ' aining Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker inc'
-                    'luding versions of Lorem Ipsum.', textAlign: TextAlign.justify,),
-                  ],
-                )
-                ),
+                   Container(
+              margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              child: Column(
+                children: [
+                  const Text(
+                    'Pesticides Used',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 10),
+                  ..._viewDataList.map((data) {
+                    String pesticide = data[DatabaseHelper.progressPest] ?? "No pesticide used"; // Get pesticide data
+                    return ListTile(
+                      title: Center(
+                        child: Text(
+                          pesticide,
+                          style: const TextStyle(color: Colors.black),
+                        ),
+                      ),
+                      leading: const Icon(Icons.check, color: Colors.green), // Optional icon
+                    );
+                  }).toList(),
+                ],
+              ),
+            ),
              Padding(
 padding:const EdgeInsets.all(16),
 child:Align(

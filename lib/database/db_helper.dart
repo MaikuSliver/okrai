@@ -118,7 +118,10 @@ class DatabaseHelper {
     // Query method for `progress` table (to get progress for a specific plant)
     Future<List<Map<String, dynamic>>?> queryProgress(int plantId) async {
     Database? db = await instance.database;
-    return await db?.query(progressTable, where: '$plantId = ?', whereArgs: [plantId]);
+    return await db?.query(progressTable,
+                           where: '${DatabaseHelper.plantId} = ?',  // Use column name for plantId
+                           whereArgs: [plantId],  // plantId is passed as an argument
+  ); // plantId is passed as an argument);
   }
    // Query function to get all progress entries (progressImages, progressDate) for a specific plant (plantId)
   Future<List<Map<String, dynamic>>?> queryProgressByPlantId(int plantId) async {
@@ -126,7 +129,6 @@ class DatabaseHelper {
     // Query to get all progress entries for the specific plantId
     return await db?.query(
       progressTable,
-      columns: [progressImages, progressDate, progressPest], // Select only the image and date columns
       where: '$DatabaseHelper.plantId = ?',   // Filter by plantId
       whereArgs: [plantId],                   // Pass the plantId as an argument
     );
@@ -139,11 +141,16 @@ class DatabaseHelper {
     return await db?.update(progressTable, row, where: '$progressId = ?', whereArgs: [id]);
   }
 
-    // Delete method for `progress`
+    // Function to delete all rows with a given plantid
   Future<int?> deleteProgress(int id) async {
-    Database? db = await instance.database;
-    await db?.delete(progressTable, where: "$progressId = ?", whereArgs: [id]);
-    return null;
+    final db = await database;
+    print('succesfully  plant id');
+    // Delete rows where plantid matches the id
+    return await db?.delete(
+      progressTable,
+      where: 'plantid = ?',
+      whereArgs: [id],
+    ); 
+   
   }
-
 }

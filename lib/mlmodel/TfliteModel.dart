@@ -1,14 +1,11 @@
-// ignore_for_file: library_private_types_in_public_api, depend_on_referenced_packages
-
 import 'dart:io';
-import 'package:okrai/mainscreens/Home.dart';
-//import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:tensorflow_lite_flutter/tensorflow_lite_flutter.dart';
 import '../database/db_helper.dart';
+import '../mainscreens/Home.dart';
 import '../mainscreens/myokra.dart';
 
 class TfliteModel extends StatefulWidget {
@@ -19,28 +16,33 @@ class TfliteModel extends StatefulWidget {
 }
 
 class _TfliteModelState extends State<TfliteModel> {
-
   var nameController = TextEditingController();
   var emailController = TextEditingController(); //status
   var contactController = TextEditingController(); //date
   var pestController = TextEditingController(); //pesticide
- 
+
   String? okraPlantResult; 
   late File _image;
   late List _results;
   bool imageSelect = false;
+  bool isButtonEnabled = false; // State for button enabled/disabled
 
   @override
   void initState() {
     super.initState();
     loadModel();
+    
+    // Add listeners to text fields to update the button state
+    nameController.addListener(_validateForm);
+    emailController.addListener(_validateForm);
+    contactController.addListener(_validateForm);
+    pestController.addListener(_validateForm);
   }
 
   Future loadModel() async {
-    Tflite.close();
-    String res;
-    res = (await Tflite.loadModel(
-        model: "assets/model.tflite", labels: "assets/labels.txt"))!;
+    String res = (await Tflite.loadModel(
+      model: "assets/model.tflite", labels: "assets/labels.txt"
+    ))!;
     print("Models loading status: $res");
   }
 
@@ -56,17 +58,19 @@ class _TfliteModelState extends State<TfliteModel> {
       _results = recognitions!;
       _image = image;
       imageSelect = true;
+      _validateForm(); // Revalidate form when image is selected
     });
   }
 
-
-    Future pickImage() async {
+  Future pickImage() async {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(
-      source: ImageSource.gallery,maxHeight: 400, maxWidth: 400
+      source: ImageSource.gallery, maxHeight: 400, maxWidth: 400
     );
-    File images = File(image!.path);
-    imageClassification(images);
+    if (image != null) {
+      File images = File(image.path);
+      imageClassification(images);
+    }
   }
 
   Future pickImageC() async {
@@ -74,8 +78,20 @@ class _TfliteModelState extends State<TfliteModel> {
     final XFile? photo = await picker.pickImage(
       source: ImageSource.camera, maxHeight: 400, maxWidth: 400
     );
-    File imageC = File(photo!.path);
-    imageClassification(imageC);
+    if (photo != null) {
+      File imageC = File(photo.path);
+      imageClassification(imageC);
+    }
+  }
+
+  // Check if all text fields are filled and image is selected
+  void _validateForm() {
+    setState(() {
+      isButtonEnabled = nameController.text.isNotEmpty &&
+          contactController.text.isNotEmpty &&
+          pestController.text.isNotEmpty &&
+          imageSelect; // Ensure image is selected
+    });
   }
 
   @override
@@ -100,9 +116,14 @@ class _TfliteModelState extends State<TfliteModel> {
           ),
         ),
         leading: IconButton(
-            icon: const Icon(Icons.arrow_back),color: const Color(0xff63b36f), onPressed: () {
-          Navigator.pushReplacement(context, PageTransition(type: PageTransitionType.fade, child: const Home()));
-        }
+          icon: const Icon(Icons.arrow_back),
+          color: const Color(0xff63b36f),
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              PageTransition(type: PageTransitionType.fade, child: const Home()),
+            );
+          },
         ),
       ),
       body: Column(
@@ -159,24 +180,25 @@ class _TfliteModelState extends State<TfliteModel> {
                           color: const Color(0x1f000000),
                           shape: BoxShape.rectangle,
                           borderRadius: BorderRadius.zero,
-                          border:
-                          Border.all(color: const Color(0x4d9e9e9e), width: 1),
+                          border: Border.all(color: const Color(0x4d9e9e9e), width: 1),
                         ),
                         child: ListView(
                           children: [
-                            (imageSelect) ? Container(
-                              margin: const EdgeInsets.all(10),
-                              child: Image.file(_image),
-                            ) : Container(
-                              margin: const EdgeInsets.all(10),
-                              child: const Opacity(
-                                opacity: 0.8,
-                                child: Center(
-                                  child: Text("No image selected"),
-                                ),
-                              ),
-                            ),
-                            SingleChildScrollView(
+                            (imageSelect)
+                                ? Container(
+                                    margin: const EdgeInsets.all(10),
+                                    child: Image.file(_image),
+                                  )
+                                : Container(
+                                    margin: const EdgeInsets.all(10),
+                                    child: const Opacity(
+                                      opacity: 0.8,
+                                      child: Center(
+                                        child: Text("No image selected"),
+                                      ),
+                                    ),
+                                  ),
+                               SingleChildScrollView(
                               child: Column(
                                 children: (imageSelect) ? _results.map((result) {
                                 // Set the label text to the variable
@@ -245,8 +267,8 @@ class _TfliteModelState extends State<TfliteModel> {
                         child: Align(
                           alignment: const Alignment(0.0, 0.0),
                           child: MaterialButton(
-                            onPressed: () async {
-  // Save the image to the app's documents directory
+                            onPressed: isButtonEnabled ? () async {
+                              // Save the image to the app's documents directory
   final appDocDir = await getApplicationDocumentsDirectory();
   final imagePath = '${appDocDir.path}/image_${DateTime.now().millisecondsSinceEpoch}.png';
   await _image.copy(imagePath);
@@ -276,8 +298,10 @@ class _TfliteModelState extends State<TfliteModel> {
     // Handle the error, e.g., show a message to the user
     print('Failed to insert record into the plants table.');
   }
-},
+                            } : null, // Disable if not valid
                             color: const Color(0xff67bb74),
+                            disabledColor: Colors.grey,
+                            disabledTextColor: Colors.black,
                             elevation: 0,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(60.0),
@@ -309,6 +333,8 @@ class _TfliteModelState extends State<TfliteModel> {
       ),
     );
   }
+}
+
   // Future<void> pickImageWithPermission() async {
   //   PermissionStatus cameraPermissionStatus = await Permission.camera.status;
   //   PermissionStatus storagePermissionStatus = await Permission.storage.status;
@@ -334,4 +360,4 @@ class _TfliteModelState extends State<TfliteModel> {
   //     }
   //   }
   // }
-}
+ 

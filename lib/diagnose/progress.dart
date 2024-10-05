@@ -115,6 +115,7 @@ late String okradate;
   children: _viewDataList.map((data) {
     String imagePath = data['images']; // Get the image path from data
     String date = data['date']; // Assuming you have a date key in your data
+     String idplant = data['plantid'].toString(); 
     return Container(
       margin: const EdgeInsets.all(5.0),
       child: Stack(

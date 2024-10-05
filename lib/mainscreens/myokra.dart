@@ -170,6 +170,7 @@ return Card(        //box of each item call
   }
    Future<void> _deleteItem(int id) async {
     await DatabaseHelper.instance.deleteRecord(id);
+    await DatabaseHelper.instance.deleteProgress(id);
     _refreshJournals(); // Refresh the list after deleting
   }
 }

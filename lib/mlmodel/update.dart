@@ -53,7 +53,16 @@ late String okradate;
   late File _image;
   late List _results;
   bool imageSelect = false;
+ bool isButtonEnabled = false; // State for button enabled/disabled
 
+  void _validateForm() {
+    setState(() {
+      isButtonEnabled = nameController.text.isNotEmpty &&
+          contactController.text.isNotEmpty &&
+          pestController.text.isNotEmpty &&
+          imageSelect; // Ensure image is selected
+    });
+  }
   @override
   void initState() {
     super.initState();
@@ -63,6 +72,10 @@ late String okradate;
     okraname = widget.name;
     okrapest = widget.pest;
     okradate = widget.date;
+      nameController.addListener(_validateForm);
+    emailController.addListener(_validateForm);
+    contactController.addListener(_validateForm);
+    pestController.addListener(_validateForm);
     loadModel();
   }
 
@@ -86,6 +99,7 @@ late String okradate;
       _results = recognitions!;
       _image = image;
       imageSelect = true;
+       _validateForm(); 
     });
   }
 
@@ -275,7 +289,7 @@ late String okradate;
                         child: Align(
                           alignment: const Alignment(0.0, 0.0),
                           child: MaterialButton(
-                            onPressed: () async {
+                            onPressed: isButtonEnabled ? () async {
                     // Save the image to the app's documents directory
                     final appDocDir = await getApplicationDocumentsDirectory();
                     final imagePath = '${appDocDir.path}/image_${DateTime.now().millisecondsSinceEpoch}.png';
@@ -298,8 +312,10 @@ late String okradate;
     DatabaseHelper.progressPest: pestController.text,
   });
                        Navigator.pushReplacement(context, PageTransition(type: PageTransitionType.fade, child: const myokra()));
-                                              },
+                                              }: null,
                             color: const Color(0xff67bb74),
+                              disabledColor: Colors.grey,
+                            disabledTextColor: Colors.black,
                             elevation: 0,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(60.0),

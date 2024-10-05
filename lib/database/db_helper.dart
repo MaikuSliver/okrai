@@ -153,4 +153,14 @@ class DatabaseHelper {
     ); 
    
   }
+
+  //total scans
+
+Future<int> countTotalRows() async {
+    final db = await database; // Get the database instance
+    final result = await db!.rawQuery('SELECT COUNT($columnId) FROM $dbTable'); 
+    print('total $result'); // Debugging line to check the result
+    return Sqflite.firstIntValue(result)!; // Extract the count value
+}
+
 }

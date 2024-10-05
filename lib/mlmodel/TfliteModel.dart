@@ -31,7 +31,9 @@ class _TfliteModelState extends State<TfliteModel> {
   void initState() {
     super.initState();
     loadModel();
-    
+    String todayDate = "${DateTime.now().day}-${DateTime.now().month}-${DateTime.now().year}";
+  contactController.text = todayDate; // Set today's date as the initial value
+
     // Add listeners to text fields to update the button state
     nameController.addListener(_validateForm);
     emailController.addListener(_validateForm);
@@ -239,16 +241,34 @@ class _TfliteModelState extends State<TfliteModel> {
                                         ),
                                       ),
                             ),
-                            Container(
-                                width: MediaQuery.of(context).size.width,
-                                margin: const EdgeInsets.all(15),
-                                child: TextField(
-                                  controller: contactController,
-                                  decoration: const InputDecoration(
-                                  hintText: "Date",
-                                        ),
-                                      ),
-                            ),
+                           Container(
+  width: MediaQuery.of(context).size.width,
+  margin: const EdgeInsets.all(15),
+  child: TextFormField(
+    controller: contactController,
+    decoration: const InputDecoration(
+      hintText: "Date",
+    ),
+    readOnly: true, // Make the field read-only so it only shows the date picker
+    onTap: () async {
+      // Show date picker when the field is tapped
+      DateTime? pickedDate = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(), // Set initial date to today's date
+        firstDate: DateTime(2000), // Set the start of the date range
+        lastDate: DateTime(2100), // Set the end of the date range
+      );
+
+      if (pickedDate != null) {
+        // Format the selected date and set it to the text field
+        String formattedDate = "${pickedDate.day}-${pickedDate.month}-${pickedDate.year}";
+        setState(() {
+          contactController.text = formattedDate; // Assign the formatted date to the controller
+        });
+      }
+    },
+  ),
+),
                           ],
                         ),
                       ),

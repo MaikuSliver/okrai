@@ -5,6 +5,7 @@ import 'package:okrai/mainscreens/myokra.dart';
 import 'package:okrai/mainscreens/okrainfo.dart';
 import 'package:okrai/mainscreens/settings.dart';
 import 'package:page_transition/page_transition.dart';
+import '../database/db_helper.dart';
 import '../mlmodel/TfliteModel.dart';
 
 class Home extends StatefulWidget {
@@ -19,6 +20,30 @@ String description='This tool aids farmers in preserving their harvests. This ap
 " is ill and send it for diagnosis.";
 
 class _HomeState extends State<Home> {
+  
+int _totalScans = 0;
+  bool _isLoading = true; // To handle loading state
+
+  @override
+  void initState() {
+    super.initState();
+    _refreshScans(); // Call to fetch total rows
+  }
+
+  void _refreshScans() async {
+    setState(() {
+      _isLoading = true; // Start loading
+    });
+
+    // Fetch the total rows
+    _totalScans = await DatabaseHelper.instance.countTotalRows();
+
+    setState(() {
+      _isLoading = false; // Stop loading
+    });
+  }
+
+
 @override
 Widget build(BuildContext context) {
 return Scaffold(
@@ -106,7 +131,7 @@ border:Border.all(color:const Color(0x4d9e9e9e),width:1),
 child:
 
 Card(
-margin:const EdgeInsets.fromLTRB(12, 10, 190, 5),
+margin:const EdgeInsets.fromLTRB(12, 5, 190, 5),
 color:const Color(0xffffffff),
 shadowColor:const Color(0xff000000),
 elevation:1,
@@ -116,11 +141,8 @@ side: const BorderSide(color:Color(0x4d9e9e9e), width:1),
 ),
 child:
 
-ListView(
-scrollDirection: Axis.vertical,
-padding:const EdgeInsets.all(0),
-shrinkWrap:false,
-physics:const ScrollPhysics(),
+Column(
+
 children:[
 
 Row(
@@ -492,39 +514,42 @@ fontStyle:FontStyle.normal,
        border:
        Border.all(color: const Color(0x4d9e9e9e), width: 1),
       ),
-      child: const Column(
+      child: Column(
        mainAxisAlignment: MainAxisAlignment.start,
        crossAxisAlignment: CrossAxisAlignment.center,
        mainAxisSize: MainAxisSize.max,
        children: [
-        Padding(
-         padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
-         child: Text(
-          "Total Scan",
-          textAlign: TextAlign.start,
-          overflow: TextOverflow.clip,
-          style: TextStyle(
-           fontWeight: FontWeight.w700,
-           fontStyle: FontStyle.normal,
-           fontSize: 14,
-           color: Color(0xff000000),
-          ),
-         ),
-        ),
-        Padding(
-         padding: EdgeInsets.fromLTRB(0, 5, 0, 0),
-         child: Text(
-          "20",
-          textAlign: TextAlign.start,
-          overflow: TextOverflow.clip,
-          style: TextStyle(
-           fontWeight: FontWeight.w600,
-           fontStyle: FontStyle.normal,
-           fontSize: 14,
-           color: Color(0xff000000),
-          ),
-         ),
-        ),
+         const Padding(
+                          padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
+                          child: Text(
+                            "Total Scan",
+                            textAlign: TextAlign.start,
+                            overflow: TextOverflow.clip,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontStyle: FontStyle.normal,
+                              fontSize: 14,
+                              color: Color(0xff000000),
+                            ),
+                          ),
+                        ),_isLoading
+            ? const CircularProgressIndicator():
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 5, 0, 10),
+                          child: Text(
+                            "$_totalScans", 
+                            textAlign: TextAlign.start,
+                            overflow: TextOverflow.clip,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontStyle: FontStyle.normal,
+                              fontSize: 14,
+                              color: Color(0xff000000),
+                            ),
+                          ),
+                          
+                        ),
+                        
        ],
       ),
      ),

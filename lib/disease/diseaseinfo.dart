@@ -1,13 +1,34 @@
 import 'package:flutter/material.dart';
-import 'package:okrai/mainscreens/Disease.dart';
 import 'package:page_transition/page_transition.dart';
 
-// ignore: camel_case_types
-class curl extends StatelessWidget {
-  const curl({super.key});
+import '../mainscreens/Disease.dart';
+import '../okraimodels/disease.dart';
+import '../okraimodels/diseaselist.dart';
+
+class DiseaseInfo extends StatefulWidget {
+  const DiseaseInfo({super.key, required this.id});
+
+final int id;
+
+  @override
+  State<DiseaseInfo> createState() => _DiseaseInfoState();
+}
+
+DiseaseList diseases = DiseaseList();
+
+class _DiseaseInfoState extends State<DiseaseInfo> {
+
+  late int diseaseid;
+
+@override
+void initState() {
+  super.initState();
+  diseaseid =  widget.id;
+}
 
   @override
   Widget build(BuildContext context) {
+    final disease diseasess = diseases.diseaseList[diseaseid];
     return Scaffold(
       backgroundColor: const Color(0xffffffff),
       appBar: AppBar(
@@ -45,25 +66,25 @@ class curl extends StatelessWidget {
 
               ///***If you have exported images you must have to copy those images in assets/images directory.
               Image(
-                image: const AssetImage("assets/images/c4.jpg"),
+                image: AssetImage(diseasess.mainimage),
                 height:
                 MediaQuery.of(context).size.height * 0.35000000000000003,
                 width: MediaQuery.of(context).size.width,
                 fit: BoxFit.cover,
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisSize: MainAxisSize.max,
                 children: [
                   Text(
-                    "Enation Leaf Curl Disease",
+                    diseasess.name,
                     textAlign: TextAlign.start,
                     overflow: TextOverflow.clip,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontWeight: FontWeight.w700,
                       fontStyle: FontStyle.normal,
                       fontSize: 16,
@@ -73,15 +94,15 @@ class curl extends StatelessWidget {
                 ],
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  "Geminiviridae, Genus:",
+                  diseasess.scientific,
                   textAlign: TextAlign.left,
                   overflow: TextOverflow.clip,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontWeight: FontWeight.w400,
                     fontStyle: FontStyle.normal,
                     fontSize: 10,
@@ -90,7 +111,7 @@ class curl extends StatelessWidget {
                 ),
               ),
             ),
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisSize: MainAxisSize.max,
@@ -98,12 +119,12 @@ class curl extends StatelessWidget {
                 Expanded(
                   flex: 1,
                   child: Padding(
-                    padding: EdgeInsets.fromLTRB(16, 5, 16, 0),
+                    padding: const EdgeInsets.fromLTRB(16, 5, 16, 0),
                     child: Text(
-                      "Begomovirus",
+                      diseasess.scientific2,
                       textAlign: TextAlign.start,
                       overflow: TextOverflow.clip,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontWeight: FontWeight.w400,
                         fontStyle: FontStyle.normal,
                         fontSize: 10,
@@ -150,7 +171,7 @@ class curl extends StatelessWidget {
                 ),
               ),
             ),
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisSize: MainAxisSize.max,
@@ -158,7 +179,7 @@ class curl extends StatelessWidget {
                 Expanded(
                   flex: 1,
                   child: Padding(
-                    padding: EdgeInsets.all(15),
+                    padding: const EdgeInsets.all(15),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -167,7 +188,7 @@ class curl extends StatelessWidget {
                         ///***If you have exported images you must have to copy those images in assets/images directory.
                         Image(
                           image: AssetImage(
-                              "assets/images/c2.jpg"),
+                              diseasess.image1),
                           height: 100,
                           width: 140,
                           fit: BoxFit.cover,
@@ -179,7 +200,7 @@ class curl extends StatelessWidget {
                 Expanded(
                   flex: 1,
                   child: Padding(
-                    padding: EdgeInsets.all(15),
+                    padding: const EdgeInsets.all(15),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -187,7 +208,7 @@ class curl extends StatelessWidget {
                       children: [
                         ///***If you have exported images you must have to copy those images in assets/images directory.
                         Image(
-                          image: AssetImage("assets/images/c3.jpg"),
+                          image: AssetImage(diseasess.image2),
                           height: 100,
                           width: 140,
                           fit: BoxFit.cover,
@@ -198,7 +219,7 @@ class curl extends StatelessWidget {
                 ),
               ],
             ),
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisSize: MainAxisSize.max,
@@ -206,7 +227,7 @@ class curl extends StatelessWidget {
                 Expanded(
                   flex: 1,
                   child: Padding(
-                    padding: EdgeInsets.all(15),
+                    padding: const EdgeInsets.all(15),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -214,7 +235,7 @@ class curl extends StatelessWidget {
                       children: [
                         ///***If you have exported images you must have to copy those images in assets/images directory.
                         Image(
-                          image: AssetImage("assets/images/c4.jpg"),
+                          image: AssetImage(diseasess.image3),
                           height: 100,
                           width: 140,
                           fit: BoxFit.cover,
@@ -226,7 +247,7 @@ class curl extends StatelessWidget {
                 Expanded(
                   flex: 1,
                   child: Padding(
-                    padding: EdgeInsets.all(15),
+                    padding: const EdgeInsets.all(15),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -234,7 +255,7 @@ class curl extends StatelessWidget {
                       children: [
                         ///***If you have exported images you must have to copy those images in assets/images directory.
                         Image(
-                          image: AssetImage("assets/images/c5.jpg"),
+                          image: AssetImage(diseasess.image4),
                           height: 100,
                           width: 140,
                           fit: BoxFit.cover,
@@ -282,7 +303,7 @@ class curl extends StatelessWidget {
                 ),
               ],
             ),
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisSize: MainAxisSize.max,
@@ -290,19 +311,12 @@ class curl extends StatelessWidget {
                 Expanded(
                   flex: 1,
                   child: Padding(
-                    padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                     child: Text(
-                      "*Plants are stunted or dwarfed.\n"
-                          "*New growth only produced after infection is reduced in size.\n"
-                          "*Leaflets are rolled upwards and inwards.\n"
-                          "*Leaves are often bent downwards, stiff, thicker than normal, have a leathery texture, show interveinal chlorosis and are wrinkled.\n "
-                          "*Young leaves are slightly chlorotic (yellowish).\n"
-                          "*Fruit, if produced at all, are small, dry and unsaleable.\n"
-                          "*Affected plants tend to be distributed randomly or in patches.",
-
+                      diseasess.symptom,
                       textAlign: TextAlign.justify,
                       overflow: TextOverflow.clip,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontWeight: FontWeight.w400,
                         fontStyle: FontStyle.normal,
                         fontSize: 10,
@@ -350,7 +364,7 @@ class curl extends StatelessWidget {
                 ),
               ],
             ),
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisSize: MainAxisSize.max,
@@ -358,44 +372,17 @@ class curl extends StatelessWidget {
                 Expanded(
                   flex: 1,
                   child: Padding(
-                    padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                     child: Text(
-                      "*Use seedling plants produced in an area free from virus and whiteflies.\n "
-                          "*Destroy old crops as soon as possible after final harvest.\n "
-                          "*Control SLW adults before destroying crops to reduce the migration of SLW to other crops.\n "
-                          "*Plant new crops as far away as practicable from existing crops which may harbour the virus and its carrier, silverleaf whitefly.\n "
-                          "*Control silverleaf whiteflies using appropriate chemicals, application methods and IPM strategies.\n "
-                          "*Synthetic pyrethroids should not be used because it will aggravate the situation.\n "
-                          "*Maintain a high standard of weed control within and around crops to reduce hosts of both the virus and silverleaf whitefly.It can be controlled by application of Chlorpyriphos 2.5 ml + neem oil 2 ml lit of water.\n",
+                     diseasess.farmuse,
                       textAlign: TextAlign.start,
                       overflow: TextOverflow.clip,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontWeight: FontWeight.w400,
                         fontStyle: FontStyle.normal,
                         fontSize: 10,
                         color: Color(0xff000000),
                       ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Padding(
-                  padding: EdgeInsets.all(16),
-                  child: Text(
-                    "",
-                    textAlign: TextAlign.start,
-                    overflow: TextOverflow.clip,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w400,
-                      fontStyle: FontStyle.normal,
-                      fontSize: 14,
-                      color: Color(0xff000000),
                     ),
                   ),
                 ),

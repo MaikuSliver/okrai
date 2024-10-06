@@ -3,15 +3,14 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
-import 'package:okrai/disease/curl.dart';
-import 'package:okrai/disease/early.dart';
-import 'package:okrai/disease/yellowvein.dart';
+import 'package:okrai/disease/diseaseinfo.dart';
 import 'package:page_transition/page_transition.dart';
 
 import 'Home.dart';
 
 class Disease extends StatelessWidget {
   const Disease({super.key});
+
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +78,7 @@ class Disease extends StatelessWidget {
                   ),
                   onPressed: () {
                     Navigator.pushReplacement(context,
-                        PageTransition(type: PageTransitionType.fade, child: const yellowvein()));
+                        PageTransition(type: PageTransitionType.fade, child: const DiseaseInfo(id:0)));
                   },
                 ),
               ),
@@ -122,7 +121,7 @@ class Disease extends StatelessWidget {
                   ),
                   onPressed: () {
                     Navigator.pushReplacement(context,
-                        PageTransition(type: PageTransitionType.fade, child: const curl()));
+                        PageTransition(type: PageTransitionType.fade, child: const DiseaseInfo(id:1)));
                   },
                 ),
               ),
@@ -166,7 +165,7 @@ class Disease extends StatelessWidget {
                   ),
                   onPressed: () {
                     Navigator.pushReplacement(context,
-                        PageTransition(type: PageTransitionType.fade, child: const early()));
+                        PageTransition(type: PageTransitionType.fade, child: const DiseaseInfo(id:2)));
                   },
                 ),
               ),

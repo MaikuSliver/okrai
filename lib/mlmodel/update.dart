@@ -1,4 +1,4 @@
-// ignore_for_file: library_private_types_in_public_api, depend_on_referenced_packages
+// ignore_for_file: library_private_types_in_public_api, depend_on_referenced_packages, prefer_typing_uninitialized_variables, use_build_context_synchronously
 import 'dart:io';
 //import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';

@@ -4,7 +4,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:okrai/diagnose/progress.dart';
-import 'package:okrai/mainscreens/myokra.dart';
 import 'package:page_transition/page_transition.dart';
 
 class care extends StatefulWidget {
@@ -72,7 +71,7 @@ color:Color(0xff63b36f),
 ),
 leading: IconButton(
   icon: const Icon(Icons.arrow_back),color: const Color(0xff63b36f), onPressed: () {
-  Navigator.push(context, PageTransition(type: PageTransitionType.fade, child: const myokra()));
+  Navigator.pop(context);
 },
 ),
 ),
@@ -356,7 +355,12 @@ padding:const EdgeInsets.fromLTRB(0, 10, 0, 0),
 child:Align(
 alignment:Alignment.center,
 child:MaterialButton(
-onPressed:(){},
+onPressed:(){
+
+//to do
+
+
+},
 color:const Color(0xff67bd74),
 elevation:0,
 shape:RoundedRectangleBorder(

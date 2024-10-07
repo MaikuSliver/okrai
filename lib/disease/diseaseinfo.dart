@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:page_transition/page_transition.dart';
-
-import '../mainscreens/Disease.dart';
 import '../okraimodels/disease.dart';
 import '../okraimodels/diseaselist.dart';
 
@@ -50,7 +47,7 @@ void initState() {
         ),
         leading: IconButton(
             icon: const Icon(Icons.arrow_back),color: const Color(0xff63b36f), onPressed: () {
-          Navigator.pushReplacement(context, PageTransition(type: PageTransitionType.fade, child: const Disease()));
+           Navigator.pop(context);
         }
         ),
       ),

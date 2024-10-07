@@ -6,7 +6,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:tensorflow_lite_flutter/tensorflow_lite_flutter.dart';
 import '../database/db_helper.dart';
 import '../mainscreens/Home.dart';
-import '../mainscreens/myokra.dart';
+import '../mainscreens/myokra.dart'; 
 
 class TfliteModel extends StatefulWidget {
   const TfliteModel({Key? key}) : super(key: key);
@@ -17,13 +17,13 @@ class TfliteModel extends StatefulWidget {
 
 class _TfliteModelState extends State<TfliteModel> {
   var nameController = TextEditingController();
-  var emailController = TextEditingController(); //status
-  var contactController = TextEditingController(); //date
-  var pestController = TextEditingController(); //pesticide
+  var emailController = TextEditingController(); // status
+  var contactController = TextEditingController(); // date
+  var pestController = TextEditingController(); // pesticide
 
-  String? okraPlantResult; 
+  String? okraPlantResult = ""; // Initialize to empty string
   late File _image;
-  late List _results;
+  List _results = []; // Initialize with an empty list
   bool imageSelect = false;
   bool isButtonEnabled = false; // State for button enabled/disabled
 
@@ -31,8 +31,8 @@ class _TfliteModelState extends State<TfliteModel> {
   void initState() {
     super.initState();
     loadModel();
-    String todayDate = "${DateTime.now().day}-${DateTime.now().month}-${DateTime.now().year}";
-  contactController.text = todayDate; // Set today's date as the initial value
+    String todayDate = "${DateTime.now().month}-${DateTime.now().day}-${DateTime.now().year}";
+    contactController.text = todayDate; // Set today's date as the initial value
 
     // Add listeners to text fields to update the button state
     nameController.addListener(_validateForm);
@@ -60,6 +60,7 @@ class _TfliteModelState extends State<TfliteModel> {
       _results = recognitions!;
       _image = image;
       imageSelect = true;
+      okraPlantResult = _results.isNotEmpty ? _results[0]['label'] : "Unknown"; // Handle unknown
       _validateForm(); // Revalidate form when image is selected
     });
   }
@@ -90,9 +91,10 @@ class _TfliteModelState extends State<TfliteModel> {
   void _validateForm() {
     setState(() {
       isButtonEnabled = nameController.text.isNotEmpty &&
-          contactController.text.isNotEmpty &&
-          pestController.text.isNotEmpty &&
-          imageSelect; // Ensure image is selected
+        contactController.text.isNotEmpty &&
+        pestController.text.isNotEmpty &&
+        imageSelect &&
+        okraPlantResult != "Unknown"; // Disable if okraPlantResult is "Unknown"
     });
   }
 
@@ -200,94 +202,79 @@ class _TfliteModelState extends State<TfliteModel> {
                                       ),
                                     ),
                                   ),
-                               SingleChildScrollView(
+                            SingleChildScrollView(
                               child: Column(
                                 children: (imageSelect) ? _results.map((result) {
-                                // Set the label text to the variable
-                                 okraPlantResult = result['label'];
-                                 
                                   return Card(
                                     child: Container(
                                       margin: const EdgeInsets.all(10),
                                       child: Text(
                                         "Your okra plant result is ${result['label']} with ${result['confidence'].toStringAsFixed(2)}",
-                                        style: const TextStyle(color: Colors.black,
-                                            fontSize: 20),
+                                        style: const TextStyle(color: Colors.black, fontSize: 20),
                                       ),
                                     ),
-                                    
                                   );
                                 }).toList() : [],
-
                               ),
                             ),
                             Container(
-                                width: MediaQuery.of(context).size.width,
-                                margin: const EdgeInsets.all(15),
-                                child: TextField(
-                                  controller: nameController,
-                                  decoration: const InputDecoration(
+                              width: MediaQuery.of(context).size.width,
+                              margin: const EdgeInsets.all(15),
+                              child: TextField(
+                                controller: nameController,
+                                decoration: const InputDecoration(
                                   hintText: "Name",
-                                        ),
-                                      ),
+                                ),
+                              ),
                             ),
                             Container(
-                                width: MediaQuery.of(context).size.width,
-                                margin: const EdgeInsets.all(15),
-                                child: TextField(
-                                  controller: pestController,
-                                  decoration: const InputDecoration(
+                              width: MediaQuery.of(context).size.width,
+                              margin: const EdgeInsets.all(15),
+                              child: TextField(
+                                controller: pestController,
+                                decoration: const InputDecoration(
                                   hintText: "Use Pesticide",
-                                        ),
-                                      ),
+                                ),
+                              ),
                             ),
-                           Container(
-  width: MediaQuery.of(context).size.width,
-  margin: const EdgeInsets.all(15),
-  child: TextFormField(
-    controller: contactController,
-    decoration: const InputDecoration(
-      hintText: "Date",
-    ),
-    readOnly: true, // Make the field read-only so it only shows the date picker
-    onTap: () async {
-      // Show date picker when the field is tapped
-      DateTime? pickedDate = await showDatePicker(
-        context: context,
-        initialDate: DateTime.now(), // Set initial date to today's date
-        firstDate: DateTime(2000), // Set the start of the date range
-        lastDate: DateTime(2100), // Set the end of the date range
-      );
+                            Container(
+                              width: MediaQuery.of(context).size.width,
+                              margin: const EdgeInsets.all(15),
+                              child: TextFormField(
+                                controller: contactController,
+                                decoration: const InputDecoration(
+                                  hintText: "Date",
+                                ),
+                                readOnly: true, // Make the field read-only so it only shows the date picker
+                                onTap: () async {
+                                  // Show date picker when the field is tapped
+                                  DateTime? pickedDate = await showDatePicker(
+                                    context: context,
+                                    initialDate: DateTime.now(), // Set initial date to today's date
+                                    firstDate: DateTime(2000), // Set the start of the date range
+                                    lastDate: DateTime(2100), // Set the end of the date range
+                                  );
 
-      if (pickedDate != null) {
-        // Format the selected date and set it to the text field
-        String formattedDate = "${pickedDate.day}-${pickedDate.month}-${pickedDate.year}";
-        setState(() {
-          contactController.text = formattedDate; // Assign the formatted date to the controller
-        });
-      }
-    },
-  ),
-),
+                                  if (pickedDate != null) {
+                                    String formattedDate = "${pickedDate.month}-${pickedDate.day}-${pickedDate.year}";
+                                    setState(() {
+                                      contactController.text = formattedDate; // Update the controller with the selected date
+                                    });
+                                  }
+                                },
+                              ),
+                            ),
+                          
                           ],
                         ),
                       ),
                     ),
                   ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Expanded(
-                      flex: 1,
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
-                        child: Align(
-                          alignment: const Alignment(0.0, 0.0),
-                          child: MaterialButton(
-                            onPressed: isButtonEnabled ? () async {
+                ),  Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 16),
+                              child: ElevatedButton(
+                                onPressed: isButtonEnabled
+                                      ? () async {
                               // Save the image to the app's documents directory
   final appDocDir = await getApplicationDocumentsDirectory();
   final imagePath = '${appDocDir.path}/image_${DateTime.now().millisecondsSinceEpoch}.png';
@@ -318,34 +305,17 @@ class _TfliteModelState extends State<TfliteModel> {
     // Handle the error, e.g., show a message to the user
     print('Failed to insert record into the plants table.');
   }
-                            } : null, // Disable if not valid
-                            color: const Color(0xff67bb74),
-                            disabledColor: Colors.grey,
-                            disabledTextColor: Colors.black,
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(60.0),
-                              side: const BorderSide(
-                                  color: Color(0xff808080), width: 1),
-                            ),
-                            padding: const EdgeInsets.all(16),
-                            textColor: const Color(0xffffffff),
-                            height: 40,
-                            minWidth: 140,
-                            child: const Text(
-                              "Add this Plant",
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400,
-                                fontStyle: FontStyle.normal,
+                                      }
+                                    : null, // Disable the button if form is invalid
+                                     style: ElevatedButton.styleFrom(
+                      backgroundColor: isButtonEnabled
+                          ? const Color(0xff57c26b)
+                          : Colors.grey, // Change color based on state
+                    ),
+                                child: const Text("Add this Plant",
+                      style: TextStyle(color: Colors.white),),
                               ),
                             ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
               ],
             ),
           ),
@@ -354,6 +324,7 @@ class _TfliteModelState extends State<TfliteModel> {
     );
   }
 }
+
 
   // Future<void> pickImageWithPermission() async {
   //   PermissionStatus cameraPermissionStatus = await Permission.camera.status;

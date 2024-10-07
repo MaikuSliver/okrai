@@ -127,7 +127,8 @@ late String okradate;
             child: Image.file(
               File(imagePath), // Display the image using File
               fit: BoxFit.cover,
-              width: 150.0, // Keep the width the same
+               width: 150,
+          height: 170,
             ),
           ),
           Positioned(

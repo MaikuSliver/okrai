@@ -78,6 +78,7 @@ backgroundColor: const Color(0xffffffff),
      ),
     ),
 body:
+
 Column(
 mainAxisAlignment:MainAxisAlignment.start,
 crossAxisAlignment:CrossAxisAlignment.center,
@@ -162,7 +163,7 @@ IconButton(
   fit: BoxFit.fitHeight,
  ),
  onPressed: () {
-  Navigator.pushReplacement(context,
+  Navigator.push(context,
       PageTransition(type: PageTransitionType.fade, child:okrainfo()));
  },
 ),
@@ -178,7 +179,7 @@ IconButton(
   fit: BoxFit.fitHeight,
  ),
  onPressed: () {
-  Navigator.pushReplacement(context,
+  Navigator.push(context,
       PageTransition(type: PageTransitionType.fade, child: const Disease()));
  },
 ),

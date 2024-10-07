@@ -1,8 +1,6 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'package:flutter/material.dart';
-import 'package:okrai/mainscreens/Home.dart';
-import 'package:page_transition/page_transition.dart';
 
 // ignore: camel_case_types, must_be_immutable
 class okrainfo extends StatelessWidget {
@@ -54,7 +52,7 @@ var Normalgstyle =const TextStyle(
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),color: const Color(0xff63b36f), onPressed: () {
-          Navigator.pushReplacement(context, PageTransition(type: PageTransitionType.fade, child: const Home()));
+          Navigator.pop(context);
         },
         ),
       ),

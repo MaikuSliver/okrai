@@ -113,8 +113,9 @@ return Card(        //box of each item call
      
         Image(
           image: FileImage(File(imagepath!)),
-          width: MediaQuery.of(context).size.width,
+          width: 150,
           height: 190,
+          fit: BoxFit.cover,
           ),
         Text(
           'Name: $name',
@@ -137,7 +138,7 @@ return Card(        //box of each item call
          children: [
            IconButton(
                       icon: const Icon(Icons.arrow_forward),
-                      onPressed: () {  Navigator.pushReplacement(context,
+                      onPressed: () {  Navigator.push(context,
                       PageTransition(type: PageTransitionType.fade, child: care(
                         type: email,
                         img: imagepath,

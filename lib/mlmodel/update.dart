@@ -13,33 +13,31 @@ import '../mainscreens/myokra.dart';
 
 class Update extends StatefulWidget {
   const Update({Key? key, 
-  required this.id, 
-  required this.name, 
-  required this.type, 
-  required this.img, 
-  required this.pest, 
-  required this.date}) : 
-  super(key: key);
+    required this.id, 
+    required this.name, 
+    required this.type, 
+    required this.img, 
+    required this.pest, 
+    required this.date}) : super(key: key);
 
-final int id;
-final String name;
-final String type;
-final String img;
-final String pest;
-final String date;
+  final int id;
+  final String name;
+  final String type;
+  final String img;
+  final String pest;
+  final String date;
 
   @override
   _UpdateState createState() => _UpdateState();
 }
 
 class _UpdateState extends State<Update> {
-
-late String okratype;
-late String okraimg;
-late int okraid;
-late String okraname;
-late String okrapest;
-late String okradate;
+  late String okratype;
+  late String okraimg;
+  late int okraid;
+  late String okraname;
+  late String okrapest;
+  late String okradate;
 
   var nameController = TextEditingController();
   var emailController = TextEditingController(); //status
@@ -47,22 +45,22 @@ late String okradate;
   var pestController = TextEditingController(); //pesticide
   var updatePic;
 
-
- 
-  String? okraPlantResult; 
+  String? okraPlantResult;
   late File _image;
   late List _results;
   bool imageSelect = false;
- bool isButtonEnabled = false; // State for button enabled/disabled
+  bool isButtonEnabled = false; // State for button enabled/disabled
 
   void _validateForm() {
     setState(() {
       isButtonEnabled = nameController.text.isNotEmpty &&
           contactController.text.isNotEmpty &&
           pestController.text.isNotEmpty &&
-          imageSelect; // Ensure image is selected
+          imageSelect && 
+          okraPlantResult != "Unknown"; // Ensure the result is not "Unknown"
     });
   }
+
   @override
   void initState() {
     super.initState();
@@ -73,16 +71,16 @@ late String okradate;
     okrapest = widget.pest;
     okradate = widget.date;
 
-    // Add initial text value "example value"
-  nameController.text = okraname;
-  pestController.text = okrapest;
-  String todayDate = "${DateTime.now().day}-${DateTime.now().month}-${DateTime.now().year}";
-  contactController.text = todayDate; // Set today's date as the initial value
+    nameController.text = okraname;
+    pestController.text = okrapest;
+    String todayDate = "${DateTime.now().month}-${DateTime.now().day}-${DateTime.now().year}";
+    contactController.text = todayDate; // Set today's date as the initial value
 
-      nameController.addListener(_validateForm);
+    nameController.addListener(_validateForm);
     emailController.addListener(_validateForm);
     contactController.addListener(_validateForm);
     pestController.addListener(_validateForm);
+
     loadModel();
   }
 
@@ -106,12 +104,18 @@ late String okradate;
       _results = recognitions!;
       _image = image;
       imageSelect = true;
-       _validateForm(); 
+
+      if (_results.isNotEmpty) {
+        okraPlantResult = _results[0]['label']; // Set the result label
+      } else {
+        okraPlantResult = "Unknown";
+      }
+
+      _validateForm(); // Validate form again after image classification
     });
   }
 
-
-    Future pickImage() async {
+  Future pickImage() async {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(
       source: ImageSource.gallery,maxHeight: 400, maxWidth: 400
@@ -151,9 +155,11 @@ late String okradate;
           ),
         ),
         leading: IconButton(
-            icon: const Icon(Icons.arrow_back),color: const Color(0xff63b36f), onPressed: () {
-          Navigator.pushReplacement(context, PageTransition(type: PageTransitionType.fade, child: const Home()));
-        }
+            icon: const Icon(Icons.arrow_back),
+            color: const Color(0xff63b36f), 
+            onPressed: () {
+              Navigator.pop(context);
+            }
         ),
       ),
       body: Column(
@@ -230,22 +236,19 @@ late String okradate;
                             SingleChildScrollView(
                               child: Column(
                                 children: (imageSelect) ? _results.map((result) {
-                                // Set the label text to the variable
-                                 okraPlantResult = result['label'];
-                                 
+                                  okraPlantResult = result['label'];
                                   return Card(
                                     child: Container(
                                       margin: const EdgeInsets.all(10),
                                       child: Text(
                                         "Your okra plant result is ${result['label']} with ${result['confidence'].toStringAsFixed(2)}",
-                                        style: const TextStyle(color: Colors.black,
+                                        style: const TextStyle(
+                                            color: Colors.black,
                                             fontSize: 20),
                                       ),
                                     ),
-                                    
                                   );
                                 }).toList() : [],
-
                               ),
                             ),
                             Container(
@@ -254,68 +257,41 @@ late String okradate;
                                 child: TextField(
                                   controller: nameController,
                                   decoration: const InputDecoration(
-                                  hintText: "Name",
-                                        ),
-                                      ),
-                            ),
+                                    hintText: "Name",
+                                  ),
+                                )),
                             Container(
                                 width: MediaQuery.of(context).size.width,
                                 margin: const EdgeInsets.all(15),
                                 child: TextField(
                                   controller: pestController,
                                   decoration: const InputDecoration(
-                                  hintText: "Use Pesticide",
-                                        ),
-                                      ),
+                                    hintText: "Use Pesticide",
+                                  ),
+                                )),
+                            Container(
+                              width: MediaQuery.of(context).size.width,
+                              margin: const EdgeInsets.all(15),
+                              child: TextFormField(
+                                controller: contactController,
+                                decoration: const InputDecoration(
+                                  hintText: "Date",
+                                ),
+                                readOnly: true,
+                              ),
                             ),
-                              Container(
-  width: MediaQuery.of(context).size.width,
-  margin: const EdgeInsets.all(15),
-  child: TextFormField(
-    controller: contactController,
-    decoration: const InputDecoration(
-      hintText: "Date",
-    ),
-    readOnly: true, // Make the field read-only so it only shows the date picker
-    onTap: () async {
-      // Show date picker when the field is tapped
-      DateTime? pickedDate = await showDatePicker(
-        context: context,
-        initialDate: DateTime.now(), // Set initial date to today's date
-        firstDate: DateTime(2000), // Set the start of the date range
-        lastDate: DateTime(2100), // Set the end of the date range
-      );
-
-      if (pickedDate != null) {
-        // Format the selected date and set it to the text field
-        String formattedDate = "${pickedDate.day}-${pickedDate.month}-${pickedDate.year}";
-        setState(() {
-          contactController.text = formattedDate; // Assign the formatted date to the controller
-        });
-      }
-    },
-  ),
-),
                           ],
                         ),
                       ),
                     ),
                   ],
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Expanded(
-                      flex: 1,
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
-                        child: Align(
-                          alignment: const Alignment(0.0, 0.0),
-                          child: MaterialButton(
-                            onPressed: isButtonEnabled ? () async {
-                    // Save the image to the app's documents directory
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: ElevatedButton(
+                    onPressed: isButtonEnabled
+                        ? () async {
+                           // Save the image to the app's documents directory
                     final appDocDir = await getApplicationDocumentsDirectory();
                     final imagePath = '${appDocDir.path}/image_${DateTime.now().millisecondsSinceEpoch}.png';
                     await _image.copy(imagePath);
@@ -336,34 +312,21 @@ late String okradate;
     DatabaseHelper.progressImages: imagePath,
     DatabaseHelper.progressPest: pestController.text,
   });
-                       Navigator.pushReplacement(context, PageTransition(type: PageTransitionType.fade, child: const myokra()));
-                                              }: null,
-                            color: const Color(0xff67bb74),
-                              disabledColor: Colors.grey,
-                            disabledTextColor: Colors.black,
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(60.0),
-                              side: const BorderSide(
-                                  color: Color(0xff808080), width: 1),
-                            ),
-                            padding: const EdgeInsets.all(16),
-                            textColor: const Color(0xffffffff),
-                            height: 40,
-                            minWidth: 140,
-                            child: const Text(
-                              "Update this Plant",
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400,
-                                fontStyle: FontStyle.normal,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
+                       Navigator.pop(context);
+                       Navigator.pop(context);
+                       Navigator.pop(context);    
+                          }
+                        : null, // Disable if form is invalid
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: isButtonEnabled
+                          ? const Color(0xff57c26b)
+                          : Colors.grey, // Change color based on state
                     ),
-                  ],
+                    child: const Text(
+                      "Update this Plant",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -372,6 +335,8 @@ late String okradate;
       ),
     );
   }
+}
+
   // Future<void> pickImageWithPermission() async {
   //   PermissionStatus cameraPermissionStatus = await Permission.camera.status;
   //   PermissionStatus storagePermissionStatus = await Permission.storage.status;
@@ -397,4 +362,4 @@ late String okradate;
   //     }
   //   }
   // }
-}
+

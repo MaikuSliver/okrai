@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:okrai/mainscreens/Disease.dart';
 import 'mainscreens/Home.dart';
 import 'package:double_tap_to_exit/double_tap_to_exit.dart';
 
@@ -19,7 +18,7 @@ class MyApp extends StatelessWidget {
           snackBar: SnackBar(
             content: Text('Tap back again to leave'),
           ),
-          child: Disease(),
+          child: Home(),
         ),
       ),
     );

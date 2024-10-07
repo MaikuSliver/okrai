@@ -1,15 +1,11 @@
 // ignore_for_file: library_private_types_in_public_api, depend_on_referenced_packages
-
 import 'dart:io';
-import 'package:okrai/mainscreens/Home.dart';
 //import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:tensorflow_lite_flutter/tensorflow_lite_flutter.dart';
 import '../database/db_helper.dart';
-import '../mainscreens/myokra.dart';
 
 class Update extends StatefulWidget {
   const Update({Key? key, 

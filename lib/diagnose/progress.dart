@@ -14,7 +14,8 @@ class Progress extends StatefulWidget {
   required this.type, 
   required this.img, 
   required this.pest, 
-  required this.date});
+  required this.date, 
+  required this.progresshealth});
 
 final int id;
 final String name;
@@ -22,6 +23,7 @@ final String type;
 final String img;
 final String pest;
 final String date;
+final double progresshealth;
 
   @override
   State<Progress> createState() => _ProgressState();
@@ -48,6 +50,8 @@ late int okraid;
 late String okraname;
 late String okrapest;
 late String okradate;
+late double okraprogress;
+late double okrapercent;
 
 @override
   void initState() {
@@ -58,6 +62,8 @@ late String okradate;
     okraname = widget.name;
     okrapest = widget.pest;
     okradate = widget.date;
+    okraprogress = widget.progresshealth;
+    okrapercent =widget.progresshealth*100;
      _refreshJournals();
   }
 
@@ -73,7 +79,7 @@ late String okradate;
   icon: 
   const Icon(Icons.arrow_back),color: const Color(0xff63b36f), onPressed: () {Navigator.pop(context);
 },
-),),
+), leadingWidth: 8,),
       body:  SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Container(
@@ -83,18 +89,18 @@ late String okradate;
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                  GFProgressBar(
-            percentage: 0.6,
+            percentage: okraprogress,
             width:300,
              radius: 150,
              circleWidth:20,
+             animateFromLastPercentage: true,
              animation: true,
-             animateFromLastPercentage:true,
              type: GFProgressType.circular,
              backgroundColor: Colors.black26,
              progressBarColor: GFColors.SUCCESS,
               leading  : const Icon( Icons.sentiment_dissatisfied, color: Colors.green),
               ),
-              const Center(child: Text(' 60%', style: TextStyle(color: Colors.green,fontWeight: FontWeight.bold),)),
+              Center(child: Text('${okrapercent.toString()}%', style: const TextStyle(color: Colors.green,fontWeight: FontWeight.bold),)),
               const SizedBox(height: 70,),
               const Center(child: Text('Great! Keep it up', style: TextStyle(fontWeight: FontWeight.bold),)),
               Container(
@@ -167,6 +173,7 @@ late String okradate;
                   const SizedBox(height: 10),
                   ..._viewDataList.map((data) {
                     String pesticide = data[DatabaseHelper.progressPest] ?? "No pesticide used"; // Get pesticide data
+                     String date = data[DatabaseHelper.progressDate] ?? "No pesticide used"; // Get pesticide data
                     return ListTile(
                       title: Center(
                         child: Text(
@@ -174,7 +181,8 @@ late String okradate;
                           style: const TextStyle(color: Colors.black),
                         ),
                       ),
-                      leading: const Icon(Icons.check, color: Colors.green), // Optional icon
+                      leading: Text(date,
+                          style: const TextStyle(color: Colors.black),), // Optional icon
                     );
                   }).toList(),
                 ],

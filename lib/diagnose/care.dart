@@ -4,7 +4,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:okrai/diagnose/progress.dart';
+import 'package:okrai/okraimodels/okralist.dart';
 import 'package:page_transition/page_transition.dart';
+
+import '../okraimodels/okra.dart';
 
 class care extends StatefulWidget {
   const care({Key? key, 
@@ -25,7 +28,7 @@ final String date;
   @override
   State<care> createState() => _careState();
 }
-
+OkraList okrainfos = OkraList();
 class _careState extends State<care> {
 
 late String okratype;
@@ -44,11 +47,23 @@ late String okradate;
     okraname = widget.name;
     okrapest = widget.pest;
     okradate = widget.date;
+      // Set okrainfoid based on okraname
+    if (okratype.toLowerCase() == 'early blight disease') {
+      okrainfoid = 0;
+    } else if (okratype.toLowerCase() == 'leaf curl disease') {
+      okrainfoid = 1;
+    } else if (okratype.toLowerCase() == 'yellow vein mosaic disease') {
+      okrainfoid = 2;
+    }  else {
+      okrainfoid = 3; // Default value for any other cases
+    }
   }
+    late int okrainfoid;
 
-  
+
 @override
 Widget build(BuildContext context) {
+    final okra okrainfoss = okrainfos.okraList[okrainfoid];
 return Scaffold(
 backgroundColor: const Color(0xffffffff),
 appBar: 
@@ -112,13 +127,13 @@ crossAxisAlignment:CrossAxisAlignment.start,
 mainAxisSize:MainAxisSize.max,
 children:[
 
-const Expanded(
+Expanded(
 flex: 1,
 child: Text(
-"Status: Diseased",
+"Status: ${okrainfoss.hstatus}",
 textAlign: TextAlign.start,
 overflow:TextOverflow.clip,
-style:TextStyle(
+style:const TextStyle(
 fontWeight:FontWeight.w700,
 fontStyle:FontStyle.normal,
 fontSize:16,
@@ -293,7 +308,7 @@ color:Color(0xff000000),
 ),
 ],),),
 ],),
-const Row(
+Row(
 mainAxisAlignment:MainAxisAlignment.start,
 crossAxisAlignment:CrossAxisAlignment.center,
 mainAxisSize:MainAxisSize.max,
@@ -308,10 +323,10 @@ crossAxisAlignment:CrossAxisAlignment.center,
 mainAxisSize:MainAxisSize.max,
 children: [
 Text(
-"Every 2 Days",
+okrainfoss.water,
 textAlign: TextAlign.start,
 overflow:TextOverflow.clip,
-style:TextStyle(
+style:const TextStyle(
 fontWeight:FontWeight.w400,
 fontStyle:FontStyle.normal,
 fontSize:10,
@@ -328,10 +343,10 @@ crossAxisAlignment:CrossAxisAlignment.center,
 mainAxisSize:MainAxisSize.max,
 children: [
 Text(
-"Every 2 Weeks",
+okrainfoss.fertilization,
 textAlign: TextAlign.start,
 overflow:TextOverflow.clip,
-style:TextStyle(
+style:const TextStyle(
 fontWeight:FontWeight.w400,
 fontStyle:FontStyle.normal,
 fontSize:10,
@@ -401,7 +416,7 @@ color:Color(0xff000000),
 ),
 ),
 ],),
-const Row(
+Row(
 mainAxisAlignment:MainAxisAlignment.start,
 crossAxisAlignment:CrossAxisAlignment.start,
 mainAxisSize:MainAxisSize.max,
@@ -410,12 +425,10 @@ children:[
 Expanded(
 flex: 1,
 child: Text(
-'Leaf spots of early blight are circular, up to 12 mm in diameter, '
-'brown, and often show a circular pattern, which distinguishes this '
-'disease from other leaf spots on Okra.',
+okrainfoss.description,
 textAlign: TextAlign.justify,
 overflow:TextOverflow.clip,
-style:TextStyle(
+style:const TextStyle(
 fontWeight:FontWeight.w400,
 fontStyle:FontStyle.normal,
 fontSize:14,
@@ -445,7 +458,7 @@ color:Color(0xff000000),
 ),
 ),
 ],),
-const Row(
+Row(
 mainAxisAlignment:MainAxisAlignment.start,
 crossAxisAlignment:CrossAxisAlignment.center,
 mainAxisSize:MainAxisSize.max,
@@ -454,16 +467,10 @@ children:[
 Expanded(
 flex: 1,
 child: Text(
-  "*Use resistant varieties (e.g. Rio Grande).\n\n"
-    "*Use certified disease-free seeds. If using own seeds, hot water treat the seeds.\n\n"
-    "*Use disease-free plants.\n\n"
-    "*Do not plant plant consecutively okra crops on the same land.\n\n"
-    "*Practise rotation with non-solanaceous crops (e.g. brassicas, legumes, small grains).\n\n"
-    "*Stake and prune indeterminate varieties.\n\n"
-    "*If disease is endemic, applied preventative sprays of copper compounds (e.g. copper hydroxide).",
+ okrainfoss.whattodo,
 textAlign: TextAlign.justify,
 overflow:TextOverflow.clip,
-style:TextStyle(
+style:const TextStyle(
 fontWeight:FontWeight.w400,
 fontStyle:FontStyle.normal,
 fontSize:14,
@@ -493,17 +500,17 @@ color:Color(0xff000000),
 ),
 ),
 ],),
-const Row(
+Row(
 mainAxisAlignment:MainAxisAlignment.start,
 crossAxisAlignment:CrossAxisAlignment.center,
 mainAxisSize:MainAxisSize.max,
 children:[
 
 Text(
-"Fungal",
+okrainfoss.pest,
 textAlign: TextAlign.start,
 overflow:TextOverflow.clip,
-style:TextStyle(
+style:const TextStyle(
 fontWeight:FontWeight.w400,
 fontStyle:FontStyle.normal,
 fontSize:14,
@@ -532,7 +539,7 @@ color:Color(0xff000000),
 ),
 ),
 ],),
-const Row(
+Row(
 mainAxisAlignment:MainAxisAlignment.start,
 crossAxisAlignment:CrossAxisAlignment.center,
 mainAxisSize:MainAxisSize.max,
@@ -541,13 +548,10 @@ children:[
 Expanded(
 flex: 1,
 child: Text(
-'For best control, apply copper-based fungicides '
-'early, two weeks before disease normally appears or when weather '
-'forecasts predict a long period of wet weather. Alternatively, begin '
-'treatment when disease first appears, and repeat every 7-10 days for as long as needed.',
+okrainfoss.treatment,
 textAlign: TextAlign.justify,
 overflow:TextOverflow.clip,
-style:TextStyle(
+style:const TextStyle(
 fontWeight:FontWeight.w400,
 fontStyle:FontStyle.normal,
 fontSize:14,
@@ -570,6 +574,7 @@ child:MaterialButton(
       img:okraimg,
       pest:okrapest,
       date:okradate,
+      progresshealth: okrainfoss.progress,
     )));
   },
 color:const Color(0xff67bd74),

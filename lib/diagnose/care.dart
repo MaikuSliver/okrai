@@ -48,17 +48,30 @@ late String okradate;
     okrapest = widget.pest;
     okradate = widget.date;
       // Set okrainfoid based on okraname
-    if (okratype.toLowerCase() == 'early blight disease') {
+        if (okratype.toLowerCase() == 'early blight disease') { // Mild Early Blight Disease
       okrainfoid = 0;
-    } else if (okratype.toLowerCase() == 'leaf curl disease') {
+    } else if (okratype.toLowerCase() == 'leaf curl disease') { // Severe Early Blight Disease
       okrainfoid = 1;
-    } else if (okratype.toLowerCase() == 'yellow vein mosaic disease') {
+    } else if (okratype.toLowerCase() == 'yellow vein mosaic disease') { // Critical Early Blight Disease
       okrainfoid = 2;
-    }  else {
-      okrainfoid = 3; // Default value for any other cases
+    // } else if (okratype.toLowerCase() == 'yellow vein mosaic disease') { // Mild Leaf Curl Disease
+    //   okrainfoid = 3;
+    // } else if (okratype.toLowerCase() == 'yellow vein mosaic disease') { // Severe Leaf Curl Disease
+    //   okrainfoid = 4;
+    // }else if (okratype.toLowerCase() == 'yellow vein mosaic disease') { // Critical Leaf Curl Disease
+    //   okrainfoid = 5;
+    // }else if (okratype.toLowerCase() == 'yellow vein mosaic disease') { // Mild Yellow Vein Mosaic Disease
+    //   okrainfoid = 6;
+    // }else if (okratype.toLowerCase() == 'yellow vein mosaic disease') { // Severe Yellow Vein Mosaic Disease
+    //   okrainfoid = 7;
+    // }else if (okratype.toLowerCase() == 'yellow vein mosaic disease') { // Critical Yellow Vein Mosaic Disease
+    //   okrainfoid = 8;
+    } else {
+      okrainfoid = 9; // Healthy
     }
   }
     late int okrainfoid;
+
 
 
 @override

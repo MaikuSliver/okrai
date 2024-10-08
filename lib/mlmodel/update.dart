@@ -293,7 +293,7 @@ class _UpdateState extends State<Update> {
                     await _image.copy(imagePath);
 
                     // Insert record into SQLite with the image path
-                    
+            
                     await DatabaseHelper.instance.updateRecord({
                       DatabaseHelper.columnId: okraid,
                       DatabaseHelper.columnName: nameController.text,
@@ -302,6 +302,7 @@ class _UpdateState extends State<Update> {
                       DatabaseHelper.columnImagePath: imagePath,
                       DatabaseHelper.columnPest: pestController.text,
                     });
+
  await DatabaseHelper.instance.insertProgress({
     DatabaseHelper.plantId: okraid,  // Use the new plant ID here
     DatabaseHelper.progressDate: contactController.text, //date

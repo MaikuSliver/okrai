@@ -35,6 +35,8 @@ dependencies:
   sqflite: ^2.3.3+2
   path_provider: ^2.1.4
   tensorflow_lite_flutter: ^2.0.1
+  timezone: ^0.9.4
+  flutter_local_notifications: ^17.2.3
 
 
 dev_dependencies:

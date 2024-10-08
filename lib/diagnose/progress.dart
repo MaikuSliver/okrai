@@ -83,26 +83,54 @@ late double okrapercent;
       body:  SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Container(
-            margin: const EdgeInsets.only(top: 75),
+              margin: const EdgeInsets.only(top: 30),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                 GFProgressBar(
-            percentage: okraprogress,
-            width:300,
-             radius: 150,
-             circleWidth:20,
-             animateFromLastPercentage: true,
-             animation: true,
-             type: GFProgressType.circular,
-             backgroundColor: Colors.black26,
-             progressBarColor: GFColors.SUCCESS,
-              leading  : const Icon( Icons.sentiment_dissatisfied, color: Colors.green),
-              ),
-              Center(child: Text('${okrapercent.toString()}%', style: const TextStyle(color: Colors.green,fontWeight: FontWeight.bold),)),
-              const SizedBox(height: 70,),
+                 Center(
+                   child: SizedBox(
+                     height: 170, // Sets the height of the Circular Progress container
+                     width: 170, // Sets the width of the Circular Progress container
+                     child: Stack(
+                       alignment: Alignment.center, // Centers all children inside the Stack
+                       children: [
+                         SizedBox(
+                           height: 150, // Sets the radius of the circular progress
+                           width: 150,
+                           child: CircularProgressIndicator(
+                             value: okraprogress, // Sets the progress value (0.0 to 1.0)
+                             strokeWidth: 15, // Sets the circle width
+                             backgroundColor: Colors.black26,
+                             valueColor: const AlwaysStoppedAnimation<Color>(Color(0xff63b36f)),
+                           ),
+                         ),
+                         Column(
+                           mainAxisAlignment: MainAxisAlignment.center,
+                           children: [
+                             const Icon(
+                               Icons.sentiment_very_satisfied,
+                               color: Color(0xff63b36f),
+                               size:40,
+                             ),
+                             const SizedBox(height: 8),
+                             Text(
+                               '${okrapercent.toString()}%',
+                               style: const TextStyle(
+                                 color: Color(0xff63b36f),
+                                 fontWeight: FontWeight.bold,
+                                 fontSize: 20,
+                               ),
+                             ),
+                           ],
+                         ),
+                       ],
+                     ),
+                   ),
+                 ),
+              const SizedBox(height: 10,),
               const Center(child: Text('Great! Keep it up', style: TextStyle(fontWeight: FontWeight.bold),)),
+               const SizedBox(height: 10,),
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 20,vertical: 15) ,
                 child: const Column(

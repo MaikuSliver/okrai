@@ -87,7 +87,7 @@ class _myokraState extends State<myokra> {
               ),
               IconButton(
                 icon: const Icon(Icons.energy_savings_leaf),
-                color: Colors.green,
+                color: const Color(0xff44c377),
                 onPressed: () {
                   Navigator.pushReplacement(
                     context,

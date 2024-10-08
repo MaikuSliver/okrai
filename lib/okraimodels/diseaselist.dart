@@ -56,8 +56,8 @@ class DiseaseList {
       image2: "assets/images/e3.jpg", 
       image3: "assets/images/e2.jpg", 
       image4: "assets/images/e4.jpg", 
-      symptom: "*Leaf symptoms of early blight are large, irregular patches of black, necrotic tissue surrounded by larger yellow areas.\n"
-               "The spots have a characteristic concentric banding appearance (oyster-shell or bull's eye).", 
+      symptom: "\u2022 Leaf symptoms of early blight are large, irregular patches of black, necrotic tissue surrounded by larger yellow areas.\n"
+               "\u2022 The spots have a characteristic concentric banding appearance (oyster-shell or bull's eye).", 
       farmuse: "Minimize wetting of leaves by using drip or furrow irrigation. Infection occurs rapidly in warm, wet weather.\n"
                "Fungicide sprays can control the disease effectively."
     ),

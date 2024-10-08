@@ -1,13 +1,16 @@
-// ignore_for_file: camel_case_types
+// ignore_for_file: camel_case_types, deprecated_member_use
 
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:okrai/diagnose/progress.dart';
 import 'package:okrai/okraimodels/okralist.dart';
 import 'package:page_transition/page_transition.dart';
-
 import '../okraimodels/okra.dart';
+import 'package:timezone/data/latest.dart' as tz;
+
 
 class care extends StatefulWidget {
   const care({Key? key, 
@@ -30,7 +33,8 @@ final String date;
 }
 OkraList okrainfos = OkraList();
 class _careState extends State<care> {
-
+  
+late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 late String okratype;
 late String okraimg;
 late int okraid;
@@ -41,6 +45,14 @@ late String okradate;
 @override
   void initState() {
     super.initState();
+  // Initialize notification plugin
+    flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+    const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const InitializationSettings initializationSettings = InitializationSettings(android: initializationSettingsAndroid);
+    flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
+  // Initialize timezone settings
+  tz.initializeTimeZones(); 
     okratype = widget.type;
     okraimg = widget.img;
     okraid =  widget.id;
@@ -69,11 +81,37 @@ late String okradate;
     } else {
       okrainfoid = 9; // Healthy
     }
+      // Start a timer to trigger notifications every 5 seconds
+  Timer.periodic(const Duration(days: 7), (timer) {
+    showInstantNotification(
+      okraname,
+      "This is your water."
+    );
+  });
+   Timer.periodic(const Duration(days: 7), (timer) {
+    showInstantNotification(
+       okraname,
+      "This is your fertilization."
+    );
+  });
   }
     late int okrainfoid;
 
+  void showInstantNotification(String title, String body) async {
+    var androidDetails = const AndroidNotificationDetails(
+      'instantChannelId', 'instantChannelName',
+      importance: Importance.max, priority: Priority.high
+    );
+    var generalNotificationDetails = NotificationDetails(android: androidDetails);
 
+    await flutterLocalNotificationsPlugin.show(
+      DateTime.now().millisecondsSinceEpoch.remainder(100000), // Unique Notification ID
+      title,
+      body,
+      generalNotificationDetails,
+    );
 
+  }
 @override
 Widget build(BuildContext context) {
     final okra okrainfoss = okrainfos.okraList[okrainfoid];
@@ -385,8 +423,13 @@ alignment:Alignment.center,
 child:MaterialButton(
 onPressed:(){
 
-//to do
-
+     showInstantNotification(
+                      "Reminder Set",
+                      "You have successfully set Water and Fertilization reminders."
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Instant reminders triggered for Water and Fertilization")),
+                    );
 
 },
 color:const Color(0xff67bd74),

@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:okrai/mainscreens/myokra.dart';
 import 'package:page_transition/page_transition.dart';
-
-
 import 'Home.dart';
 
-
-class settings extends StatelessWidget {
+class settings extends StatefulWidget {
   const settings({super.key});
 
+  @override
+  State<settings> createState() => _settingsState();
+}
+
+class _settingsState extends State<settings> {
+  bool notificationsEnabled = true; // Track if notifications are enabled
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +45,7 @@ class settings extends StatelessWidget {
               ),
               IconButton(
                 icon: const Icon(Icons.settings),
-                color: Colors.green,
+                color: const Color(0xff44c377),
                 onPressed: () {
                   Navigator.pushReplacement(context,
                       PageTransition(type: PageTransitionType.fade, child: const settings()));
@@ -75,7 +78,7 @@ class settings extends StatelessWidget {
                   mainAxisSize: MainAxisSize.max,
                   children: [
                     const Text(
-                      "Notification Settings",
+                      "Notification settings",
                       textAlign: TextAlign.start,
                       overflow: TextOverflow.clip,
                       style: TextStyle(
@@ -88,7 +91,7 @@ class settings extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.fromLTRB(0, 30, 0, 0),
                       child: SwitchListTile(
-                        value: true,
+                        value: notificationsEnabled,
                         title: const Text(
                           "Push Notification",
                           style: TextStyle(
@@ -112,7 +115,18 @@ class settings extends StatelessWidget {
                         shape: const RoundedRectangleBorder(
                           borderRadius: BorderRadius.zero,
                         ),
-                        onChanged: (value) {},
+                        onChanged: (value) {
+                          setState(() {
+                            notificationsEnabled = value; // Update the state
+                            if (!notificationsEnabled) {
+                              // Logic to stop notifications
+                              stopAllNotifications();
+                            } else {
+                              // Logic to enable notifications
+                              startNotifications();
+                            }
+                          });
+                        },
                         tileColor: const Color(0x00ffffff),
                         activeColor: const Color(0xff093010),
                         activeTrackColor: const Color(0xff57c26b),
@@ -121,8 +135,6 @@ class settings extends StatelessWidget {
                         inactiveThumbColor: const Color(0xff9e9e9e),
                         inactiveTrackColor: const Color(0xffe0e0e0),
                         contentPadding: const EdgeInsets.all(0),
-                        selected: false,
-                        selectedTileColor: const Color(0x42000000),
                       ),
                     ),
                     const Divider(
@@ -157,7 +169,9 @@ class settings extends StatelessWidget {
                       shape: const RoundedRectangleBorder(
                         borderRadius: BorderRadius.zero,
                       ),
-                      onChanged: (value) {},
+                      onChanged: (value) {
+                        // Implement your theme change logic here
+                      },
                       tileColor: const Color(0x00ffffff),
                       activeColor: const Color(0xff3a57e8),
                       activeTrackColor: const Color(0x3f3a57e8),
@@ -166,8 +180,6 @@ class settings extends StatelessWidget {
                       inactiveThumbColor: const Color(0xff9e9e9e),
                       inactiveTrackColor: const Color(0xffe0e0e0),
                       contentPadding: const EdgeInsets.all(0),
-                      selected: false,
-                      selectedTileColor: const Color(0x42000000),
                     ),
                   ],
                 ),
@@ -266,5 +278,14 @@ class settings extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  // Implement your notification management logic
+  void startNotifications() {
+    // Logic to start notifications
+  }
+
+  void stopAllNotifications() {
+    // Logic to stop all notifications
   }
 }

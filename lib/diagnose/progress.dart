@@ -72,12 +72,12 @@ late double okrapercent;
     return  Scaffold(
       appBar: AppBar(title: const Center(
         child: Text('Heal Progress', 
-          style: TextStyle(color:Color(0xff63b36f), fontWeight: FontWeight.bold),),
+          style: TextStyle(color:Color(0xff44c377), fontWeight: FontWeight.bold),),
       ),
       backgroundColor:Colors.white ,
       leading: IconButton(
   icon: 
-  const Icon(Icons.arrow_back),color: const Color(0xff63b36f), onPressed: () {Navigator.pop(context);
+  const Icon(Icons.arrow_back),color: const Color(0xff44c377), onPressed: () {Navigator.pop(context);
 },
 ), leadingWidth: 8,),
       body:  SingleChildScrollView(
@@ -102,7 +102,7 @@ late double okrapercent;
                              value: okraprogress, // Sets the progress value (0.0 to 1.0)
                              strokeWidth: 15, // Sets the circle width
                              backgroundColor: Colors.black26,
-                             valueColor: const AlwaysStoppedAnimation<Color>(Color(0xff63b36f)),
+                             valueColor: const AlwaysStoppedAnimation<Color>(Color(0xff44c377)),
                            ),
                          ),
                          Column(
@@ -110,14 +110,14 @@ late double okrapercent;
                            children: [
                              const Icon(
                                Icons.sentiment_very_satisfied,
-                               color: Color(0xff63b36f),
+                               color: Color(0xff44c377),
                                size:40,
                              ),
                              const SizedBox(height: 8),
                              Text(
                                '${okrapercent.toString()}%',
                                style: const TextStyle(
-                                 color: Color(0xff63b36f),
+                                 color: Color(0xff44c377),
                                  fontWeight: FontWeight.bold,
                                  fontSize: 20,
                                ),

@@ -123,6 +123,7 @@ class DatabaseHelper {
     return await db?.query(progressTable,
                            where: '${DatabaseHelper.plantId} = ?',  // Use column name for plantId
                            whereArgs: [plantId],  // plantId is passed as an argument
+                           orderBy: '${DatabaseHelper.progressId} DESC',
   ); // plantId is passed as an argument);
   }
    // Query function to get all progress entries (progressImages, progressDate) for a specific plant (plantId)

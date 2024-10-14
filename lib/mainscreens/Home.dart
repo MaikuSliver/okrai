@@ -1,4 +1,7 @@
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
+import 'package:okrai/forecast/predictyield.dart';
 import 'package:okrai/mainscreens/Disease.dart';
 import 'package:okrai/mainscreens/myokra.dart';
 import 'package:okrai/mainscreens/okrainfo.dart';
@@ -289,7 +292,7 @@ class _HomeState extends State<Home> {
           const Text("PREDICT NOW!", style: TextStyle(fontSize: 25, fontWeight: FontWeight.w800)),
           const Icon(Icons.grass_rounded, size: 50, color: Color(0xff44c377)),
           ElevatedButton(
-            onPressed: () => Navigator.push(context, PageTransition(type: PageTransitionType.fade, child: const TfliteModel())),
+            onPressed: () => Navigator.push(context, PageTransition(type: PageTransitionType.fade, child: const PredictYield())),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xff44c377),
               shape: RoundedRectangleBorder(

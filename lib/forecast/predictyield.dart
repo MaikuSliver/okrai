@@ -9,21 +9,27 @@ class PredictYield extends StatefulWidget {
 }
 
 class _PredictYieldState extends State<PredictYield> {
-Interpreter? _interpreter;
+  Interpreter? _interpreter;
 
-  final List<String> _typesOfDiseases = ['Yellow vein', 'Leaf curl', 'Early blight', 'None'];
-  final List<String> _pesticidesUsed = [
-    'Carbaryl 250 grams',
+  // Sorted Disease types and pesticide names
+  final List<String> _typesOfDiseases = [
+    'Early Blight Disease',
+    'Leaf Curl Disease',
+    'Yellow Vein Disease',
     'None',
-    'Carbaryl 500 grams',
+  ];
+  final List<String> _pesticidesUsed = [
     'Acetamiprid 250 grams',
-    'Vermicast',
-    'Fungaran 200 grams',
-    'Acetamiprid 400 grams',
-    'Fungaran 400 grams',
-    'Carbaryl 400 grams',
-    'Cull',
     'Acetamiprid 300 grams',
+    'Acetamiprid 400 grams',
+    'Carbaryl 250 grams',
+    'Carbaryl 400 grams',
+    'Carbaryl 500 grams',
+    'Cull',
+    'Fungaran 200 grams',
+    'Fungaran 400 grams',
+    'Vermicast',
+    'None',
   ];
 
   String? _selectedTypeOfDisease;
@@ -39,7 +45,7 @@ Interpreter? _interpreter;
 
   Future<void> _loadModel() async {
     try {
-      _interpreter = await Interpreter.fromAsset('predictyield.tflite');
+      _interpreter = await Interpreter.fromAsset('assets/okra_yield_model.tflite');
     } catch (e) {
       print('Error loading model: $e');
     }
@@ -52,19 +58,31 @@ Interpreter? _interpreter;
 
     // Prepare input tensor (convert input data to a float array)
     var input = [
-      [_encounteredDiseaseCount!.toDouble(), _typesOfDiseases.indexOf(_selectedTypeOfDisease!).toDouble(), _pesticidesUsed.indexOf(_selectedPesticide!).toDouble()]
+      [
+        _encounteredDiseaseCount!.toDouble(),
+        _typesOfDiseases.indexOf(_selectedTypeOfDisease!).toDouble(),
+        _pesticidesUsed.indexOf(_selectedPesticide!).toDouble(),
+      ]
     ];
 
-    // Prepare output tensor for prediction
-    var output = List.filled(1, 0.0);
+    // Prepare output tensor with correct shape [1, 1]
+    var output = List.generate(1, (_) => List.filled(1, 0.0)); // 2D list with shape [1, 1]
 
-    // Run the interpreter to get the prediction
-    _interpreter?.run(input, output);
+    try {
+      // Run the interpreter to get the prediction
+      _interpreter?.run(input, output);
 
-    // Update the state with the predicted value
-    setState(() {
-      _predictedHarvestKilos = output[0];
-    });
+      // Update the state with the predicted value
+      setState(() {
+        _predictedHarvestKilos = output[0][0];
+      });
+    } catch (e) {
+      print("Error during prediction: $e");
+    }
+  }
+
+  bool _isButtonEnabled() {
+    return _encounteredDiseaseCount != null && _selectedTypeOfDisease != null && _selectedPesticide != null;
   }
 
   @override
@@ -143,8 +161,11 @@ Interpreter? _interpreter;
             const SizedBox(height: 16),
 
             ElevatedButton(
-              onPressed: _predictYield,
-              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xff44c377)),
+              onPressed: _isButtonEnabled() ? _predictYield : null,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xff44c377),
+                disabledBackgroundColor: Colors.grey,
+              ),
               child: const Text(
                 "Predict Harvest Kilos",
                 style: TextStyle(color: Colors.white),
@@ -153,9 +174,11 @@ Interpreter? _interpreter;
             const SizedBox(height: 16),
 
             if (_predictedHarvestKilos != null)
-              Text(
-                "Predicted Harvest Kilos: $_predictedHarvestKilos kg",
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              Center(
+                child: Text(
+                  "Predicted Harvest Kilos: ${_predictedHarvestKilos!.toStringAsFixed(2)} kg",
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
               ),
           ],
         ),

@@ -58,7 +58,8 @@ flutter:
     - assets/
     - assets/images/
     - assets/icon/
-    - assets/predictyield.tflite
+    - assets/okra_yield_model.tflite
+
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

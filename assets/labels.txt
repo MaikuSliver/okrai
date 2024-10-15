@@ -1,5 +1,11 @@
-Early Blight Disease
+Critical Early Blight Disease
+Critical Leaf Curl Disease
+Critical Yellow Vein Mosaic Disease
 Healthy
-Leaf Curl Disease
+Mild Early Blight Disease
+Mild Leaf Curl Disease
+Mild Yellow Vein Mosaic Disease
+Severe Early Blight Disease
+Severe Leaf Curl Disease
+Severe Yellow Vein Mosaic Disease
 Unknown
-Yellow Vein Mosaic Disease

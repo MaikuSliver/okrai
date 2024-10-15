@@ -60,26 +60,26 @@ late String okradate;
     okrapest = widget.pest;
     okradate = widget.date;
       // Set okrainfoid based on okraname
-        if (okratype.toLowerCase() == 'early blight disease') { // Mild Early Blight Disease
+        if (okratype.toLowerCase() == 'mild early blight disease') { 
       okrainfoid = 0;
-    } else if (okratype.toLowerCase() == 'leaf curl disease') { // Severe Early Blight Disease
+    } else if (okratype.toLowerCase() == 'severe early blight disease') { 
       okrainfoid = 1;
-    } else if (okratype.toLowerCase() == 'yellow vein mosaic disease') { // Critical Early Blight Disease
+    } else if (okratype.toLowerCase() == 'critical early blight disease') {
       okrainfoid = 2;
-    // } else if (okratype.toLowerCase() == 'yellow vein mosaic disease') { // Mild Leaf Curl Disease
-    //   okrainfoid = 3;
-    // } else if (okratype.toLowerCase() == 'yellow vein mosaic disease') { // Severe Leaf Curl Disease
-    //   okrainfoid = 4;
-    // }else if (okratype.toLowerCase() == 'yellow vein mosaic disease') { // Critical Leaf Curl Disease
-    //   okrainfoid = 5;
-    // }else if (okratype.toLowerCase() == 'yellow vein mosaic disease') { // Mild Yellow Vein Mosaic Disease
-    //   okrainfoid = 6;
-    // }else if (okratype.toLowerCase() == 'yellow vein mosaic disease') { // Severe Yellow Vein Mosaic Disease
-    //   okrainfoid = 7;
-    // }else if (okratype.toLowerCase() == 'yellow vein mosaic disease') { // Critical Yellow Vein Mosaic Disease
-    //   okrainfoid = 8;
+    } else if (okratype.toLowerCase() == 'mild leaf curl disease') { 
+       okrainfoid = 3;
+    } else if (okratype.toLowerCase() == 'severe leaf curl disease') { 
+       okrainfoid = 4;
+    }else if (okratype.toLowerCase() == 'critical leaf curl disease') { 
+       okrainfoid = 5;
+     }else if (okratype.toLowerCase() == 'mild yellow vein mosaic disease') { 
+       okrainfoid = 6;
+     }else if (okratype.toLowerCase() == 'severe yellow vein mosaic disease') { 
+       okrainfoid = 7;
+     }else if (okratype.toLowerCase() == 'critical yellow vein mosaic disease') { 
+       okrainfoid = 8;
     } else {
-      okrainfoid = 9; // Healthy
+      okrainfoid = 9; 
     }
       // Start a timer to trigger notifications every 5 seconds
   Timer.periodic(const Duration(days: 7), (timer) {

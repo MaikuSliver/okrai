@@ -38,6 +38,9 @@ dependencies:
   timezone: ^0.9.4
   flutter_local_notifications: ^17.2.3
   tflite_flutter: ^0.11.0
+  fl_chart: ^0.69.0
+  d_chart: ^2.9.1
+  syncfusion_flutter_charts: ^27.1.53
 
 
 

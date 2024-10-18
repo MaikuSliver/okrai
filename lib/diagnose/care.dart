@@ -1,8 +1,6 @@
 // ignore_for_file: camel_case_types, deprecated_member_use
-
 import 'dart:async';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:okrai/diagnose/progress.dart';
@@ -10,7 +8,7 @@ import 'package:okrai/okraimodels/okralist.dart';
 import 'package:page_transition/page_transition.dart';
 import '../okraimodels/okra.dart';
 import 'package:timezone/data/latest.dart' as tz;
-
+import 'package:syncfusion_flutter_charts/charts.dart';
 
 class care extends StatefulWidget {
   const care({Key? key, 
@@ -41,7 +39,7 @@ late int okraid;
 late String okraname;
 late String okrapest;
 late String okradate;
-
+late int okragraph;
 @override
   void initState() {
     super.initState();
@@ -59,27 +57,38 @@ late String okradate;
     okraname = widget.name;
     okrapest = widget.pest;
     okradate = widget.date;
+    
       // Set okrainfoid based on okraname
         if (okratype.toLowerCase() == 'mild early blight disease') { 
       okrainfoid = 0;
+      okragraph = 1;
     } else if (okratype.toLowerCase() == 'severe early blight disease') { 
       okrainfoid = 1;
+      okragraph = 1;
     } else if (okratype.toLowerCase() == 'critical early blight disease') {
       okrainfoid = 2;
+      okragraph = 1;
     } else if (okratype.toLowerCase() == 'mild leaf curl disease') { 
        okrainfoid = 3;
+       okragraph = 2;
     } else if (okratype.toLowerCase() == 'severe leaf curl disease') { 
        okrainfoid = 4;
+       okragraph = 2;
     }else if (okratype.toLowerCase() == 'critical leaf curl disease') { 
        okrainfoid = 5;
+       okragraph = 2;
      }else if (okratype.toLowerCase() == 'mild yellow vein mosaic disease') { 
        okrainfoid = 6;
+       okragraph = 3;
      }else if (okratype.toLowerCase() == 'severe yellow vein mosaic disease') { 
        okrainfoid = 7;
+       okragraph = 3;
      }else if (okratype.toLowerCase() == 'critical yellow vein mosaic disease') { 
        okrainfoid = 8;
+       okragraph = 3;
     } else {
       okrainfoid = 9; 
+      okragraph = 4;
     }
       // Start a timer to trigger notifications every 5 seconds
   Timer.periodic(const Duration(days: 7), (timer) {
@@ -115,6 +124,29 @@ late String okradate;
 @override
 Widget build(BuildContext context) {
     final okra okrainfoss = okrainfos.okraList[okrainfoid];
+     // Prepare the pesticide data based on the disease type
+  Map<String, int> pesticideData = {};
+  
+  // Example Data - Replace this with your actual data processing logic
+  if (okragraph == 2) {
+    pesticideData = {
+      'Carbaryl 250g': 22,
+      'Carbaryl 400g': 2,
+      'Carbaryl 500g': 1,
+      'Vermicast': 1,
+    };
+  } else if (okragraph == 3) {
+    pesticideData = {
+      'Acetamiprid 250g': 11,
+      'Acetamiprid 300g': 9,
+      'Acetamiprid 400g': 4,
+    };
+  } else if (okragraph == 1) {
+    pesticideData = {
+      'Fungaran 200g': 5,
+      'Fungaran 400g': 1,
+    };
+  }
 return Scaffold(
 backgroundColor: const Color(0xffffffff),
 appBar: 
@@ -574,6 +606,19 @@ color:Color(0xff000000),
 ),
 ),
 ],),
+Row(
+
+children:[
+
+Container(
+margin: const EdgeInsets.only(top: 10),
+child:PesticideUsageChart(
+            diseaseType: okratype,
+            pesticideData: pesticideData,
+          ),
+
+),
+],),
 const Row(
 mainAxisAlignment:MainAxisAlignment.start,
 crossAxisAlignment:CrossAxisAlignment.center,
@@ -595,6 +640,8 @@ color:Color(0xff000000),
 ),
 ),
 ],),
+
+
 Row(
 mainAxisAlignment:MainAxisAlignment.start,
 crossAxisAlignment:CrossAxisAlignment.center,
@@ -653,4 +700,73 @@ fontStyle:FontStyle.normal,
 ],),),
 )
 ;}
+}
+
+class PesticideUsageChart extends StatelessWidget {
+  final String diseaseType;
+  final Map<String, int> pesticideData;
+
+  const PesticideUsageChart({
+    Key? key,
+    required this.diseaseType,
+    required this.pesticideData,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    // Prepare the data for the chart
+    final List<ChartData> chartData = pesticideData.entries
+        .map((entry) => ChartData(entry.key, entry.value))
+        .toList();
+
+    return Padding(
+      padding: const EdgeInsets.all(5.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Center(
+            child: Text(
+              'Pesticide Trends for $diseaseType',
+              style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+            ),
+          ),
+          const SizedBox(height: 16),
+          // Wrap the chart in a SingleChildScrollView to handle overflow
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Container(
+              constraints: const BoxConstraints(maxHeight: 300, maxWidth: 295),
+              child: SfCartesianChart(
+                primaryXAxis: const CategoryAxis(
+                  labelStyle: TextStyle(fontSize: 10), // Set label text size to 10
+                ),
+                primaryYAxis: const NumericAxis(
+                  labelStyle: TextStyle(fontSize: 10), // Set Y-axis label text size to 10
+                ),
+                series: <CartesianSeries<ChartData, String>>[
+                  // Change AreaSeries to ColumnSeries
+                  ColumnSeries<ChartData, String>(
+                    dataSource: chartData,
+                    xValueMapper: (ChartData data, _) => data.pesticide,
+                    yValueMapper: (ChartData data, _) => data.usage,
+                    color: const Color(0xff67bd74),
+                    borderColor: Colors.green,
+                    borderWidth: 1,
+                  ),
+                ],
+                tooltipBehavior: TooltipBehavior(enable: true),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ChartData {
+  final String pesticide;
+  final int usage;
+
+  ChartData(this.pesticide, this.usage);
 }

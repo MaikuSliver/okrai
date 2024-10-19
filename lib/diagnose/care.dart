@@ -615,6 +615,7 @@ margin: const EdgeInsets.only(top: 10),
 child:PesticideUsageChart(
             diseaseType: okratype,
             pesticideData: pesticideData,
+             okragraph: okragraph,  // Pass okragraph to the widget
           ),
 
 ),
@@ -705,16 +706,28 @@ fontStyle:FontStyle.normal,
 class PesticideUsageChart extends StatelessWidget {
   final String diseaseType;
   final Map<String, int> pesticideData;
+  final int okragraph; // Add okragraph as a parameter
 
   const PesticideUsageChart({
     Key? key,
     required this.diseaseType,
     required this.pesticideData,
+    required this.okragraph, // Include okragraph in the constructor
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    // Prepare the data for the chart
+    if (okragraph == 4) {
+      // If the okragraph is 4 (healthy state), show a centered message
+      return const Center(
+        child: Text(
+          "No need to Implement Pesticides",
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.green),
+        ),
+      );
+    }
+
+    // Prepare the data for the chart if okragraph is not 4
     final List<ChartData> chartData = pesticideData.entries
         .map((entry) => ChartData(entry.key, entry.value))
         .toList();
@@ -731,20 +744,18 @@ class PesticideUsageChart extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          // Wrap the chart in a SingleChildScrollView to handle overflow
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Container(
-              constraints: const BoxConstraints(maxHeight: 300, maxWidth: 295),
+              constraints: const BoxConstraints(maxHeight: 275, maxWidth: 275),
               child: SfCartesianChart(
                 primaryXAxis: const CategoryAxis(
-                  labelStyle: TextStyle(fontSize: 10), // Set label text size to 10
+                  labelStyle: TextStyle(fontSize: 10),
                 ),
                 primaryYAxis: const NumericAxis(
-                  labelStyle: TextStyle(fontSize: 10), // Set Y-axis label text size to 10
+                  labelStyle: TextStyle(fontSize: 10),
                 ),
                 series: <CartesianSeries<ChartData, String>>[
-                  // Change AreaSeries to ColumnSeries
                   ColumnSeries<ChartData, String>(
                     dataSource: chartData,
                     xValueMapper: (ChartData data, _) => data.pesticide,

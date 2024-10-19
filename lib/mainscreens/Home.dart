@@ -21,6 +21,8 @@ class _HomeState extends State<Home> {
   int _totalScans = 0;
   bool _isLoading = true;
   String description = 'This tool aids farmers in preserving their harvests. This app has a useful built-in camera that enables the farmer to take a picture of the crop that is ill and send it for diagnosis.';
+ int _totalHealthy = 0;
+  int _totalDisease = 0;
 
   @override
   void initState() {
@@ -28,9 +30,11 @@ class _HomeState extends State<Home> {
     _refreshScans();
   }
 
-  void _refreshScans() async {
+ void _refreshScans() async {
     setState(() => _isLoading = true);
     _totalScans = await DatabaseHelper.instance.countTotalRows();
+    _totalHealthy = await DatabaseHelper.instance.countTotalHealthy();
+    _totalDisease = await DatabaseHelper.instance.countTotalDisease();
     setState(() => _isLoading = false);
   }
 
@@ -63,7 +67,7 @@ class _HomeState extends State<Home> {
           ),
         ),
       ),
-      body: Column(
+      body: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Expanded(
@@ -74,7 +78,7 @@ class _HomeState extends State<Home> {
                 Container(
                   margin: const EdgeInsets.only(top: 15),
                   child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Image(
                         image: AssetImage("assets/images/GUL-AI__1_-removebg-preview.png"),
@@ -95,56 +99,82 @@ class _HomeState extends State<Home> {
                           color: const Color(0xff43c175),
                           border: Border.all(color: const Color(0x4d9e9e9e), width: 1),
                         ),
-                        child: Card(
-                          margin: const EdgeInsets.fromLTRB(12, 5, 190, 5),
-                          color: const Color(0xffffffff),
-                          elevation: 1,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(4.0),
-                            side: const BorderSide(color: Color(0x4d9e9e9e), width: 1),
-                          ),
-                          child: Column(
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-                                    child: IconButton(
-                                      icon: Image.asset(
-                                        'assets/images/pest.png',
-                                        height: 25,
-                                        width: 50,
-                                      ),
-                                      onPressed: () => Navigator.push(context, PageTransition(type: PageTransitionType.fade, child: okrainfo())),
-                                    ),
-                                  ),
-                                  IconButton(
-                                    icon: Image.asset(
-                                      'assets/images/gut-microbiota.png',
-                                      height: 25,
-                                      width: 50,
-                                    ),
-                                    onPressed: () => Navigator.push(context, PageTransition(type: PageTransitionType.fade, child: const Disease())),
-                                  ),
-                                ],
-                              ),
-                              const Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Padding(
-                                    padding: EdgeInsets.fromLTRB(29, 0, 5, 0),
-                                    child: Text("Info", style: TextStyle(fontWeight: FontWeight.w400, fontSize: 14)),
-                                  ),
-                                  Padding(
-                                    padding: EdgeInsets.fromLTRB(25, 0, 5, 0),
-                                    child: Text("Disease", style: TextStyle(fontWeight: FontWeight.w400, fontSize: 14)),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
+                       child: Row(
+  children: [
+    // Card for Info
+    Card(
+      margin: const EdgeInsets.fromLTRB(12, 5, 5, 5),
+      color: const Color(0xffffffff),
+      elevation: 1,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(4.0),
+        side: const BorderSide(color: Color(0x4d9e9e9e), width: 1),
+      ),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 0),
+            child: IconButton(
+              icon: Image.asset(
+                'assets/images/pest.png',
+                height: 30, // Adjust the size as needed
+                width: 50,
+              ),
+              onPressed: () => Navigator.push(
+                context,
+                PageTransition(type: PageTransitionType.fade, child: okrainfo()),
+              ),
+            ),
+          ),
+          const Text(
+            "Info",
+            style: TextStyle(
+              fontWeight: FontWeight.w400,
+              fontSize: 14,
+            ),
+          ),
+        ],
+      ),
+    ),
+
+    // Card for Disease
+    Card(
+      margin: const EdgeInsets.fromLTRB(5, 5, 12, 5),
+      color: const Color(0xffffffff),
+      elevation: 1,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(4.0),
+        side: const BorderSide(color: Color(0x4d9e9e9e), width: 1),
+      ),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 0),
+            child: IconButton(
+              icon: Image.asset(
+                'assets/images/gut-microbiota.png',
+                height: 30, // Adjust the size as needed
+                width: 50,
+              ),
+              onPressed: () => Navigator.push(
+                context,
+                PageTransition(type: PageTransitionType.fade, child: const Disease()),
+              ),
+            ),
+          ),
+          const Text(
+            "Disease",
+            style: TextStyle(
+              fontWeight: FontWeight.w400,
+              fontSize: 14,
+            ),
+          ),
+        ],
+      ),
+    ),
+  ],
+)
+
                       ),
                     ),
                   ],
@@ -165,7 +195,7 @@ class _HomeState extends State<Home> {
                 _buildTotalScanCard(),
                 const Padding(
                   padding: EdgeInsets.fromLTRB(15, 15, 15, 5),
-                  child: Text("Predict", style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
+                  child: Center(child: Text("Predict", style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16))),
                 ),
                 _buildOkraYieldPredictionCard(),
               ],
@@ -176,25 +206,61 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget _buildTotalScanCard() {
-    return Container(
-      height: 100,
-      decoration: BoxDecoration(
-        color: const Color(0x1fffffff),
-        border: Border.all(color: const Color(0x4d9e9e9e), width: 1),
-      ),
-      child: Row(
-        children: [
-          Expanded(
+ Widget _buildTotalScanCard() {
+  return Container(
+    height: 100,
+    decoration: BoxDecoration(
+      color: const Color(0x1fffffff),
+      border: Border.all(color: const Color(0x4d9e9e9e), width: 1),
+    ),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        // Total Healthy Container
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(10),
             child: Container(
-              margin: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: const Color(0xffc5d7e0),
+                color: const Color.fromARGB(255, 22, 97, 12),
                 borderRadius: BorderRadius.circular(5.0),
                 border: Border.all(color: const Color(0x4d9e9e9e), width: 1),
               ),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
+                    child: Text(
+                      "Total Healthy",
+                      style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12, color: Colors.white),
+                    ),
+                  ),
+                  _isLoading
+                      ? const CircularProgressIndicator()
+                      : Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 5, 0, 10),
+                          child: Text(
+                            "$_totalHealthy",  // Updated to display total healthy count
+                            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: Colors.white),
+                          ),
+                        ),
+                ],
+              ),
+            ),
+          ),
+        ),
+
+        // Total Scan Container
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: Container(
+              decoration: BoxDecoration(
+                color: const Color(0xff43c175),
+                borderRadius: BorderRadius.circular(5.0),
+                border: Border.all(color: const Color(0x4d9e9e9e), width: 1),
+              ),
+              child: Column(
                 children: [
                   const Padding(
                     padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
@@ -203,22 +269,58 @@ class _HomeState extends State<Home> {
                       style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
                     ),
                   ),
-                  _isLoading ? const CircularProgressIndicator() : Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 5, 0, 10),
-                    child: Text(
-                      "$_totalScans",
-                      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-                    ),
-                  ),
+                  _isLoading
+                      ? const CircularProgressIndicator()
+                      : Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 5, 0, 10),
+                          child: Text(
+                            "$_totalScans",  // Total scans as before
+                            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                          ),
+                        ),
                 ],
               ),
             ),
           ),
-        ],
-      ),
-    );
-  }
+        ),
 
+        // Total Disease Container
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: Container(
+              decoration: BoxDecoration(
+                color: const Color.fromARGB(255, 189, 6, 6),
+                borderRadius: BorderRadius.circular(5.0),
+                border: Border.all(color: const Color(0x4d9e9e9e), width: 1),
+              ),
+              child: Column(
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
+                    child: Text(
+                      "Total Disease",
+                      style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12, color: Colors.white),
+                    ),
+                  ),
+                  _isLoading
+                      ? const CircularProgressIndicator()
+                      : Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 5, 0, 10),
+                          child: Text(
+                            "$_totalDisease",  // Updated to display total disease count
+                            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: Colors.white),
+                          ),
+                        ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
   Widget _buildPredictionCard() {
     return SizedBox(
       height: 230,

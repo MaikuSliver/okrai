@@ -166,4 +166,18 @@ Future<int> countTotalRows() async {
     return Sqflite.firstIntValue(result)!; // Extract the count value
 }
 
+
+// Method to count total healthy records
+  Future<int> countTotalHealthy() async {
+    final db = await database;
+    final result = await db!.rawQuery('SELECT COUNT(*) FROM $dbTable WHERE $columnEmail = "Healthy"');
+    return Sqflite.firstIntValue(result)!; // Extract the count value
+  }
+
+  // Method to count total disease records (i.e., records where columnEmail is NOT "Healthy")
+  Future<int> countTotalDisease() async {
+    final db = await database;
+    final result = await db!.rawQuery('SELECT COUNT(*) FROM $dbTable WHERE $columnEmail != "Healthy"');
+    return Sqflite.firstIntValue(result)!; // Extract the count value
+  }
 }

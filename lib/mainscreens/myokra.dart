@@ -70,11 +70,11 @@ class _myokraState extends State<myokra> {
           ),
         ),
         backgroundColor: const Color(0xff43c175),
-        // leading: const Icon(
-        //   Icons.android,
-        //   color: Color(0xff43c175),
-        // ),
-        // leadingWidth: 8,
+        leading: const Icon(
+        Icons.android,
+        color: Color(0xff43c175),
+        ),
+        leadingWidth: 8,
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),

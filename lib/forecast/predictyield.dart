@@ -9,28 +9,29 @@ class PredictYield extends StatefulWidget {
 }
 
 class _PredictYieldState extends State<PredictYield> {
-  Interpreter? _interpreter;
+ Interpreter? _interpreter;
 
-  // Sorted Disease types and pesticide names
-  final List<String> _typesOfDiseases = [
-    'Early Blight Disease',
-    'Leaf Curl Disease',
-    'Yellow Vein Disease',
-    'None',
-  ];
-  final List<String> _pesticidesUsed = [
-    'Acetamiprid 250 grams',
-    'Acetamiprid 300 grams',
-    'Acetamiprid 400 grams',
-    'Carbaryl 250 grams',
-    'Carbaryl 400 grams',
-    'Carbaryl 500 grams',
-    'Cull',
-    'Fungaran 200 grams',
-    'Fungaran 400 grams',
-    'Vermicast',
-    'None',
-  ];
+  // Mapping strings to integers (Label Encoding)
+  final Map<String, int> _diseaseTypeMapping = {
+    'Early Blight Disease': 0,
+    'Leaf Curl Disease': 1,
+    'Yellow Vein Disease': 2,
+    'None': 3,
+  };
+
+  final Map<String, int> _pesticideMapping = {
+    'Acetamiprid 250 grams': 0,
+    'Acetamiprid 300 grams': 1,
+    'Acetamiprid 400 grams': 2,
+    'Carbaryl 250 grams': 3,
+    'Carbaryl 400 grams': 4,
+    'Carbaryl 500 grams': 5,
+    'Cull': 6,
+    'Fungaran 200 grams': 7,
+    'Fungaran 400 grams': 8,
+    'Vermicast': 9,
+    'None': 10,
+  };
 
   String? _selectedTypeOfDisease;
   String? _selectedPesticide;
@@ -51,35 +52,63 @@ class _PredictYieldState extends State<PredictYield> {
     }
   }
 
-  void _predictYield() {
-    if (_interpreter == null || _encounteredDiseaseCount == null || _selectedTypeOfDisease == null || _selectedPesticide == null) {
-      return;
-    }
-
-    // Prepare input tensor (convert input data to a float array)
-    var input = [
-      [
-        _encounteredDiseaseCount!.toDouble(),
-        _typesOfDiseases.indexOf(_selectedTypeOfDisease!).toDouble(),
-        _pesticidesUsed.indexOf(_selectedPesticide!).toDouble(),
-      ]
-    ];
-
-    // Prepare output tensor with correct shape [1, 1]
-    var output = List.generate(1, (_) => List.filled(1, 0.0)); // 2D list with shape [1, 1]
-
-    try {
-      // Run the interpreter to get the prediction
-      _interpreter?.run(input, output);
-
-      // Update the state with the predicted value
-      setState(() {
-        _predictedHarvestKilos = output[0][0];
-      });
-    } catch (e) {
-      print("Error during prediction: $e");
-    }
+ void _predictYield() {
+  if (_interpreter == null || _encounteredDiseaseCount == null || _selectedTypeOfDisease == null || _selectedPesticide == null) {
+    return;
   }
+
+  // Prepare each input tensor as a List<Object>
+  var diseaseTypeInput = [_diseaseTypeMapping[_selectedTypeOfDisease]!.toDouble()];
+  var numberAffectedInput = [_encounteredDiseaseCount!.toDouble()];
+  var solutionInput = [_pesticideMapping[_selectedPesticide]!.toDouble()];
+
+  // Prepare output tensor
+   var output = <int, List<List<double>>>{0: List.filled(1, [0.0])}; // Adjust as needed based on model output
+
+  try {
+    // Run the interpreter with the three inputs
+    _interpreter?.runForMultipleInputs([diseaseTypeInput, numberAffectedInput, solutionInput], output);
+    
+    
+    setState(() {
+      _predictedHarvestKilos = output[0]![0][0];
+
+      // Ensure that _predictedHarvestKilos is not null before performing operations
+      double harvestAdjustment = 0;
+
+      if (_encounteredDiseaseCount != null) {
+        if (_encounteredDiseaseCount! < 10) {
+          harvestAdjustment += 600;  // 1 digit
+        } else if (_encounteredDiseaseCount! < 100) {
+          harvestAdjustment += 400;  // 2 digits
+        } else if (_encounteredDiseaseCount! < 300) {
+          harvestAdjustment += 200;  // 3 digits
+        } else if (_encounteredDiseaseCount! < 500) {
+          harvestAdjustment -= 30;   // 400 up to 500
+        } else if (_encounteredDiseaseCount! < 1000) {
+          harvestAdjustment -= 200*0.76;  // 800 up to 1000
+        } else if (_encounteredDiseaseCount! < 1500) {
+          harvestAdjustment -= 500;  // 1100 up to 1500
+           } else if (_encounteredDiseaseCount! < 2000) {
+          harvestAdjustment -= 1000;  // 1500 up to 2000
+        } else {
+          // 2000 and above
+          _predictedHarvestKilos = 0; // Set to 0 for very low harvest
+          // You can add a message to inform the user if needed
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Very Low Harvest')),
+          );
+          return; // Exit the function to avoid further processing
+        }
+      }
+
+      // Apply the adjustment to the predicted harvest
+      _predictedHarvestKilos = (_predictedHarvestKilos ?? 0) + harvestAdjustment; // Use null coalescing operator
+    });
+  } catch (e) {
+    print("Error during prediction: $e");
+  }
+}
 
   bool _isButtonEnabled() {
     return _encounteredDiseaseCount != null && _selectedTypeOfDisease != null && _selectedPesticide != null;
@@ -126,7 +155,7 @@ class _PredictYieldState extends State<PredictYield> {
             DropdownButton<String>(
               isExpanded: true,
               value: _selectedTypeOfDisease,
-              items: _typesOfDiseases.map((String value) {
+              items: _diseaseTypeMapping.keys.map((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
                   child: Text(value),
@@ -145,7 +174,7 @@ class _PredictYieldState extends State<PredictYield> {
             DropdownButton<String>(
               isExpanded: true,
               value: _selectedPesticide,
-              items: _pesticidesUsed.map((String value) {
+              items: _pesticideMapping.keys.map((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
                   child: Text(value),

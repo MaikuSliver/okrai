@@ -86,11 +86,15 @@ class DatabaseHelper {
     return await db?.insert(dbTable, row);
   }
 
-  // Query method for `myTable`
-  Future<List<Map<String, dynamic>>?> queryDatabase() async {
-    Database? db = await instance.database;
-    return await db?.query(dbTable);
-  }
+// Query method for `myTable`
+Future<List<Map<String, dynamic>>?> queryDatabase() async {
+  Database? db = await instance.database;
+  // Add orderBy to sort by id in descending order
+  return await db?.query(
+    dbTable,
+    orderBy: '$columnId DESC', // Sort by id in descending order
+  );
+}
 
   // Update method for `myTable`
   Future<int?> updateRecord(Map<String, dynamic> row) async {

@@ -190,14 +190,14 @@ crossAxisAlignment:CrossAxisAlignment.start,
 mainAxisSize:MainAxisSize.max,
 children: [
 Padding(
-padding:const EdgeInsets.symmetric(vertical: 16,horizontal:0),
+padding:const EdgeInsets.symmetric(vertical: 1,horizontal:0),
 child:Align(
 alignment:Alignment.center,
 child:///***If you have exported images you must have to copy those images in assets/images directory.
 Image(
 image: FileImage(File(okraimg)),
-height:150,
-width:150,
+height:175,
+width:200,
 fit:BoxFit.cover,
 ),
 ),
@@ -460,8 +460,19 @@ onPressed:(){
                       "You have successfully set Water and Fertilization reminders."
                     );
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Instant reminders triggered for Water and Fertilization")),
-                    );
+  SnackBar(
+    content: const Text(
+      "Instant reminders triggered for Water and Fertilization",
+      style: TextStyle(color: Colors.white), // White text color
+    ),
+    duration: const Duration(seconds: 2), // You can adjust the duration as needed
+    backgroundColor: const Color(0xff57c26b), // Green background color
+    behavior: SnackBarBehavior.floating,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(10),
+    ),
+  ),
+);
 
 },
 color:const Color(0xff67bd74),

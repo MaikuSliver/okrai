@@ -3,9 +3,11 @@ import 'dart:io';
 //import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:tensorflow_lite_flutter/tensorflow_lite_flutter.dart';
 import '../database/db_helper.dart';
+import '../mainscreens/myokra.dart';
 
 class Update extends StatefulWidget {
   const Update({Key? key, 
@@ -237,8 +239,9 @@ class _UpdateState extends State<Update> {
                                     child: Container(
                                       margin: const EdgeInsets.all(10),
                                       child: Text(
-                                        "Your okra plant result is ${result['label']} with ${result['confidence'].toStringAsFixed(2)}",
-                                        style: const TextStyle(
+                                          ' "Your okra plant result is ${result['label']}.'
+                                        //'with ${result['confidence'].toStringAsFixed(2)}'
+                                        ,style: const TextStyle(
                                             color: Colors.black,
                                             fontSize: 20),
                                       ),
@@ -283,48 +286,66 @@ class _UpdateState extends State<Update> {
                   ],
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: ElevatedButton(
-                    onPressed: isButtonEnabled
-                        ? () async {
-                           // Save the image to the app's documents directory
-                    final appDocDir = await getApplicationDocumentsDirectory();
-                    final imagePath = '${appDocDir.path}/image_${DateTime.now().millisecondsSinceEpoch}.png';
-                    await _image.copy(imagePath);
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: ElevatedButton(
+              onPressed: isButtonEnabled
+                  ? () async {
+                      // Save the image to the app's documents directory
+                      final appDocDir = await getApplicationDocumentsDirectory();
+                      final imagePath = '${appDocDir.path}/image_${DateTime.now().millisecondsSinceEpoch}.png';
+                      await _image.copy(imagePath);
 
-                    // Insert record into SQLite with the image path
-            
-                    await DatabaseHelper.instance.updateRecord({
-                      DatabaseHelper.columnId: okraid,
-                      DatabaseHelper.columnName: nameController.text,
-                      DatabaseHelper.columnEmail: okraPlantResult, //status
-                      DatabaseHelper.columnContact: contactController.text, //date
-                      DatabaseHelper.columnImagePath: imagePath,
-                      DatabaseHelper.columnPest: pestController.text,
-                    });
+                      // Insert record into SQLite with the image path
+                      await DatabaseHelper.instance.updateRecord({
+                        DatabaseHelper.columnId: okraid,
+                        DatabaseHelper.columnName: nameController.text,
+                        DatabaseHelper.columnEmail: okraPlantResult, // status
+                        DatabaseHelper.columnContact: contactController.text, // date
+                        DatabaseHelper.columnImagePath: imagePath,
+                        DatabaseHelper.columnPest: pestController.text,
+                      });
 
- await DatabaseHelper.instance.insertProgress({
-    DatabaseHelper.plantId: okraid,  // Use the new plant ID here
-    DatabaseHelper.progressDate: contactController.text, //date
-    DatabaseHelper.progressImages: imagePath,
-    DatabaseHelper.progressPest: pestController.text,
-  });
-                       Navigator.pop(context);
-                       Navigator.pop(context);
-                       Navigator.pop(context);    
-                          }
-                        : null, // Disable if form is invalid
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: isButtonEnabled
-                          ? const Color(0xff57c26b)
-                          : Colors.grey, // Change color based on state
-                    ),
-                    child: const Text(
-                      "Update this Plant",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ),
+                      await DatabaseHelper.instance.insertProgress({
+                        DatabaseHelper.plantId: okraid,  // Use the new plant ID here
+                        DatabaseHelper.progressDate: contactController.text, // date
+                        DatabaseHelper.progressImages: imagePath,
+                        DatabaseHelper.progressPest: pestController.text,
+                      });
+
+                      // Show success message
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: const Text(
+                            'Plant updated successfully!',
+                            style: TextStyle(color: Colors.white), // White text color
+                          ),
+                          duration: const Duration(seconds: 3),
+                          backgroundColor: const Color(0xff57c26b), // Green background color
+                          behavior: SnackBarBehavior.floating,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      );
+
+                       Navigator.pushAndRemoveUntil(
+  context,
+  PageTransition(type: PageTransitionType.fade, child: const myokra()),
+  (Route<dynamic> route) => false, // Removes all previous routes
+);
+                    }
+                  : null, // Disable if form is invalid
+              style: ElevatedButton.styleFrom(
+                backgroundColor: isButtonEnabled
+                    ? const Color(0xff57c26b)
+                    : Colors.grey, // Change color based on state
+              ),
+              child: const Text(
+                "Update this Plant",
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ),
               ],
             ),
           ),

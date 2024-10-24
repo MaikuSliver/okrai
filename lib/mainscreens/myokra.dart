@@ -1,5 +1,3 @@
-// ignore_for_file: camel_case_types
-
 import 'package:flutter/material.dart';
 import 'package:okrai/diagnose/care.dart';
 import 'package:okrai/mainscreens/settings.dart';
@@ -16,46 +14,46 @@ class myokra extends StatefulWidget {
 }
 
 class _myokraState extends State<myokra> {
-  List<Map<String, dynamic>> _filteredDataList = []; // For search results
-  String _searchQuery = ""; // Store the search query
-  final TextEditingController _searchController = TextEditingController(); // Controller for search bar
+  List<Map<String, dynamic>> _filteredDataList = [];
+  String _searchQuery = "";
+  final TextEditingController _searchController = TextEditingController();
   List<Map<String, dynamic>> _viewDataList = [];
   bool _isLoading = true;
 
   void _refreshJournals() async {
     setState(() {
-      _isLoading = true; // Show loading indicator while refreshing
+      _isLoading = true;
     });
     final data = await DatabaseHelper.instance.queryDatabase();
     setState(() {
       _viewDataList = data ?? [];
-      _filteredDataList = _viewDataList; // Initially, show all data
-      _isLoading = false; // Hide loading indicator after refresh
+      _filteredDataList = _viewDataList;
+      _isLoading = false;
     });
   }
 
   @override
   void initState() {
     super.initState();
-    _refreshJournals(); // Initial data load
+    _refreshJournals();
   }
 
-// Method to filter the data based on the search query
   void _filterData(String query) {
     setState(() {
       _searchQuery = query;
       if (_searchQuery.isEmpty) {
-        _filteredDataList = _viewDataList; // Show all data when search is empty
+        _filteredDataList = _viewDataList;
       } else {
         _filteredDataList = _viewDataList
             .where((item) =>
                 item['name'].toLowerCase().contains(_searchQuery.toLowerCase()) ||
                 item['email'].toLowerCase().contains(_searchQuery.toLowerCase()) ||
                 item['pest'].toLowerCase().contains(_searchQuery.toLowerCase()))
-            .toList(); // Filter the data
+            .toList();
       }
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,31 +68,15 @@ class _myokraState extends State<myokra> {
           ),
         ),
         backgroundColor: const Color(0xff43c175),
-        leading: const Icon(
-        Icons.android,
-        color: Color(0xff43c175),
-        ),
-        leadingWidth: 8,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: () {
-              _refreshJournals(); // Call refresh function when button is pressed
-            },
-            tooltip: 'Refresh',
-          ),
-        ],
       ),
-   
       body: Column(
         children: [
-          // Search bar below the AppBar
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
               controller: _searchController,
               onChanged: (query) {
-                _filterData(query); // Filter the data on search query change
+                _filterData(query);
               },
               decoration: InputDecoration(
                 labelText: 'Search',
@@ -106,96 +88,107 @@ class _myokraState extends State<myokra> {
               ),
             ),
           ),
-          // List of data (filtered based on the search query)
           Expanded(
-            child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : GridView.builder(
-                    physics: const BouncingScrollPhysics(),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2, // Number of columns
-                      mainAxisExtent: 360, // Height of items
-                    ),
-                    itemCount: _filteredDataList.length, // Use filtered data
-                    itemBuilder: (context, index) {
-                      final id = _filteredDataList[index]['id'];
-                      final imagepath = _filteredDataList[index]['pic'] as String?;
-                      final name = _filteredDataList[index]['name'] as String;
-                      final email = _filteredDataList[index]['email'] as String;
-                      final pest = _filteredDataList[index]['pest'] as String;
-                      final date = _filteredDataList[index]['contact'] as String;
+            child: RefreshIndicator(
+              onRefresh: () async {
+                _refreshJournals(); // Refresh when pulled down
+              },
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : GridView.builder(
+                      physics: const BouncingScrollPhysics(),
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        mainAxisExtent: 326,
+                      ),
+                      itemCount: _filteredDataList.length,
+                      itemBuilder: (context, index) {
+                        final id = _filteredDataList[index]['id'];
+                        final imagepath = _filteredDataList[index]['pic'] as String?;
+                        final name = _filteredDataList[index]['name'] as String;
+                        final email = _filteredDataList[index]['email'] as String;
+                        final pest = _filteredDataList[index]['pest'] as String;
+                        final date = _filteredDataList[index]['contact'] as String;
 
-                      return Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Image(
-                                image: FileImage(File(imagepath!)),
-                                width: 150,
-                                height: 190,
-                                fit: BoxFit.cover,
-                              ),
-                              Text(
-                                'Name: $name',
-                                softWrap: false,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(fontSize: 15),
-                              ),
-                              Text(
-                                'Status: $email',
-                                softWrap: false,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(fontSize: 15),
-                              ),
-                              Column(
+                        return Container(
+                          margin: const EdgeInsets.all(10),
+                           decoration: BoxDecoration(
+      border: Border.all(color: const Color(0xff43c175), width: 1), // Green border
+      borderRadius: BorderRadius.circular(10), // Rounded corners
+    ),
+                          child: Card(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
+                                  Image(
+                                    image: FileImage(File(imagepath!)),
+                                    width: 150,
+                                    height: 190,
+                                    fit: BoxFit.cover,
+                                  ),
+                                  Text(
+                                    'Name: $name',
+                                    softWrap: false,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(fontSize: 15),
+                                  ),
+                                  Text(
+                                    'Status: $email',
+                                    softWrap: false,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(fontSize: 15),
+                                  ),
+                                  Column(
                                     children: [
-                                      IconButton(
-                                        icon: const Icon(Icons.arrow_forward),
-                                        onPressed: () {
-                                          Navigator.push(
-                                            context,
-                                            PageTransition(
-                                              type: PageTransitionType.fade,
-                                              child: care(
-                                                type: email,
-                                                img: imagepath,
-                                                id: id,
-                                                name: name,
-                                                pest: pest,
-                                                date: date,
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                        color: const Color(0xff5ac46d),
-                                        iconSize: 24,
-                                      ),
-                                      IconButton(
-                                        icon: const Icon(Icons.delete),
-                                        onPressed: () {
-                                          _deleteItem(id);
-                                        },
-                                        color: const Color.fromARGB(255, 255, 0, 0),
-                                        iconSize: 24,
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          IconButton(
+                                            icon: const Icon(Icons.arrow_forward),
+                                            onPressed: () {
+                                              Navigator.push(
+                                                context,
+                                                PageTransition(
+                                                  type: PageTransitionType.fade,
+                                                  child: care(
+                                                    type: email,
+                                                    img: imagepath,
+                                                    id: id,
+                                                    name: name,
+                                                    pest: pest,
+                                                    date: date,
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                            color: const Color(0xff5ac46d),
+                                            iconSize: 24,
+                                          ),
+                                          IconButton(
+                                            icon: const Icon(Icons.delete),
+                                            onPressed: () {
+                                              _confirmDelete(id);
+                                            },
+                                            color: const Color.fromARGB(255, 255, 0, 0),
+                                            iconSize: 24,
+                                          ),
+                                        ],
                                       ),
                                     ],
                                   ),
                                 ],
                               ),
-                            ],
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                  ),
+                        );
+                      },
+                    ),
+            ),
           ),
         ],
       ),
@@ -246,9 +239,53 @@ class _myokraState extends State<myokra> {
     );
   }
 
-  Future<void> _deleteItem(int id) async {
-    await DatabaseHelper.instance.deleteRecord(id);
-    await DatabaseHelper.instance.deleteProgress(id);
-    _refreshJournals(); // Refresh the list after deleting
-  }
+void _confirmDelete(int id) {
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text('Confirm Deletion'),
+        content: const Text('Are you sure you want to delete this okra plant?'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the dialog
+            },
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              await _deleteItem(id); // Call delete function
+              Navigator.of(context).pop(); // Close the dialog
+            },
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+Future<void> _deleteItem(int id) async {
+  await DatabaseHelper.instance.deleteRecord(id);
+  await DatabaseHelper.instance.deleteProgress(id);
+  _refreshJournals();
+
+  // Show SnackBar for successful deletion
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: const Text(
+        "Okra plant successfully deleted!",
+        style: TextStyle(color: Colors.white), // White text color
+      ),
+      duration: const Duration(seconds: 2), // Duration of the SnackBar
+      backgroundColor: const Color(0xff57c26b), // Green background color
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+    ),
+  );
+}
+
 }

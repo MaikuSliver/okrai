@@ -1,5 +1,4 @@
 // ignore_for_file: file_names
-
 import 'package:flutter/material.dart';
 import 'package:okrai/forecast/predictyield.dart';
 import 'package:okrai/mainscreens/Disease.dart';
@@ -37,7 +36,25 @@ class _HomeState extends State<Home> {
     _totalDisease = await DatabaseHelper.instance.countTotalDisease();
     setState(() => _isLoading = false);
   }
-
+// List of tips
+  final List<String> tips = [
+    "Check soil moisture to prevent root rot.",
+    "Use mulch to retain soil moisture and suppress weeds.",
+    "Rotate crops to prevent soil nutrient depletion.",
+    "Harvest okra regularly to encourage more growth.",
+    "Inspect plants for pests regularly.",
+    "Ensure adequate sunlight for healthy growth.",
+    "Use organic fertilizers to boost soil health.",
+    "Plant okra after the last frost date.",
+    "Prune lower leaves to improve airflow.",
+    "Water deeply and less frequently.",
+    "Avoid overcrowding to prevent disease.",
+    "Use row covers to protect seedlings from pests.",
+    "Apply neem oil to control aphids and whiteflies.",
+    "Monitor for signs of disease and act quickly.",
+    "Plant companion plants to deter pests.",
+    "Clean tools to prevent disease spread."
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -193,11 +210,8 @@ class _HomeState extends State<Home> {
                 ),
                 _buildPredictionCard(),
                 _buildTotalScanCard(),
-                const Padding(
-                  padding: EdgeInsets.fromLTRB(15, 15, 15, 5),
-                  child: Center(child: Text("Predict", style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16))),
-                ),
                 _buildOkraYieldPredictionCard(),
+                _buildDailyTips(),
               ],
             ),
           ),
@@ -326,11 +340,11 @@ class _HomeState extends State<Home> {
       height: 230,
       child: Card(
         margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-        color: const Color(0xffc1d4dd),
+        color: Colors.white,
         elevation: 1,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(4.0),
-          side: const BorderSide(color: Color(0x4d9e9e9e), width: 1),
+          side: const BorderSide(color: Color(0xff44c377), width: 3),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -383,28 +397,66 @@ class _HomeState extends State<Home> {
   }
 
   Widget _buildOkraYieldPredictionCard() {
-    return Card(
-      margin: const EdgeInsets.all(10),
-      color: const Color(0xffc4d6df),
-      child: ListView(
-        shrinkWrap: true,
-        padding: const EdgeInsets.all(10),
-        children: [
-          const Text("Okra Yield Prediction", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
-          const Text("PREDICT NOW!", style: TextStyle(fontSize: 25, fontWeight: FontWeight.w800)),
-          const Icon(Icons.grass_rounded, size: 50, color: Color(0xff44c377)),
-          ElevatedButton(
-            onPressed: () => Navigator.push(context, PageTransition(type: PageTransitionType.fade, child: const PredictYield())),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xff44c377),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30.0),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            ),
-            child: const Text("Click Here", style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: Colors.white)),
+  return Container(
+    margin: const EdgeInsets.all(10),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      border: Border.all(color: const Color(0xff44c377), width: 3), // Green border
+      borderRadius: BorderRadius.circular(10), // Optional: round the corners of the border
+    ),
+    child: ListView(
+      shrinkWrap: true,
+      padding: const EdgeInsets.all(10),
+      children: [
+        const Text(
+          "Okra Yield Prediction", 
+          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+        ),
+        const Text(
+          "PREDICT NOW!", 
+          style: TextStyle(fontSize: 25, fontWeight: FontWeight.w800),
+        ),
+        const Icon(
+          Icons.grass_rounded, 
+          size: 50, 
+          color: Color(0xff44c377),
+        ),
+        ElevatedButton(
+          onPressed: () => Navigator.push(
+            context, 
+            PageTransition(type: PageTransitionType.fade, child: const PredictYield()),
           ),
-        ],
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xff44c377),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(30.0),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          ),
+          child: const Text(
+            "Click Here", 
+            style: TextStyle(
+              fontWeight: FontWeight.w600, 
+              fontSize: 16, 
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+   Widget _buildDailyTips() {
+    // Select a random tip
+    final randomTip = (tips..shuffle()).first; // Shuffle and select the first tip
+    return Card(
+      margin: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+      color: const Color(0xff44c377),
+      child: ListTile(
+        leading: const Icon(Icons.lightbulb_outline, color: Colors.white),
+        title: const Text("Today's Tip!", style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),),
+        subtitle: Text(randomTip,style: const TextStyle(color: Colors.white,)),
       ),
     );
   }

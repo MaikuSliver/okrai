@@ -211,8 +211,9 @@ class _TfliteModelState extends State<TfliteModel> {
                                     child: Container(
                                       margin: const EdgeInsets.all(10),
                                       child: Text(
-                                        "Your okra plant result is ${result['label']} with ${result['confidence'].toStringAsFixed(2)}",
-                                        style: const TextStyle(color: Colors.black, fontSize: 20),
+                                       ' "Your okra plant result is ${result['label']}.'
+                                        //'with ${result['confidence'].toStringAsFixed(2)}'
+                                        ,style: const TextStyle(color: Colors.black, fontSize: 20),
                                       ),
                                     ),
                                   );
@@ -273,51 +274,72 @@ class _TfliteModelState extends State<TfliteModel> {
                     ),
                   ],
                 ),  Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16),
-                              child: ElevatedButton(
-                                onPressed: isButtonEnabled
-                                      ? () async {
-                              // Save the image to the app's documents directory
-  final appDocDir = await getApplicationDocumentsDirectory();
-  final imagePath = '${appDocDir.path}/image_${DateTime.now().millisecondsSinceEpoch}.png';
-  await _image.copy(imagePath);
+  padding: const EdgeInsets.symmetric(horizontal: 16),
+  child: ElevatedButton(
+    onPressed: isButtonEnabled
+      ? () async {
+          // Save the image to the app's documents directory
+          final appDocDir = await getApplicationDocumentsDirectory();
+          final imagePath = '${appDocDir.path}/image_${DateTime.now().millisecondsSinceEpoch}.png';
+          await _image.copy(imagePath);
 
-  // Insert record into the 'plants' table and get the newly inserted plantId
-  int? plantId = await DatabaseHelper.instance.insertRecord({
-    DatabaseHelper.columnName: nameController.text,
-    DatabaseHelper.columnEmail: okraPlantResult,  // status (okra plant result)
-    DatabaseHelper.columnContact: contactController.text,  // date
-    DatabaseHelper.columnImagePath: imagePath,  // image path
-    DatabaseHelper.columnPest: pestController.text,  // pesticide info
-  });
+          // Insert record into the 'plants' table and get the newly inserted plantId
+          int? plantId = await DatabaseHelper.instance.insertRecord({
+            DatabaseHelper.columnName: nameController.text,
+            DatabaseHelper.columnEmail: okraPlantResult,  // status (okra plant result)
+            DatabaseHelper.columnContact: contactController.text,  // date
+            DatabaseHelper.columnImagePath: imagePath,  // image path
+            DatabaseHelper.columnPest: pestController.text,  // pesticide info
+          });
 
-  // Ensure the plantId is valid
-  if (plantId != null) {
-    // Now insert into the 'progress' table using the newly generated plantId
-    await DatabaseHelper.instance.insertProgress({
-      DatabaseHelper.plantId: plantId,  // Use the new plantId from the 'plants' table
-      DatabaseHelper.progressDate: contactController.text,  // date
-      DatabaseHelper.progressImages: imagePath,  // image path
-      DatabaseHelper.progressPest: pestController.text,  // pesticide info
-    });
+          // Ensure the plantId is valid
+          if (plantId != null) {
+            // Now insert into the 'progress' table using the newly generated plantId
+            await DatabaseHelper.instance.insertProgress({
+              DatabaseHelper.plantId: plantId,  // Use the new plantId from the 'plants' table
+              DatabaseHelper.progressDate: contactController.text,  // date
+              DatabaseHelper.progressImages: imagePath,  // image path
+              DatabaseHelper.progressPest: pestController.text,  // pesticide info
+            });
 
-    // Navigate to the 'myokra' page
-    Navigator.pushReplacement(context, PageTransition(type: PageTransitionType.fade, child: const myokra()));
-  } else {
-    // Handle the error, e.g., show a message to the user
-    print('Failed to insert record into the plants table.');
-  }
-                                      }
-                                    : null, // Disable the button if form is invalid
-                                     style: ElevatedButton.styleFrom(
-                      backgroundColor: isButtonEnabled
-                          ? const Color(0xff57c26b)
-                          : Colors.grey, // Change color based on state
-                    ),
-                                child: const Text("Add this Plant",
-                      style: TextStyle(color: Colors.white),),
-                              ),
-                            ),
+            // Show a SnackBar with a success message
+            ScaffoldMessenger.of(context).showSnackBar(
+               SnackBar(
+    content: const Text(
+      'Plant added successfully!',
+      style: TextStyle(color: Colors.white), // White text color
+    ),
+    duration: const Duration(seconds: 3),
+    backgroundColor: const Color(0xff57c26b), // Green background color
+    behavior: SnackBarBehavior.floating,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(10),
+    ),
+  ),
+            );
+
+            // Navigate to the 'myokra' page after a slight delay
+            Future.delayed(const Duration(seconds: 1), () {
+            Navigator.pushAndRemoveUntil(
+  context,
+  PageTransition(type: PageTransitionType.fade, child: const myokra()),
+  (Route<dynamic> route) => false, // Removes all previous routes
+);
+            });
+          } 
+        }
+      : null, // Disable the button if form is invalid
+    style: ElevatedButton.styleFrom(
+      backgroundColor: isButtonEnabled
+        ? const Color(0xff57c26b)
+        : Colors.grey, // Change color based on state
+    ),
+    child: const Text(
+      "Add this Plant",
+      style: TextStyle(color: Colors.white),
+    ),
+  ),
+),
               ],
             ),
           ),

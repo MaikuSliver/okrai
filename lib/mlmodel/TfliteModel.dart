@@ -7,7 +7,6 @@ import 'package:page_transition/page_transition.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:tensorflow_lite_flutter/tensorflow_lite_flutter.dart';
 import '../database/db_helper.dart';
-import '../mainscreens/Home.dart';
 import '../mainscreens/myokra.dart'; 
 
 class TfliteModel extends StatefulWidget {
@@ -101,44 +100,51 @@ class _TfliteModelState extends State<TfliteModel> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+Widget build(BuildContext context) {
+  return Scaffold(
+    backgroundColor: const Color(0xffffffff),
+    appBar: AppBar(
+      elevation: 4,
+      centerTitle: false,
+      automaticallyImplyLeading: false,
       backgroundColor: const Color(0xffffffff),
-      appBar: AppBar(
-        elevation: 4,
-        centerTitle: false,
-        automaticallyImplyLeading: false,
-        backgroundColor: const Color(0xffffffff),
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.zero,
-        ),
-        title: const Text(
-          "Okrai Scan",
-          style: TextStyle(
-            fontWeight: FontWeight.w700,
-            fontStyle: FontStyle.normal,
-            fontSize: 14,
-            color: Color(0xff58c36c),
-          ),
-        ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          color: const Color(0xff63b36f),
-          onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              PageTransition(type: PageTransitionType.fade, child: const Home()),
-            );
-          },
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.zero,
+      ),
+      title: const Text(
+        "Okrai Scan",
+        style: TextStyle(
+          fontWeight: FontWeight.w700,
+          fontStyle: FontStyle.normal,
+          fontSize: 14,
+          color: Color(0xff58c36c),
         ),
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          Expanded(
-            flex: 1,
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back),
+        color: const Color(0xff63b36f),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+    ),
+    body: Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisSize: MainAxisSize.max,
+      children: [
+        Expanded(
+          flex: 1,
+          child: Container(
+            margin: const EdgeInsets.all(10), // Adjust the margin as needed
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: Colors.white, // Add green border
+                width: 2,
+              ),
+              borderRadius: BorderRadius.circular(8),
+            ),
             child: ListView(
               scrollDirection: Axis.vertical,
               padding: const EdgeInsets.all(0),
@@ -171,55 +177,72 @@ class _TfliteModelState extends State<TfliteModel> {
                   ],
                 ),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Expanded(
-                      flex: 1,
-                      child: Container(
-                        margin: const EdgeInsets.all(0),
-                        padding: const EdgeInsets.all(0),
-                        width: 200,
-                        height: 450,
-                        decoration: BoxDecoration(
-                          color: const Color(0x1f000000),
-                          shape: BoxShape.rectangle,
-                          borderRadius: BorderRadius.zero,
-                          border: Border.all(color: const Color(0x4d9e9e9e), width: 1),
-                        ),
-                        child: ListView(
-                          children: [
-                            (imageSelect)
-                                ? Container(
-                                    margin: const EdgeInsets.all(10),
-                                    child: Image.file(_image),
-                                  )
-                                : Container(
-                                    margin: const EdgeInsets.all(10),
-                                    child: const Opacity(
-                                      opacity: 0.8,
-                                      child: Center(
-                                        child: Text("No image selected"),
-                                      ),
-                                    ),
-                                  ),
-                            SingleChildScrollView(
-                              child: Column(
-                                children: (imageSelect) ? _results.map((result) {
-                                  return Card(
-                                    child: Container(
-                                      margin: const EdgeInsets.all(10),
-                                      child: Text(
-                                       ' "Your okra plant result is ${result['label']}.'
-                                        //'with ${result['confidence'].toStringAsFixed(2)}'
-                                        ,style: const TextStyle(color: Colors.black, fontSize: 20),
-                                      ),
-                                    ),
-                                  );
-                                }).toList() : [],
-                              ),
-                            ),
+  mainAxisAlignment: MainAxisAlignment.start,
+  crossAxisAlignment: CrossAxisAlignment.center,
+  mainAxisSize: MainAxisSize.max,
+  children: [
+    Expanded(
+      flex: 1,
+      child: Container(
+        margin: const EdgeInsets.all(0),
+        padding: const EdgeInsets.all(0),
+        width: 200,
+        height: 450,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.rectangle,
+          borderRadius: BorderRadius.zero,
+          border: Border.all(
+            color: const Color(0xff44c377), // Green border
+            width: 1,
+          ),
+        ),
+        child: ListView(
+          children: [
+            (imageSelect)
+                ? 
+                Container(
+                    margin: const EdgeInsets.all(5), // Reduced margin
+                    child: Image.file(_image),
+                  )
+                : Container(
+                    margin: const EdgeInsets.all(10),
+                    child: const Opacity(
+                      opacity: 0.8,
+                      child: Center(
+                        child: Text("No image selected"),
+                      ),
+                    ),
+                  ),
+            SingleChildScrollView(
+          child: Column(
+             children: (imageSelect)
+        ? _results.map((result) {
+            return Card(
+              child: Container(
+                margin: const EdgeInsets.symmetric(), // 10 margin on Y-axis
+                padding: const EdgeInsets.all(10), // Add padding for better appearance
+                decoration: BoxDecoration(
+                  color: const Color(0xff44c377), // Green background
+                  borderRadius: BorderRadius.circular(12), // Curved edges
+                ),
+                child: Center(
+                  child: Text(
+                    'Your okra plant result is ${result['label']}!',
+                    style: const TextStyle(
+                      color: Colors.white, // White text
+                      fontSize: 20,
+                    ),
+                    textAlign: TextAlign.center, // Center the text
+                  ),
+                ),
+              ),
+            );
+          }).toList()
+        : [],
+  ),
+),
+
                             Container(
                               width: MediaQuery.of(context).size.width,
                               margin: const EdgeInsets.all(15),
@@ -227,6 +250,18 @@ class _TfliteModelState extends State<TfliteModel> {
                                 controller: nameController,
                                 decoration: const InputDecoration(
                                   hintText: "Name",
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Color(0xff44c377), // Green border
+                                      width: 1.5,
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Color(0xff44c377),
+                                      width: 2.0,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
@@ -237,6 +272,18 @@ class _TfliteModelState extends State<TfliteModel> {
                                 controller: pestController,
                                 decoration: const InputDecoration(
                                   hintText: "Use Pesticide",
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Color(0xff44c377), // Green border
+                                      width: 1.5,
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Color(0xff44c377),
+                                      width: 2.0,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
@@ -247,106 +294,121 @@ class _TfliteModelState extends State<TfliteModel> {
                                 controller: contactController,
                                 decoration: const InputDecoration(
                                   hintText: "Date",
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Color(0xff44c377), // Green border
+                                      width: 1.5,
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Color(0xff44c377),
+                                      width: 2.0,
+                                    ),
+                                  ),
                                 ),
-                                readOnly: true, // Make the field read-only so it only shows the date picker
+                                readOnly: true,
                                 onTap: () async {
-                                  // Show date picker when the field is tapped
                                   DateTime? pickedDate = await showDatePicker(
                                     context: context,
-                                    initialDate: DateTime.now(), // Set initial date to today's date
-                                    firstDate: DateTime(2000), // Set the start of the date range
-                                    lastDate: DateTime(2100), // Set the end of the date range
+                                    initialDate: DateTime.now(),
+                                    firstDate: DateTime(2000),
+                                    lastDate: DateTime(2100),
                                   );
 
                                   if (pickedDate != null) {
-                                    String formattedDate = "${pickedDate.month}-${pickedDate.day}-${pickedDate.year}";
+                                    String formattedDate =
+                                        "${pickedDate.month}-${pickedDate.day}-${pickedDate.year}";
                                     setState(() {
-                                      contactController.text = formattedDate; // Update the controller with the selected date
+                                      contactController.text =
+                                          formattedDate;
                                     });
                                   }
                                 },
                               ),
                             ),
-                          
                           ],
                         ),
                       ),
                     ),
                   ],
-                ),  Padding(
+                ),
+                // Updated button with margin top 10
+Padding(
   padding: const EdgeInsets.symmetric(horizontal: 16),
-  child: ElevatedButton(
-    onPressed: isButtonEnabled
-      ? () async {
-          // Save the image to the app's documents directory
-          final appDocDir = await getApplicationDocumentsDirectory();
-          final imagePath = '${appDocDir.path}/image_${DateTime.now().millisecondsSinceEpoch}.png';
-          await _image.copy(imagePath);
+  child: Container(
+    margin: const EdgeInsets.only(top: 10), // Margin added here
+    child: ElevatedButton(
+      onPressed: isButtonEnabled
+          ? () async {
+              final appDocDir = await getApplicationDocumentsDirectory();
+              final imagePath =
+                  '${appDocDir.path}/image_${DateTime.now().millisecondsSinceEpoch}.png';
+              await _image.copy(imagePath);
 
-          // Insert record into the 'plants' table and get the newly inserted plantId
-          int? plantId = await DatabaseHelper.instance.insertRecord({
-            DatabaseHelper.columnName: nameController.text,
-            DatabaseHelper.columnEmail: okraPlantResult,  // status (okra plant result)
-            DatabaseHelper.columnContact: contactController.text,  // date
-            DatabaseHelper.columnImagePath: imagePath,  // image path
-            DatabaseHelper.columnPest: pestController.text,  // pesticide info
-          });
+              int? plantId = await DatabaseHelper.instance.insertRecord({
+                DatabaseHelper.columnName: nameController.text,
+                DatabaseHelper.columnEmail: okraPlantResult,
+                DatabaseHelper.columnContact: contactController.text,
+                DatabaseHelper.columnImagePath: imagePath,
+                DatabaseHelper.columnPest: pestController.text,
+              });
 
-          // Ensure the plantId is valid
-          if (plantId != null) {
-            // Now insert into the 'progress' table using the newly generated plantId
-            await DatabaseHelper.instance.insertProgress({
-              DatabaseHelper.plantId: plantId,  // Use the new plantId from the 'plants' table
-              DatabaseHelper.progressDate: contactController.text,  // date
-              DatabaseHelper.progressImages: imagePath,  // image path
-              DatabaseHelper.progressPest: pestController.text,  // pesticide info
-            });
+              if (plantId != null) {
+                await DatabaseHelper.instance.insertProgress({
+                  DatabaseHelper.plantId: plantId,
+                  DatabaseHelper.progressDate: contactController.text,
+                  DatabaseHelper.progressImages: imagePath,
+                  DatabaseHelper.progressPest: pestController.text,
+                });
 
-            // Show a SnackBar with a success message
-            ScaffoldMessenger.of(context).showSnackBar(
-               SnackBar(
-    content: const Text(
-      'Plant added successfully!',
-      style: TextStyle(color: Colors.white), // White text color
-    ),
-    duration: const Duration(seconds: 3),
-    backgroundColor: const Color(0xff57c26b), // Green background color
-    behavior: SnackBarBehavior.floating,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(10),
-    ),
-  ),
-            );
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: const Text(
+                      'Plant added successfully!',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    duration: const Duration(seconds: 3),
+                    backgroundColor: const Color(0xff57c26b),
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                );
 
-            // Navigate to the 'myokra' page after a slight delay
-            Future.delayed(const Duration(seconds: 1), () {
-            Navigator.pushAndRemoveUntil(
-  context,
-  PageTransition(type: PageTransitionType.fade, child: const myokra()),
-  (Route<dynamic> route) => false, // Removes all previous routes
-);
-            });
-          } 
-        }
-      : null, // Disable the button if form is invalid
-    style: ElevatedButton.styleFrom(
-      backgroundColor: isButtonEnabled
-        ? const Color(0xff57c26b)
-        : Colors.grey, // Change color based on state
-    ),
-    child: const Text(
-      "Add this Plant",
-      style: TextStyle(color: Colors.white),
+                Future.delayed(const Duration(seconds: 1), () {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    PageTransition(
+                      type: PageTransitionType.fade,
+                      child: const myokra(),
+                    ),
+                    (Route<dynamic> route) => false,
+                  );
+                });
+              }
+            }
+          : null,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: isButtonEnabled ? const Color(0xff57c26b) : Colors.grey,
+      ),
+      child: const Text(
+        "Add this Plant",
+        style: TextStyle(color: Colors.white),
+      ),
     ),
   ),
 ),
               ],
             ),
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
+}
+
 }
 
 

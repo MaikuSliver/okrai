@@ -205,7 +205,7 @@ class _PredictYieldState extends State<PredictYield> {
             if (_predictedHarvestKilos != null)
               Center(
                 child: Text(
-                  "Predicted Harvest Kilos: ${_predictedHarvestKilos!.toStringAsFixed(2)} kg",
+                  "Predicted Harvest: ${_predictedHarvestKilos!.toStringAsFixed(2)} kg",
                   style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ),

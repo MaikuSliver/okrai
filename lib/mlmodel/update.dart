@@ -167,186 +167,264 @@ class _UpdateState extends State<Update> {
         children: [
           Expanded(
             flex: 1,
-            child: ListView(
-              scrollDirection: Axis.vertical,
-              padding: const EdgeInsets.all(0),
-              shrinkWrap: false,
-              physics: const ScrollPhysics(),
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-                      child: IconButton(
-                        icon: const Icon(Icons.image),
-                        onPressed: pickImage,
-                        color: const Color(0xff57c26b),
-                        iconSize: 24,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: IconButton(
-                        icon: const Icon(Icons.photo_camera),
-                        onPressed: pickImageC,
-                        color: const Color(0xff59be6c),
-                        iconSize: 24,
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Expanded(
-                      flex: 1,
-                      child: Container(
-                        margin: const EdgeInsets.all(0),
-                        padding: const EdgeInsets.all(0),
-                        width: 200,
-                        height: 450,
-                        decoration: BoxDecoration(
-                          color: const Color(0x1f000000),
-                          shape: BoxShape.rectangle,
-                          borderRadius: BorderRadius.zero,
-                          border:
-                          Border.all(color: const Color(0x4d9e9e9e), width: 1),
+            child: Container(
+                margin: const EdgeInsets.all(10), // Adjust the margin as needed
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: Colors.white, // Add green border
+                width: 2,
+              ),
+              borderRadius: BorderRadius.circular(8),
+            ),
+              child: ListView(
+                scrollDirection: Axis.vertical,
+                padding: const EdgeInsets.all(0),
+                shrinkWrap: false,
+                physics: const ScrollPhysics(),
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                       Padding(
+                        padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+                        child: IconButton(
+                          icon: const Icon(Icons.image),
+                          onPressed: pickImage,
+                          color: const Color(0xff57c26b),
+                          iconSize: 24,
                         ),
-                        child: ListView(
-                          children: [
-                            (imageSelect) ? Container(
-                              margin: const EdgeInsets.all(10),
-                              child: Image.file(_image),
-                            ) : Container(
-                              margin: const EdgeInsets.all(10),
-                              child: const Opacity(
-                                opacity: 0.8,
-                                child: Center(
-                                  child: Text("No image selected"),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: IconButton(
+                          icon: const Icon(Icons.photo_camera),
+                          onPressed: pickImageC,
+                          color: const Color(0xff59be6c),
+                          iconSize: 24,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: Container(
+                      margin: const EdgeInsets.all(0),
+                      padding: const EdgeInsets.all(0),
+                      width: 200,
+                      height: 450,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.rectangle,
+                        borderRadius: BorderRadius.zero,
+                        border: Border.all(
+              color: const Color(0xff44c377), // Green border
+              width: 1,
+                        ),
+                      ),
+                          child: ListView(
+                            children: [
+                              (imageSelect) ? 
+                              Container(
+                                margin: const EdgeInsets.all(5), // Reduced margin
+                                child: Image.file(_image),
+                              ) : Container(
+                               margin: const EdgeInsets.all(10),
+                      child: const Opacity(
+                        opacity: 0.8,
+                        child: Center(
+                          child: Text("No image selected"),
+                        ),
+                      ),
+                    ),
+                              SingleChildScrollView(
+                                child: Column(
+                                  children: (imageSelect) ? _results.map((result) {
+                                    okraPlantResult = result['label'];
+                                    return Card(
+                                      child: Container(
+                                         margin: const EdgeInsets.symmetric(), // 10 margin on Y-axis
+                  padding: const EdgeInsets.all(10), // Add padding for better appearance
+                  decoration: BoxDecoration(
+                    color: const Color(0xff44c377), // Green background
+                    borderRadius: BorderRadius.circular(12), // Curved edges
+                  ),
+                                        child: Center(
+                                          child: Text(
+                                              'Your okra plant result is ${result['label']}.'
+                                            //'with ${result['confidence'].toStringAsFixed(2)}'
+                                            ,   style: const TextStyle(
+                        color: Colors.white, // White text
+                        fontSize: 20,),
+                         textAlign: TextAlign.center, // Center the text
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  }).toList() : [],
                                 ),
                               ),
-                            ),
-                            SingleChildScrollView(
-                              child: Column(
-                                children: (imageSelect) ? _results.map((result) {
-                                  okraPlantResult = result['label'];
-                                  return Card(
-                                    child: Container(
-                                      margin: const EdgeInsets.all(10),
-                                      child: Text(
-                                          ' "Your okra plant result is ${result['label']}.'
-                                        //'with ${result['confidence'].toStringAsFixed(2)}'
-                                        ,style: const TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 20),
+                              Container(
+                                  width: MediaQuery.of(context).size.width,
+                                  margin: const EdgeInsets.all(15),
+                                  child: TextField(
+                                    controller: nameController,
+                                    decoration: const InputDecoration(
+                                    hintText: "Name",
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: Color(0xff44c377), // Green border
+                                        width: 1.5,
                                       ),
                                     ),
-                                  );
-                                }).toList() : [],
-                              ),
-                            ),
-                            Container(
-                                width: MediaQuery.of(context).size.width,
-                                margin: const EdgeInsets.all(15),
-                                child: TextField(
-                                  controller: nameController,
-                                  decoration: const InputDecoration(
-                                    hintText: "Name",
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: Color(0xff44c377),
+                                        width: 2.0,
+                                      ),
+                                    ),
                                   ),
-                                )),
-                            Container(
-                                width: MediaQuery.of(context).size.width,
-                                margin: const EdgeInsets.all(15),
-                                child: TextField(
-                                  controller: pestController,
-                                  decoration: const InputDecoration(
+                                  )),
+                              Container(
+                                  width: MediaQuery.of(context).size.width,
+                                  margin: const EdgeInsets.all(15),
+                                  child: TextField(
+                                    controller: pestController,
+                                    decoration: const InputDecoration(
                                     hintText: "Use Pesticide",
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: Color(0xff44c377), // Green border
+                                        width: 1.5,
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: Color(0xff44c377),
+                                        width: 2.0,
+                                      ),
+                                    ),
                                   ),
-                                )),
-                            Container(
-                              width: MediaQuery.of(context).size.width,
-                              margin: const EdgeInsets.all(15),
-                              child: TextFormField(
-                                controller: contactController,
-                                decoration: const InputDecoration(
-                                  hintText: "Date",
+                                  )),
+                              Container(
+                                width: MediaQuery.of(context).size.width,
+                                margin: const EdgeInsets.all(15),
+                                child: TextFormField(
+                                  controller: contactController,
+                                  decoration: const InputDecoration(
+                                    hintText: "Date",
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: Color(0xff44c377), // Green border
+                                        width: 1.5,
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: Color(0xff44c377),
+                                        width: 2.0,
+                                      ),
+                                    ),
+                                  ),
+                                  readOnly: true,
+                                  onTap: () async {
+                                    DateTime? pickedDate = await showDatePicker(
+                                      context: context,
+                                      initialDate: DateTime.now(),
+                                      firstDate: DateTime(2000),
+                                      lastDate: DateTime(2100),
+                                    );
+              
+                                    if (pickedDate != null) {
+                                      String formattedDate =
+                                          "${pickedDate.month}-${pickedDate.day}-${pickedDate.year}";
+                                      setState(() {
+                                        contactController.text =
+                                            formattedDate;
+                                      });
+                                    }
+                                  },
                                 ),
-                                readOnly: true,
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
+                  Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Container(
+                margin: const EdgeInsets.only(top: 10), // Margin added here
+                child: ElevatedButton(
+                  onPressed: isButtonEnabled
+                      ? () async {
+                          // Save the image to the app's documents directory
+                          final appDocDir = await getApplicationDocumentsDirectory();
+                          final imagePath = '${appDocDir.path}/image_${DateTime.now().millisecondsSinceEpoch}.png';
+                          await _image.copy(imagePath);
+                
+                          // Insert record into SQLite with the image path
+                          await DatabaseHelper.instance.updateRecord({
+                            DatabaseHelper.columnId: okraid,
+                            DatabaseHelper.columnName: nameController.text,
+                            DatabaseHelper.columnEmail: okraPlantResult, // status
+                            DatabaseHelper.columnContact: contactController.text, // date
+                            DatabaseHelper.columnImagePath: imagePath,
+                            DatabaseHelper.columnPest: pestController.text,
+                          });
+                
+                          await DatabaseHelper.instance.insertProgress({
+                            DatabaseHelper.plantId: okraid,  // Use the new plant ID here
+                            DatabaseHelper.progressDate: contactController.text, // date
+                            DatabaseHelper.progressImages: imagePath,
+                            DatabaseHelper.progressPest: pestController.text,
+                          });
+                
+                          // Show success message
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: const Text(
+                                'Plant updated successfully!',
+                                style: TextStyle(color: Colors.white), // White text color
+                              ),
+                              duration: const Duration(seconds: 3),
+                              backgroundColor: const Color(0xff57c26b), // Green background color
+                              behavior: SnackBarBehavior.floating,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          );
+                
+                           Navigator.pushAndRemoveUntil(
+                  context,
+                  PageTransition(type: PageTransitionType.fade, child: const myokra()),
+                  (Route<dynamic> route) => false, // Removes all previous routes
+                );
+                        }
+                      : null, // Disable if form is invalid
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: isButtonEnabled
+                        ? const Color(0xff57c26b)
+                        : Colors.grey, // Change color based on state
+                  ),
+                  child: const Text(
+                    "Update this Plant",
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
-                Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: ElevatedButton(
-              onPressed: isButtonEnabled
-                  ? () async {
-                      // Save the image to the app's documents directory
-                      final appDocDir = await getApplicationDocumentsDirectory();
-                      final imagePath = '${appDocDir.path}/image_${DateTime.now().millisecondsSinceEpoch}.png';
-                      await _image.copy(imagePath);
-
-                      // Insert record into SQLite with the image path
-                      await DatabaseHelper.instance.updateRecord({
-                        DatabaseHelper.columnId: okraid,
-                        DatabaseHelper.columnName: nameController.text,
-                        DatabaseHelper.columnEmail: okraPlantResult, // status
-                        DatabaseHelper.columnContact: contactController.text, // date
-                        DatabaseHelper.columnImagePath: imagePath,
-                        DatabaseHelper.columnPest: pestController.text,
-                      });
-
-                      await DatabaseHelper.instance.insertProgress({
-                        DatabaseHelper.plantId: okraid,  // Use the new plant ID here
-                        DatabaseHelper.progressDate: contactController.text, // date
-                        DatabaseHelper.progressImages: imagePath,
-                        DatabaseHelper.progressPest: pestController.text,
-                      });
-
-                      // Show success message
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: const Text(
-                            'Plant updated successfully!',
-                            style: TextStyle(color: Colors.white), // White text color
-                          ),
-                          duration: const Duration(seconds: 3),
-                          backgroundColor: const Color(0xff57c26b), // Green background color
-                          behavior: SnackBarBehavior.floating,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
+              ),
                         ),
-                      );
-
-                       Navigator.pushAndRemoveUntil(
-  context,
-  PageTransition(type: PageTransitionType.fade, child: const myokra()),
-  (Route<dynamic> route) => false, // Removes all previous routes
-);
-                    }
-                  : null, // Disable if form is invalid
-              style: ElevatedButton.styleFrom(
-                backgroundColor: isButtonEnabled
-                    ? const Color(0xff57c26b)
-                    : Colors.grey, // Change color based on state
+                ],
               ),
-              child: const Text(
-                "Update this Plant",
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          ),
-              ],
             ),
           ),
         ],

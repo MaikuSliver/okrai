@@ -404,46 +404,69 @@ class _HomeState extends State<Home> {
       border: Border.all(color: const Color(0xff44c377), width: 3), // Green border
       borderRadius: BorderRadius.circular(10), // Optional: round the corners of the border
     ),
-    child: ListView(
-      shrinkWrap: true,
-      padding: const EdgeInsets.all(10),
-      children: [
-        const Text(
-          "Okra Yield Prediction", 
-          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-        ),
-        const Text(
-          "PREDICT NOW!", 
-          style: TextStyle(fontSize: 25, fontWeight: FontWeight.w800),
-        ),
-        const Icon(
+    child: Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    const Padding(
+      padding: EdgeInsets.fromLTRB(10,10,0,0),
+      child: Text(
+        "Okra Yield Prediction", 
+        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+      ),
+    ),
+    const Padding(
+      padding: EdgeInsets.fromLTRB(10,0,0,0),
+      child: Text(
+        "PREDICT NOW!", 
+        style: TextStyle(fontSize: 25, fontWeight: FontWeight.w800),
+      ),
+    ),
+    const Padding(
+      padding: EdgeInsets.fromLTRB(10,0,0,0),
+      child: Center(
+        child: Icon(
           Icons.grass_rounded, 
           size: 50, 
           color: Color(0xff44c377),
         ),
-        ElevatedButton(
-          onPressed: () => Navigator.push(
-            context, 
-            PageTransition(type: PageTransitionType.fade, child: const PredictYield()),
-          ),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xff44c377),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30.0),
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          ),
-          child: const Text(
-            "Click Here", 
-            style: TextStyle(
-              fontWeight: FontWeight.w600, 
-              fontSize: 16, 
-              color: Colors.white,
-            ),
-          ),
-        ),
-      ],
+      ),
     ),
+    Padding(
+      padding: const EdgeInsets.fromLTRB(10,0,0,0),
+      child: Center(
+        child: Padding(
+  padding: const EdgeInsets.all(10),
+  child: SizedBox(
+    width: double.infinity, // Makes the button full width
+    child: ElevatedButton(
+      onPressed: () => Navigator.push(
+        context, 
+        PageTransition(type: PageTransitionType.fade, child: const PredictYield()),
+      ),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: const Color(0xff44c377),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30.0),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      ),
+      child: const Text(
+        "Click Here", 
+        style: TextStyle(
+          fontWeight: FontWeight.w600, 
+          fontSize: 16, 
+          color: Colors.white,
+        ),
+      ),
+    ),
+  ),
+),
+
+      ),
+    ),
+  ],
+),
+
   );
 }
 

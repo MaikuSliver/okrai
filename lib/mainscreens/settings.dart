@@ -240,12 +240,7 @@ class _settingsState extends State<settings> {
   // Add the onTap property to make it clickable
   onTap: () {
     // Define what happens when the tile is clicked
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const HelpPage(), // Navigate to the HelpPage
-      ),
-    );
+    Navigator.push(context, PageTransition(type: PageTransitionType.fade, child: const HelpPage()));
   },
 )
                     ),
@@ -282,12 +277,7 @@ class _settingsState extends State<settings> {
   // Add the onTap property to make it clickable
   onTap: () {
     // Define what happens when the tile is clicked
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const ContactUsPage(), // Navigate to the HelpPage
-      ),
-    );
+   Navigator.push(context, PageTransition(type: PageTransitionType.fade, child: const ContactUsPage()));
   },
 )
                     ),

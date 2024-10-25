@@ -48,7 +48,7 @@ class _PredictYieldState extends State<PredictYield> {
     try {
       _interpreter = await Interpreter.fromAsset('assets/okra_yield_model.tflite');
     } catch (e) {
-      print('Error loading model: $e');
+     // print('Error loading model: $e');
     }
   }
 
@@ -106,7 +106,7 @@ class _PredictYieldState extends State<PredictYield> {
       _predictedHarvestKilos = (_predictedHarvestKilos ?? 0) + harvestAdjustment; // Use null coalescing operator
     });
   } catch (e) {
-    print("Error during prediction: $e");
+    //print("Error during prediction: $e");
   }
 }
 

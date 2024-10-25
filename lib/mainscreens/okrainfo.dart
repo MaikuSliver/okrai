@@ -67,12 +67,15 @@ var Normalgstyle =const TextStyle(
               child:
 
               ///***If you have exported images you must have to copy those images in assets/images directory.
-              Image(
-                image: const AssetImage("assets/images/images123.jpg"),
-                height:
-                MediaQuery.of(context).size.height * 0.35000000000000003,
-                width: MediaQuery.of(context).size.width,
-                fit: BoxFit.cover,
+              ClipRRect(
+                borderRadius: const BorderRadius.all(Radius.circular(20)),
+                child: Image(
+                  image: const AssetImage("assets/images/images123.jpg"),
+                  height:
+                  MediaQuery.of(context).size.height * 0.35000000000000003,
+                  width: MediaQuery.of(context).size.width,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
             Padding(
@@ -167,13 +170,19 @@ var Normalgstyle =const TextStyle(
               margin: const EdgeInsets.fromLTRB(20, 20, 20, 5),
               child: Row(
                 children: [
-                       Expanded(child: Image.asset('assets/images/abelmoschus-esculentus-le-kstarr3.jpg',
-                fit: BoxFit.cover,height: 200,
-              width: 200,)),
+                       Expanded(child: ClipRRect(
+                          borderRadius: const BorderRadius.all(Radius.circular(10)),
+                         child: Image.asset('assets/images/abelmoschus-esculentus-le-kstarr3.jpg',
+                                         fit: BoxFit.cover,height: 200,
+                                       width: 200,),
+                       )),
                        const SizedBox(width: 15,),
-                       Expanded(child: Image.asset('assets/images/images (1).jpg',
-                fit: BoxFit.cover,height: 200,
-              width: 200,)),
+                       Expanded(child: ClipRRect(
+                        borderRadius: const BorderRadius.all(Radius.circular(10)),
+                         child: Image.asset('assets/images/images (1).jpg',
+                                         fit: BoxFit.cover,height: 200,
+                                       width: 200,),
+                       )),
                 ],
               ),
             ),
@@ -193,13 +202,19 @@ var Normalgstyle =const TextStyle(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                       Expanded(child: Image.asset('assets/images/images (2).jpg',
-                fit: BoxFit.cover,height: 200,
-              width: 200,)),
+                       Expanded(child: ClipRRect(
+                        borderRadius: const BorderRadius.all(Radius.circular(10)),
+                         child: Image.asset('assets/images/images (2).jpg',
+                                         fit: BoxFit.cover,height: 200,
+                                       width: 200,),
+                       )),
                        const SizedBox(width: 15,),
-                       Expanded(child: Image.asset('assets/images/images (3).jpg',
-                fit: BoxFit.cover,height: 200,
-              width: 200,)),
+                       Expanded(child: ClipRRect(
+                        borderRadius: const BorderRadius.all(Radius.circular(10)),
+                         child: Image.asset('assets/images/images (3).jpg',
+                                         fit: BoxFit.cover,height: 200,
+                                       width: 200,),
+                       )),
                 ],
               ),
             ),

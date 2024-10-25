@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:okrai/facts/contactus.dart';
+import 'package:okrai/facts/help.dart';
 import 'package:okrai/mainscreens/myokra.dart';
 import 'package:page_transition/page_transition.dart';
 import 'Home.dart';
@@ -144,43 +146,43 @@ class _settingsState extends State<settings> {
                       indent: 0,
                       endIndent: 0,
                     ),
-                    SwitchListTile(
-                      value: false,
-                      title: const Text(
-                        "App Theme",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w400,
-                          fontStyle: FontStyle.normal,
-                          fontSize: 14,
-                          color: Color(0xff000000),
-                        ),
-                        textAlign: TextAlign.start,
-                      ),
-                      subtitle: const Text(
-                        "Set into dark mode theme",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w400,
-                          fontStyle: FontStyle.normal,
-                          fontSize: 12,
-                          color: Color(0xff737070),
-                        ),
-                        textAlign: TextAlign.start,
-                      ),
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero,
-                      ),
-                      onChanged: (value) {
-                        // Implement your theme change logic here
-                      },
-                      tileColor: const Color(0x00ffffff),
-                      activeColor: const Color(0xff3a57e8),
-                      activeTrackColor: const Color(0x3f3a57e8),
-                      controlAffinity: ListTileControlAffinity.trailing,
-                      dense: false,
-                      inactiveThumbColor: const Color(0xff9e9e9e),
-                      inactiveTrackColor: const Color(0xffe0e0e0),
-                      contentPadding: const EdgeInsets.all(0),
-                    ),
+                    // SwitchListTile(
+                    //   value: false,
+                    //   title: const Text(
+                    //     "App Theme",
+                    //     style: TextStyle(
+                    //       fontWeight: FontWeight.w400,
+                    //       fontStyle: FontStyle.normal,
+                    //       fontSize: 14,
+                    //       color: Color(0xff000000),
+                    //     ),
+                    //     textAlign: TextAlign.start,
+                    //   ),
+                    //   subtitle: const Text(
+                    //     "Set into dark mode theme",
+                    //     style: TextStyle(
+                    //       fontWeight: FontWeight.w400,
+                    //       fontStyle: FontStyle.normal,
+                    //       fontSize: 12,
+                    //       color: Color(0xff737070),
+                    //     ),
+                    //     textAlign: TextAlign.start,
+                    //   ),
+                    //   shape: const RoundedRectangleBorder(
+                    //     borderRadius: BorderRadius.zero,
+                    //   ),
+                    //   onChanged: (value) {
+                    //     // Implement your theme change logic here
+                    //   },
+                    //   tileColor: const Color(0x00ffffff),
+                    //   activeColor: const Color(0xff3a57e8),
+                    //   activeTrackColor: const Color(0x3f3a57e8),
+                    //   controlAffinity: ListTileControlAffinity.trailing,
+                    //   dense: false,
+                    //   inactiveThumbColor: const Color(0xff9e9e9e),
+                    //   inactiveTrackColor: const Color(0xffe0e0e0),
+                    //   contentPadding: const EdgeInsets.all(0),
+                    // ),
                   ],
                 ),
               ),
@@ -194,14 +196,14 @@ class _settingsState extends State<settings> {
                 borderRadius: BorderRadius.circular(16.0),
                 side: const BorderSide(color: Color(0x4d9e9e9e), width: 1),
               ),
-              child: const Padding(
-                padding: EdgeInsets.all(16),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.max,
                   children: [
-                    Text(
+                    const Text(
                       "Support",
                       textAlign: TextAlign.start,
                       overflow: TextOverflow.clip,
@@ -213,58 +215,81 @@ class _settingsState extends State<settings> {
                       ),
                     ),
                     Padding(
-                      padding: EdgeInsets.fromLTRB(0, 30, 0, 0),
+                      padding: const EdgeInsets.fromLTRB(0, 15, 0, 0),
                       child: ListTile(
-                        tileColor: Color(0x00ffffff),
-                        title: Text(
-                          "Help",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w400,
-                            fontStyle: FontStyle.normal,
-                            fontSize: 16,
-                            color: Color(0xff000000),
-                          ),
-                          textAlign: TextAlign.start,
-                        ),
-                        dense: false,
-                        contentPadding: EdgeInsets.all(0),
-                        selected: false,
-                        selectedTileColor: Color(0x42000000),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.zero,
-                        ),
-                        trailing: Icon(Icons.arrow_forward_ios,
-                            color: Color(0xff767678), size: 18),
-                      ),
+  tileColor: const Color(0x00ffffff),
+  title: const Text(
+    "Help",
+    style: TextStyle(
+      fontWeight: FontWeight.w400,
+      fontStyle: FontStyle.normal,
+      fontSize: 16,
+      color: Color(0xff000000),
+    ),
+    textAlign: TextAlign.start,
+  ),
+  dense: false,
+  contentPadding: const EdgeInsets.all(0),
+  selected: false,
+  selectedTileColor: const Color(0x42000000),
+  shape: const RoundedRectangleBorder(
+    borderRadius: BorderRadius.zero,
+  ),
+  trailing: const Icon(Icons.arrow_forward_ios, color: Color(0xff767678), size: 18),
+  
+  // Add the onTap property to make it clickable
+  onTap: () {
+    // Define what happens when the tile is clicked
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const HelpPage(), // Navigate to the HelpPage
+      ),
+    );
+  },
+)
                     ),
-                    Divider(
+                    const Divider(
                       color: Color(0xff808080),
                       height: 16,
                       thickness: 0.3,
                       indent: 0,
                       endIndent: 0,
                     ),
-                    ListTile(
-                      tileColor: Color(0x00ffffff),
-                      title: Text(
-                        "Contact Us",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w400,
-                          fontStyle: FontStyle.normal,
-                          fontSize: 16,
-                          color: Color(0xff000000),
-                        ),
-                        textAlign: TextAlign.start,
-                      ),
-                      dense: false,
-                      contentPadding: EdgeInsets.all(0),
-                      selected: false,
-                      selectedTileColor: Color(0x42000000),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero,
-                      ),
-                      trailing: Icon(Icons.arrow_forward_ios,
-                          color: Color(0xff767678), size: 18),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 15, 0, 0),
+                      child: ListTile(
+  tileColor: const Color(0x00ffffff),
+  title: const Text(
+    "Contact Us",
+    style: TextStyle(
+      fontWeight: FontWeight.w400,
+      fontStyle: FontStyle.normal,
+      fontSize: 16,
+      color: Color(0xff000000),
+    ),
+    textAlign: TextAlign.start,
+  ),
+  dense: false,
+  contentPadding: const EdgeInsets.all(0),
+  selected: false,
+  selectedTileColor: const Color(0x42000000),
+  shape: const RoundedRectangleBorder(
+    borderRadius: BorderRadius.zero,
+  ),
+  trailing: const Icon(Icons.arrow_forward_ios, color: Color(0xff767678), size: 18),
+  
+  // Add the onTap property to make it clickable
+  onTap: () {
+    // Define what happens when the tile is clicked
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const ContactUsPage(), // Navigate to the HelpPage
+      ),
+    );
+  },
+)
                     ),
                   ],
                 ),

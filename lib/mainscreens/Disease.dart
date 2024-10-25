@@ -82,11 +82,14 @@ class Disease extends StatelessWidget {
             border: Border.all(color: const Color(0xff57c26b), width: 1),
           ),
           child: IconButton(
-            icon: Image.asset(
-              imagePath,
-              height: 100,
-              width: 140,
-              fit: BoxFit.cover,
+            icon: ClipRRect(
+              borderRadius: const BorderRadius.all(Radius.circular(10)),
+              child: Image.asset(
+                imagePath,
+                height: 100,
+                width: 140,
+                fit: BoxFit.cover,
+              ),
             ),
             onPressed: () {
               Navigator.push(

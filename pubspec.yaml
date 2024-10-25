@@ -39,6 +39,7 @@ dependencies:
   flutter_local_notifications: ^17.2.3
   tflite_flutter: ^0.11.0
   syncfusion_flutter_charts: ^27.1.53
+  url_launcher: ^6.3.1
 
 
 

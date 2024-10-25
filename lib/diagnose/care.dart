@@ -194,11 +194,14 @@ padding:const EdgeInsets.symmetric(vertical: 1,horizontal:0),
 child:Align(
 alignment:Alignment.center,
 child:///***If you have exported images you must have to copy those images in assets/images directory.
-Image(
-image: FileImage(File(okraimg)),
-height:175,
-width:200,
-fit:BoxFit.cover,
+ClipRRect(
+  borderRadius: const BorderRadius.all(Radius.circular(20)),
+  child: Image(
+  image: FileImage(File(okraimg)),
+  height:175,
+  width:200,
+  fit:BoxFit.cover,
+  ),
 ),
 ),
 ),
@@ -211,18 +214,20 @@ mainAxisSize:MainAxisSize.max,
 children:[
 
 Expanded(
-flex: 1,
-child: Text(
-"Status: ${okrainfoss.hstatus}",
-textAlign: TextAlign.start,
-overflow:TextOverflow.clip,
-style:const TextStyle(
-fontWeight:FontWeight.w700,
-fontStyle:FontStyle.normal,
-fontSize:16,
-color:Color(0xff000000),
-),
-),
+  flex: 1,
+  child: Text(
+    "Status: ${okrainfoss.hstatus}",
+    textAlign: TextAlign.start,
+    overflow: TextOverflow.clip,
+    style: TextStyle(
+      fontWeight: FontWeight.w700,
+      fontStyle: FontStyle.normal,
+      fontSize: 16,
+      color: okrainfoss.hstatus == 'Healthy' 
+          ?const Color(0xff63b36f) // Green color
+          : const Color(0xffff0000) // Red color
+    ),
+  ),
 ),
 Row(
 mainAxisAlignment:MainAxisAlignment.start,

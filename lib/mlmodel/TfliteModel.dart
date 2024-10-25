@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously, file_names, library_private_types_in_public_api
+// ignore_for_file: use_build_context_synchronously, file_names, library_private_types_in_public_api, unused_local_variable
 
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -46,7 +46,7 @@ class _TfliteModelState extends State<TfliteModel> {
     String res = (await Tflite.loadModel(
       model: "assets/model.tflite", labels: "assets/labels.txt"
     ))!;
-    print("Models loading status: $res");
+    //print("Models loading status: $res");
   }
 
   Future imageClassification(File image) async {
@@ -219,25 +219,26 @@ Widget build(BuildContext context) {
              children: (imageSelect)
         ? _results.map((result) {
             return Card(
-              child: Container(
-                margin: const EdgeInsets.symmetric(), // 10 margin on Y-axis
-                padding: const EdgeInsets.all(10), // Add padding for better appearance
-                decoration: BoxDecoration(
-                  color: const Color(0xff44c377), // Green background
-                  borderRadius: BorderRadius.circular(12), // Curved edges
-                ),
-                child: Center(
-                  child: Text(
-                    'Your okra plant result is ${result['label']}!',
-                    style: const TextStyle(
-                      color: Colors.white, // White text
-                      fontSize: 20,
-                    ),
-                    textAlign: TextAlign.center, // Center the text
-                  ),
-                ),
-              ),
-            );
+  child: Container(
+    padding: const EdgeInsets.all(10), // Add padding for better appearance
+    decoration: BoxDecoration(
+      color: result['label'] == 'Healthy' 
+          ? const Color(0xff44c377) // Green background
+          : const Color(0xffff0000), // Red background
+      borderRadius: BorderRadius.circular(12), // Curved edges
+    ),
+    child: Center(
+      child: Text(
+        'Your okra plant result is ${result['label']}!',
+        style: const TextStyle(
+          color: Colors.white, // White text
+          fontSize: 20,
+        ),
+        textAlign: TextAlign.center, // Center the text
+      ),
+    ),
+  ),
+);
           }).toList()
         : [],
   ),

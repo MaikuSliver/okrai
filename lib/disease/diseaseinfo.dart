@@ -62,12 +62,15 @@ void initState() {
               child:
 
               ///***If you have exported images you must have to copy those images in assets/images directory.
-              Image(
-                image: AssetImage(diseasess.mainimage),
-                height:
-                MediaQuery.of(context).size.height * 0.35000000000000003,
-                width: MediaQuery.of(context).size.width,
-                fit: BoxFit.cover,
+              ClipRRect(
+                borderRadius: const BorderRadius.all(Radius.circular(20)),
+                child: Image(
+                  image: AssetImage(diseasess.mainimage),
+                  height:
+                  MediaQuery.of(context).size.height * 0.35000000000000003,
+                  width: MediaQuery.of(context).size.width,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
             Padding(
@@ -183,12 +186,15 @@ void initState() {
                       mainAxisSize: MainAxisSize.max,
                       children: [
                         ///***If you have exported images you must have to copy those images in assets/images directory.
-                        Image(
-                          image: AssetImage(
-                              diseasess.image1),
-                          height: 100,
-                          width: 140,
-                          fit: BoxFit.cover,
+                        ClipRRect(
+                          borderRadius: const BorderRadius.all(Radius.circular(10)),
+                          child: Image(
+                            image: AssetImage(
+                                diseasess.image1),
+                            height: 100,
+                            width: 140,
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ],
                     ),
@@ -204,11 +210,14 @@ void initState() {
                       mainAxisSize: MainAxisSize.max,
                       children: [
                         ///***If you have exported images you must have to copy those images in assets/images directory.
-                        Image(
-                          image: AssetImage(diseasess.image2),
-                          height: 100,
-                          width: 140,
-                          fit: BoxFit.cover,
+                        ClipRRect(
+                          borderRadius: const BorderRadius.all(Radius.circular(10)),
+                          child: Image(
+                            image: AssetImage(diseasess.image2),
+                            height: 100,
+                            width: 140,
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ],
                     ),
@@ -231,11 +240,14 @@ void initState() {
                       mainAxisSize: MainAxisSize.max,
                       children: [
                         ///***If you have exported images you must have to copy those images in assets/images directory.
-                        Image(
-                          image: AssetImage(diseasess.image3),
-                          height: 100,
-                          width: 140,
-                          fit: BoxFit.cover,
+                        ClipRRect(
+                          borderRadius: const BorderRadius.all(Radius.circular(10)),
+                          child: Image(
+                            image: AssetImage(diseasess.image3),
+                            height: 100,
+                            width: 140,
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ],
                     ),
@@ -251,11 +263,14 @@ void initState() {
                       mainAxisSize: MainAxisSize.max,
                       children: [
                         ///***If you have exported images you must have to copy those images in assets/images directory.
-                        Image(
-                          image: AssetImage(diseasess.image4),
-                          height: 100,
-                          width: 140,
-                          fit: BoxFit.cover,
+                        ClipRRect(
+                          borderRadius: const BorderRadius.all(Radius.circular(10)),
+                          child: Image(
+                            image: AssetImage(diseasess.image4),
+                            height: 100,
+                            width: 140,
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ],
                     ),

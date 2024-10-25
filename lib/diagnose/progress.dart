@@ -66,7 +66,19 @@ late double okrapercent;
     okrapercent =widget.progresshealth*100;
      _refreshJournals();
   }
-
+ Color _getProgressColor(double okraprogress) {
+    if (okraprogress <= 0.25) {
+      return const Color.fromARGB(255, 255, 17, 0); // 0.0 - 0.25
+    } else if (okraprogress <= 0.5) {
+      return Colors.orange; // 0.26 - 0.5
+    } else if (okraprogress <= 0.75) {
+      return const Color.fromARGB(255, 233, 210, 0); // 0.51 - 0.75
+    } else if (okraprogress <= 0.85) {
+      return const Color.fromARGB(255, 124, 233, 0); // 0.76 - 0.85
+    } else {
+      return Colors.green; // 0.86 - 1.00
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
@@ -102,22 +114,22 @@ late double okrapercent;
                              value: okraprogress, // Sets the progress value (0.0 to 1.0)
                              strokeWidth: 15, // Sets the circle width
                              backgroundColor: Colors.black26,
-                             valueColor: const AlwaysStoppedAnimation<Color>(Color(0xff44c377)),
+                             valueColor: AlwaysStoppedAnimation<Color>(_getProgressColor(okraprogress)),
                            ),
                          ),
                          Column(
                            mainAxisAlignment: MainAxisAlignment.center,
                            children: [
-                             const Icon(
+                              Icon(
                                Icons.sentiment_very_satisfied,
-                               color: Color(0xff44c377),
+                               color: _getProgressColor(okraprogress),
                                size:40,
                              ),
                              const SizedBox(height: 8),
                              Text(
                                '${okrapercent.toString()}%',
-                               style: const TextStyle(
-                                 color: Color(0xff44c377),
+                               style:  TextStyle(
+                                 color: _getProgressColor(okraprogress),
                                  fontWeight: FontWeight.bold,
                                  fontSize: 20,
                                ),

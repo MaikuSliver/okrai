@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:okrai/diagnose/care.dart';
 import 'package:okrai/mainscreens/settings.dart';
@@ -80,7 +82,7 @@ class _myokraState extends State<myokra> {
               },
               decoration: InputDecoration(
                 labelText: 'Search',
-                hintText: 'Search by name, status, or pest',
+                hintText: 'Search by name, status, or pesticide',
                 prefixIcon: const Icon(Icons.search),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
@@ -123,11 +125,14 @@ class _myokraState extends State<myokra> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Image(
-                                    image: FileImage(File(imagepath!)),
-                                    width: 150,
-                                    height: 190,
-                                    fit: BoxFit.cover,
+                                  ClipRRect(
+                                    borderRadius: const BorderRadius.all(Radius.circular(10)),
+                                    child: Image(
+                                      image: FileImage(File(imagepath!)),
+                                      width: 150,
+                                      height: 190,
+                                      fit: BoxFit.cover,
+                                    ),
                                   ),
                                   Text(
                                     'Name: $name',

@@ -33,7 +33,7 @@ class DatabaseHelper {
 
   // Constructor with print statement
   DatabaseHelper() {
-    print("DatabaseHelper constructor");
+    //("DatabaseHelper constructor");
   }
 
   Future<Database?> get database async {
@@ -42,17 +42,17 @@ class DatabaseHelper {
   }
 
   Future<Database?> initDB() async {
-    print("Initializing database");
+    //print("Initializing database");
     Directory directory = await getApplicationDocumentsDirectory();
     String path = join(directory.path, dbName);
-    print("Database path: $path");
+    //print("Database path: $path");
     _database = await openDatabase(path, version: dbVersion, onCreate: onCreate);
     return _database;
   }
 
   // Create tables for `myTable` and `progress`
   Future<void> onCreate(Database db, int version) async {
-    print("Creating the database table");
+    //print("Creating the database table");
 
     // Create `myTable`
     await db.execute('''
@@ -82,7 +82,7 @@ class DatabaseHelper {
   // Insert method for `myTable`
   Future<int?> insertRecord(Map<String, dynamic> row) async {
     Database? db = await instance.database;
-    print('Record added successfully to myTable');
+    //print('Record added successfully to myTable');
     return await db?.insert(dbTable, row);
   }
 
@@ -117,7 +117,7 @@ Future<List<Map<String, dynamic>>?> queryDatabase() async {
    // Insert method for `progress`
   Future<int?> insertProgress(Map<String, dynamic> row) async {
     Database? db = await instance.database;
-    print('Progress added successfully');
+    //print('Progress added successfully');
     return await db?.insert(progressTable, row);
   }
 
@@ -151,7 +151,7 @@ Future<List<Map<String, dynamic>>?> queryDatabase() async {
     // Function to delete all rows with a given plantid
   Future<int?> deleteProgress(int id) async {
     final db = await database;
-    print('succesfully  plant id');
+    //print('succesfully  plant id');
     // Delete rows where plantid matches the id
     return await db?.delete(
       progressTable,
@@ -166,7 +166,7 @@ Future<List<Map<String, dynamic>>?> queryDatabase() async {
 Future<int> countTotalRows() async {
     final db = await database; // Get the database instance
     final result = await db!.rawQuery('SELECT COUNT($columnId) FROM $dbTable'); 
-    print('total $result'); // Debugging line to check the result
+  //  print('total $result'); // Debugging line to check the result
     return Sqflite.firstIntValue(result)!; // Extract the count value
 }
 

@@ -146,7 +146,7 @@ class DiseaseList {
       scientific2: "Colletotrichum malvarum", 
        image1: "assets/images/a1.jpg", 
       image2: "assets/images/a2.jpg", 
-      image3: "assets/images/ap55.jpg", 
+      image3: "assets/images/a3.jpg", 
       image4: "assets/images/a4.jpg",  
       symptom: "\u2022 Dark, sunken lesions appear on leaves, stems, and fruits.\n"
                "\u2022 Infected fruits may rot and drop prematurely.", 
@@ -161,7 +161,7 @@ class DiseaseList {
       scientific2: "Aphis gossypii", 
        image1: "assets/images/ap1.jpg", 
       image2: "assets/images/ap2.jpg", 
-      image3: "assets/images/ap3.png", 
+      image3: "assets/images/ap55.jpg", 
       image4: "assets/images/ap4.jpg",  
       symptom: "\u2022 Aphids cluster on new growth, sucking sap and causing leaf curling.\n"
                "\u2022 Heavy infestations result in stunted plants and distorted leaves.", 

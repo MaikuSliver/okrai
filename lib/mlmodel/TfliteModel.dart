@@ -104,6 +104,7 @@ Widget build(BuildContext context) {
   return Scaffold(
     backgroundColor: const Color(0xffffffff),
     appBar: AppBar(
+      leadingWidth: 8,
       elevation: 4,
       centerTitle: false,
       automaticallyImplyLeading: false,
@@ -111,13 +112,10 @@ Widget build(BuildContext context) {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.zero,
       ),
-      title: const Text(
-        "Okrai Scan",
-        style: TextStyle(
-          fontWeight: FontWeight.w700,
-          fontStyle: FontStyle.normal,
-          fontSize: 14,
-          color: Color(0xff58c36c),
+      title: const Center(
+        child: Text(
+          "Okrai Scan",
+          style: TextStyle(color:Color(0xff44c377), fontWeight: FontWeight.bold),
         ),
       ),
       leading: IconButton(

@@ -134,82 +134,129 @@ class _PredictYieldState extends State<PredictYield> {
         ),
         leadingWidth: 8,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text("Encountered Disease in Okra"),
-            TextField(
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(hintText: "Enter number of encountered diseases"),
-              onChanged: (value) {
-                setState(() {
-                  _encounteredDiseaseCount = int.tryParse(value);
-                });
-              },
-            ),
-            const SizedBox(height: 16),
-
-            const Text("What Types of Disease"),
-            DropdownButton<String>(
-              isExpanded: true,
-              value: _selectedTypeOfDisease,
-              items: _diseaseTypeMapping.keys.map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-              onChanged: (String? newValue) {
-                setState(() {
-                  _selectedTypeOfDisease = newValue!;
-                });
-              },
-              hint: const Text("Select Type of Disease"),
-            ),
-            const SizedBox(height: 16),
-
-            const Text("Name of Used Pesticides"),
-            DropdownButton<String>(
-              isExpanded: true,
-              value: _selectedPesticide,
-              items: _pesticideMapping.keys.map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-              onChanged: (String? newValue) {
-                setState(() {
-                  _selectedPesticide = newValue!;
-                });
-              },
-              hint: const Text("Select Pesticide"),
-            ),
-            const SizedBox(height: 16),
-
-            ElevatedButton(
-              onPressed: _isButtonEnabled() ? _predictYield : null,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xff44c377),
-                disabledBackgroundColor: Colors.grey,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+               Center(
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(vertical: 25),
+                    child:  const ClipRRect(
+                           borderRadius: BorderRadius.all(Radius.circular(20)),
+                      child: Image(
+                        image: AssetImage('assets/images/okrafarm.webp'), // Add the correct path to your icon image
+                        width: 175,
+                        height: 175,
+                      ),
+                    ),
+                  ),
+               
+               
               ),
-              child: const Text(
-                "Predict Harvest Kilos",
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-            const SizedBox(height: 16),
+              const SizedBox(height: 10,),
+              const Text("Encountered Disease in Okra"),
+TextField(
+  keyboardType: TextInputType.number,
+  decoration: InputDecoration(
+    hintText: "Enter number of encountered diseases",
+    border: OutlineInputBorder(
+      borderSide: const BorderSide(color: Color(0xff44c377)), // Green border
+      borderRadius: BorderRadius.circular(10), // Optional: rounded corners
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderSide: const BorderSide(color: Color(0xff44c377)), // Green border when enabled
+      borderRadius: BorderRadius.circular(10), // Optional: rounded corners
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderSide: const BorderSide(color: Color(0xff44c377), width: 2), // Thicker green border when focused
+      borderRadius: BorderRadius.circular(10), // Optional: rounded corners
+    ),
+  ),
+  onChanged: (value) {
+    setState(() {
+      _encounteredDiseaseCount = int.tryParse(value);
+    });
+  },
+),
+const SizedBox(height: 16),
 
-            if (_predictedHarvestKilos != null)
-              Center(
-                child: Text(
-                  "Predicted Harvest: ${_predictedHarvestKilos!.toStringAsFixed(2)} kg",
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-              ),
-          ],
+const Text("What Types of Disease"),
+Container(
+  decoration: BoxDecoration(
+    border: Border.all(color: const Color(0xff44c377)), // Green border
+    borderRadius: BorderRadius.circular(10), // Optional: rounded corners
+  ),
+  child: DropdownButton<String>(
+    isExpanded: true,
+    value: _selectedTypeOfDisease,
+    items: _diseaseTypeMapping.keys.map((String value) {
+      return DropdownMenuItem<String>(
+        value: value,
+        child: Text(value),
+      );
+    }).toList(),
+    onChanged: (String? newValue) {
+      setState(() {
+        _selectedTypeOfDisease = newValue!;
+      });
+    },
+    hint: const Text("Select Type of Disease"),
+    underline: Container(), // Remove the default underline
+  ),
+),
+const SizedBox(height: 16),
+
+const Text("Name of Used Pesticides"),
+Container(
+  decoration: BoxDecoration(
+    border: Border.all(color: const Color(0xff44c377)), // Green border
+    borderRadius: BorderRadius.circular(10), // Optional: rounded corners
+  ),
+  child: DropdownButton<String>(
+    isExpanded: true,
+    value: _selectedPesticide,
+    items: _pesticideMapping.keys.map((String value) {
+      return DropdownMenuItem<String>(
+        value: value,
+        child: Text(value),
+      );
+    }).toList(),
+    onChanged: (String? newValue) {
+      setState(() {
+        _selectedPesticide = newValue!;
+      });
+    },
+    hint: const Text("Select Pesticide"),
+    underline: Container(), // Remove the default underline
+  ),
+),
+const SizedBox(height: 16),
+
+ElevatedButton(
+  onPressed: _isButtonEnabled() ? _predictYield : null,
+  style: ElevatedButton.styleFrom(
+    backgroundColor: const Color(0xff44c377),
+    disabledBackgroundColor: Colors.grey,
+  ),
+  child: const Text(
+    "Predict Harvest Kilos",
+    style: TextStyle(color: Colors.white),
+  ),
+),
+const SizedBox(height: 16),
+
+if (_predictedHarvestKilos != null)
+  Center(
+    child: Text(
+      "Predicted Harvest: ${_predictedHarvestKilos!.toStringAsFixed(2)} kg",
+      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+    ),
+  ),
+
+            ],
+          ),
         ),
       ),
     );

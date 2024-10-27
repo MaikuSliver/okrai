@@ -326,6 +326,16 @@ Widget build(BuildContext context) {
                                 },
                               ),
                             ),
+                             Container(
+                              width: MediaQuery.of(context).size.width,
+                              margin: const EdgeInsets.all(15),
+                              child: const Center(
+                                child: Text(
+                                   textAlign: TextAlign.justify,
+                                                 overflow: TextOverflow.visible,
+                                            'Note: Please ensure that the okra leaf is fully captured in the photo to obtain accurate results.'),
+                              ),
+                            ),
                           ],
                         ),
                       ),

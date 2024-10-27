@@ -352,9 +352,16 @@ class _UpdateState extends State<Update> {
                                   },
                                 ),
                               ),
+                                 Container(
+                              width: MediaQuery.of(context).size.width,
+                              margin: const EdgeInsets.all(15),
+                              child: const Text(
+            'Note: Please ensure that the okra leaf is fully captured in the photo to obtain accurate results.'),
+                            ),
                             ],
                           ),
                         ),
+
                       ),
                     ],
                   ),

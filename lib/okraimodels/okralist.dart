@@ -519,7 +519,7 @@ whattodo:
 '\u2022 Regularly monitor plants, especially during warmer seasons, for signs of whitefly infestation.\n\n'
 '\u2022 Sanitize tools and remove plant debris to reduce viral transmission between plants.\n\n'
 '\u2022 Use soil-level irrigation to avoid splash dispersal of virus particles and whitefly attraction.\n\n'
-'\u2022 Consider planting disease-resistant okra varieties when available to reduce infection risk.\n\n',
+'\u2022 Consider planting disease-resistant okra varieties when available to reduce infection risk.',
 
 pest: 
 '\u2022 Whiteflies (Bemisia tabaci): The primary pest responsible for spreading Critical Yellow Vein Mosaic Disease in okra.',
@@ -544,8 +544,8 @@ treatment:
 
 okra(// 9 Healthy
   hstatus: 'Healthy', 
-  water: 'Every 10 days', 
-  fertilization: 'Every 14 Days', 
+ water: '2-3 times per week',
+fertilization: '1 time per week',
   description: 
 '\u2022 Healthy okra leaves are vibrant green with a smooth, broad surface and defined veins.\n\n'
 '\u2022 The leaves are slightly lobed, with 5 to 7 lobes depending on the variety.\n\n'

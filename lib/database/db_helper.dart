@@ -1,5 +1,4 @@
 // ignore_for_file: depend_on_referenced_packages
-
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -184,4 +183,90 @@ Future<int> countTotalRows() async {
     final result = await db!.rawQuery('SELECT COUNT(*) FROM $dbTable WHERE $columnEmail != "Healthy"');
     return Sqflite.firstIntValue(result)!; // Extract the count value
   }
+
+///////////REPORTS QUERY/////////////////////////////////////////////////////////////////////////////////////
+
+// Method to count total healthy records
+
+  // Method to count daily scans records by current date which is october right now
+  //by count the progress table id group by each date today within current month for 30 days
+  
+Future<Map<String, int>> countDiseasesByType() async {
+  // Access the database
+  final db = await instance.database;
+
+  // Fetch disease counts excluding "Healthy"
+  final List<Map<String, dynamic>> results = await db!.rawQuery(
+    'SELECT email, COUNT(*) as count FROM myTable WHERE email IS NOT NULL AND email != "Healthy" GROUP BY email'
+  );
+
+  // Create a mapping for specific email values to their broader categories
+  const emailMap = {
+    'Mild Early Blight Disease': 'Early Blight',
+    'Severe Early Blight Disease': 'Early Blight',
+    'Critical Early Blight Disease': 'Early Blight',
+    'Mild Yellow Vein Mosaic Disease': 'Yellow Vein',
+    'Severe Yellow Vein Mosaic Disease': 'Yellow Vein',
+    'Critical Yellow Vein Mosaic Disease': 'Yellow Vein',
+    'Mild Leaf Curl Disease': 'Leaf Curl',
+    'Severe Leaf Curl Disease': 'Leaf Curl',
+    'Critical Leaf Curl Disease': 'Leaf Curl',
+  };
+
+  // Convert results to a map with grouped email counts
+  final Map<String, int> groupedEmailCounts = {};
+  
+  for (var e in results) {
+    // Get the current email
+    final email = e['email'] as String;
+    
+    // Find the corresponding broader category
+    final category = emailMap[email] ?? email; // Default to original if not found
+
+    // Increment the count for the corresponding category
+    groupedEmailCounts[category] = (groupedEmailCounts[category] ?? 0) + (e['count'] as int);
+  }
+
+  return groupedEmailCounts;
+}
+
+Future<Map<String, int>> countPesticidesUsed() async {
+  // Access the database
+  final db = await instance.database;
+
+  // Fetch pesticide counts grouped by listpest, excluding unwanted values,
+  // ordered by count in descending order, limited to 5
+  final List<Map<String, dynamic>> results = await db!.rawQuery(
+    '''SELECT listpest, COUNT(*) as count 
+       FROM $progressTable 
+       WHERE listpest NOT IN ('na', 'none', 'n/a', '') 
+       GROUP BY listpest 
+       ORDER BY count DESC 
+       LIMIT 5'''
+  );
+
+  // Convert results to a map
+  return { for (var e in results) e['listpest'] as String: e['count'] as int };
+}
+
+ // New Method to count progressId grouped by progressDate for the current month
+  Future<Map<String, int>> countProgressByDate() async {
+    // Access the database
+    final db = await instance.database;
+
+    // Get the current month and year
+
+    // Fetch counts of progressId grouped by progressDate within the current month
+    final List<Map<String, dynamic>> results = await db!.rawQuery(
+      '''
+      SELECT date, COUNT(progressId) as count 
+      FROM $progressTable 
+      GROUP BY date
+      ''',
+    );
+
+    // Convert results to a map
+    return { for (var e in results) e['date'] as String: e['count'] as int };
+  }
+  
 }

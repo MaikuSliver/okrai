@@ -26,13 +26,14 @@ class _HomeState extends State<Home> {
   String description = 'This tool aids farmers in preserving their harvests. This app has a useful built-in camera that enables the farmer to take a picture of the crop that is ill and send it for diagnosis.';
   int _totalHealthy = 0;
   int _totalDisease = 0;
+  String selectedFilter = 'This Year';
  //int _currentIndex = 0; // Current index for the carousel
   //late Timer _timer; // Timer for auto slide
 
   @override
   void initState() {
     super.initState();
-    _refreshScans();
+    _refreshScans(selectedFilter);
       // Start the timer for auto sliding
     // _timer = Timer.periodic(const Duration(seconds: 15), (Timer timer) {
     //   setState(() {
@@ -51,7 +52,7 @@ class _HomeState extends State<Home> {
     super.dispose();
   }
 
-void _refreshScans() async {
+void _refreshScans(String filter) async {
    setState(() => _isLoading = true);
 
   _totalScans = await DatabaseHelper.instance.countTotalRows();
@@ -59,8 +60,8 @@ void _refreshScans() async {
   _totalDisease = await DatabaseHelper.instance.countTotalDisease();
 
   // Fetch disease count by type
-  final diseaseCounts = await DatabaseHelper.instance.countDiseasesByType();
-  barChartData = diseaseCounts.entries.map((entry) {
+    // Update the charts based on the selected filter
+  barChartData = (await DatabaseHelper.instance.countDiseasesByType(filter: filter)).entries.map((entry) {
     return ChartData(entry.key, entry.value.toDouble());
   }).toList();
 
@@ -72,13 +73,12 @@ void _refreshScans() async {
 
   // Prepare pie chart data
   pieChartData = [
-    ChartData('Healthy', _totalHealthy.toDouble()),
-    ChartData('Diseased', _totalDisease.toDouble()),
+ ChartData('Healthy', double.parse((_totalHealthy / _totalScans * 100).toStringAsFixed(1))),
+ChartData('Diseased', double.parse((_totalDisease / _totalScans * 100).toStringAsFixed(1))),
   ];
 
   // Fetch pesticide counts and prepare data
-  final pesticideCounts = await DatabaseHelper.instance.countPesticidesUsed();
-  pesticideChartData = pesticideCounts.entries.map((entry) {
+   pesticideChartData = (await DatabaseHelper.instance.countPesticidesUsed(filter: filter)).entries.map((entry) {
     return ChartData(entry.key, entry.value.toDouble());
   }).toList();
 
@@ -86,6 +86,11 @@ void _refreshScans() async {
 
 }
 
+ bool get hasBarData => barChartData.isNotEmpty;
+  bool get hasLineData => lineChartData.isNotEmpty;
+  bool get hasPieData => pieChartData.isNotEmpty;
+   bool get hasPesticideData => pesticideChartData.isNotEmpty;
+  
 // List of tips
   final List<String> tips = [
     "Check soil moisture to prevent root rot.",
@@ -110,11 +115,7 @@ void _refreshScans() async {
 
   
 
- bool get hasBarData => barChartData.isNotEmpty;
-  bool get hasLineData => lineChartData.isNotEmpty;
-  bool get hasPieData => pieChartData.isNotEmpty;
-   bool get hasPesticideData => pesticideChartData.isNotEmpty;
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -532,142 +533,180 @@ Widget _buildTotalScanCard() {
 }
 
 Widget _buildCharts() {
+
+
   return Center(
     child: SizedBox(
       height: MediaQuery.of(context).size.height * 0.3, // Adjust height based on screen size
-      width: MediaQuery.of(context).size.height * 0.5, // Adjust height based on screen size
+      width: MediaQuery.of(context).size.height * 0.5, // Adjust width based on screen size
       child: GFCarousel(
         items: [
-          // Bar Chart or No Data Message
+          // Bar Chart or No Data Message with Dropdown
           Container(
-  margin: const EdgeInsets.only(left: 20, right: 20), // Add horizontal space
-  child: hasBarData
-      ? SfCartesianChart(
-          primaryXAxis: const CategoryAxis(),
-          title: const ChartTitle(text: 'Disease Types'),
-          series: <CartesianSeries<ChartData, String>>[
-            ColumnSeries<ChartData, String>(
-              dataSource: barChartData,
-              xValueMapper: (ChartData data, _) => data.category,
-              yValueMapper: (ChartData data, _) => data.value,
-              color: const Color.fromARGB(255, 212, 22, 8),
-              borderColor: const Color.fromARGB(255, 245, 245, 245),
-              borderWidth: 1,
-            ),
-          ],
-        )
-      : const Center(child: Text("No data yet", style: TextStyle(fontSize: 20))),
+            margin: const EdgeInsets.only(left: 20, right: 20), // Add horizontal space
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Disease Types',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                   DropdownButton<String>(
+  value: selectedFilter,
+  onChanged: (String? newValue) {
+    if (newValue != null) {
+      setState(() {
+        selectedFilter = newValue;
+        _refreshScans(newValue); // Pass the selected filter to update charts
+      });
+    }
+  },
+  items: ['Today', 'This Month', 'This Year'].map((String filter) {
+    return DropdownMenuItem<String>(
+      value: filter,
+      child: Text(filter),
+    );
+  }).toList(),
 ),
-Container(
-  margin: const EdgeInsets.only(left: 20, right: 20), // Add horizontal space
-  child: hasPesticideData // This should be a boolean indicating if there's pesticide data
-      ? SfCartesianChart(
-          primaryXAxis: const CategoryAxis(),
-          title: const ChartTitle(text: 'Top 5 Pesticides Used'),
-          series: <CartesianSeries<ChartData, String>>[
-            ColumnSeries<ChartData, String>(
-              dataSource: pesticideChartData, // Your data source for pesticides
-              xValueMapper: (ChartData data, _) {
-                // Split the category by space
-                final words = data.category.split(' '); 
-                
-                // Function to truncate words longer than a specified length
-                String truncate(String word, int maxLength) {
-                  return word.length > maxLength ? '${word.substring(0, maxLength)}...' : word;
-                }
-
-                // Truncate the first word and the rest if necessary
-                String firstWord = truncate(words[0], 5); // Adjust length as needed
-                String remainingWords = words.length > 1 
-                    ? words.sublist(1).map((word) => truncate(word, 5)).join(' ') // Adjust length as needed
-                    : '';
-
-                return remainingWords.isNotEmpty 
-                    ? '$firstWord\n$remainingWords' // Add line break between the first word and the rest
-                    : firstWord; // Return the single word if there's no remaining words
-              },
-              yValueMapper: (ChartData data, _) => data.value,
-              color: const Color(0xff44c377), // Change color as needed
-              borderColor: const Color.fromARGB(255, 245, 245, 245),
-              borderWidth: 1,
+                  ],
+                ),
+                Expanded(
+                  child: hasBarData
+                      ? SfCartesianChart(
+                          primaryXAxis: const CategoryAxis(),
+                          title: const ChartTitle(text: ''),
+                          series: <CartesianSeries<ChartData, String>>[
+                            ColumnSeries<ChartData, String>(
+                              dataSource: barChartData,
+                              xValueMapper: (ChartData data, _) => data.category,
+                              yValueMapper: (ChartData data, _) => data.value,
+                              color: const Color.fromARGB(255, 212, 22, 8),
+                              borderColor: const Color.fromARGB(255, 245, 245, 245),
+                              borderWidth: 1,
+                            ),
+                          ],
+                        )
+                      : const Center(
+                          child: Text("No data yet", style: TextStyle(fontSize: 20)),
+                        ),
+                ),
+              ],
             ),
-          ],
-        )
-      : const Center(child: Text("No pesticide data yet", style: TextStyle(fontSize: 20))),
-),
+          ),
 
-          // Line Chart or No Data Message
+          // Pesticide Chart or No Data Message with Dropdown
          Container(
   margin: const EdgeInsets.only(left: 20, right: 20), // Add horizontal space
-  child: hasLineData
-      ? SfCartesianChart(
-          primaryXAxis: const CategoryAxis(isVisible: false), // Hide x-axis label
-          title: const ChartTitle(text: 'Daily Scan Reports'),
-          series: <CartesianSeries<ChartData, String>>[
-            LineSeries<ChartData, String>(
-              dataSource: lineChartData,
-              xValueMapper: (ChartData data, _) => data.category,
-              yValueMapper: (ChartData data, _) => data.value,
-              color: const Color(0xff67bd74),
-            ),
-          ],
-        )
-      : const Center(child: Text("No data yet", style: TextStyle(fontSize: 20))),
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const Text(
+            'Top 5 Pesticides Used',
+            style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+          ),
+          DropdownButton<String>(
+            value: selectedFilter,
+            onChanged: (String? newValue) {
+              if (newValue != null) {
+                setState(() {
+                  selectedFilter = newValue;
+                  _refreshScans(newValue); // Pass the selected filter to update charts
+                });
+              }
+            },
+            items: ['Today', 'This Month', 'This Year'].map((String filter) {
+              return DropdownMenuItem<String>(
+                value: filter,
+                child: Text(filter),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+      Expanded(
+        child: hasPesticideData
+            ? SfCartesianChart(
+                primaryXAxis: const CategoryAxis(
+               
+                  labelStyle: TextStyle(
+                    fontSize: 10,
+                    overflow: TextOverflow.ellipsis, // Add ellipsis for long text
+                  ),
+                ),
+                title: const ChartTitle(text: ''),
+                series: <CartesianSeries<ChartData, String>>[
+                  ColumnSeries<ChartData, String>(
+                    dataSource: pesticideChartData,
+                    xValueMapper: (ChartData data, _) => data.category,
+                    yValueMapper: (ChartData data, _) => data.value,
+                    color: const Color(0xff44c377),
+                    borderColor: const Color.fromARGB(255, 245, 245, 245),
+                    borderWidth: 1,
+                  ),
+                ],
+              )
+            : const Center(
+                child: Text("No pesticide data yet", style: TextStyle(fontSize: 20)),
+              ),
+      ),
+    ],
+  ),
 )
 ,
-          // Pie Chart or No Data Message
-       Container(
-  margin: const EdgeInsets.only(left: 20, right: 20), // Add horizontal space
-  child: hasPieData
-      ? SfCircularChart(
-          title: const ChartTitle(text: 'Healthy & Disease Plants'),
-          legend: Legend(
-            isVisible: true,
-            position: LegendPosition.bottom,
-            itemPadding: 10,
-            legendItemBuilder: (String name, dynamic series, dynamic point, int index) {
-              // Custom legend item builder
-              Color color = index == 0 ? const Color(0xff44c377) : const Color.fromARGB(255, 212, 22, 8);
-              return Row(
-                children: [
-                  Container(
-                    width: 10,
-                    height: 10,
-                    color: color,
-                    margin: const EdgeInsets.only(right: 5),
-                  ),
-                  Text(name, style: const TextStyle(fontSize: 14)), // Adjust the font size as needed
-                ],
-              );
-            },
-          ),
-          series: <CircularSeries>[
-            PieSeries<ChartData, String>(
-              dataSource: pieChartData,
-              xValueMapper: (ChartData data, _) => data.category,
-              yValueMapper: (ChartData data, _) => data.value,
-              dataLabelSettings: const DataLabelSettings(isVisible: true),
-              pointColorMapper: (ChartData data, int index) {
-                // Set color based on index: green for healthy, red for diseased
-                return index == 0 ? const Color(0xff44c377) : const Color.fromARGB(255, 212, 22, 8);
-              },
-            ),
-          ],
-        )
-      : const Center(child: Text("No data yet", style: TextStyle(fontSize: 20))),
-),
 
+          // Pie Chart (No Dropdown)
+          Container(
+            margin: const EdgeInsets.only(left: 20, right: 20), // Add horizontal space
+            child: hasPieData
+                ? SfCircularChart(
+                    title: const ChartTitle(text: 'Healthy & Disease Plants'),
+                    legend: Legend(
+                      isVisible: true,
+                      position: LegendPosition.bottom,
+                      itemPadding: 10,
+                      legendItemBuilder: (String name, dynamic series, dynamic point, int index) {
+                        Color color = index == 0 ? const Color(0xff44c377) : const Color.fromARGB(255, 212, 22, 8);
+                        return Row(
+                          children: [
+                            Container(
+                              width: 10,
+                              height: 10,
+                              color: color,
+                              margin: const EdgeInsets.only(right: 5),
+                            ),
+                            Text(name, style: const TextStyle(fontSize: 14)),
+                          ],
+                        );
+                      },
+                    ),
+                    series: <CircularSeries>[
+                      PieSeries<ChartData, String>(
+                        dataSource: pieChartData.where((data) => data.value != 0).toList(),
+                        xValueMapper: (ChartData data, _) => data.category,
+                        yValueMapper: (ChartData data, _) => data.value,
+                        dataLabelSettings: const DataLabelSettings(isVisible: true),
+                        pointColorMapper: (ChartData data, int index) {
+                          return index == 0 ? const Color(0xff44c377) : const Color.fromARGB(255, 212, 22, 8);
+                        },
+                      ),
+                    ],
+                  )
+                : const Center(
+                    child: Text("No data yet", style: TextStyle(fontSize: 20)),
+                  ),
+          ),
         ],
-      //  onPageChanged: (index) {
-        //  setState(() {
-          //  _currentIndex = index; // Update current index on manual change
-         // });
-       // },
-       // initialPage: _currentIndex, // Set the initial page
       ),
     ),
   );
 }
+
 
 
    Widget _buildDailyTips() {

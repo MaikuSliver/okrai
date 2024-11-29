@@ -191,16 +191,40 @@ Future<int> countTotalRows() async {
   // Method to count daily scans records by current date which is october right now
   //by count the progress table id group by each date today within current month for 30 days
   
-Future<Map<String, int>> countDiseasesByType() async {
+Future<Map<String, int>> countDiseasesByType({String? filter}) async {
   // Access the database
   final db = await instance.database;
 
-  // Fetch disease counts excluding "Healthy"
-  final List<Map<String, dynamic>> results = await db!.rawQuery(
-    'SELECT email, COUNT(*) as count FROM myTable WHERE email IS NOT NULL AND email != "Healthy" GROUP BY email'
-  );
+   String? startDate;
+  if (filter == 'Today') {
+    final now = DateTime.now();
+    String currentmonth = now.month.toString();
+  String currentday = now.day.toString();
+  startDate='$currentmonth-$currentday%';
+  } else if (filter == 'This Month') {
+    final now = DateTime.now();
+  String currentmonth = now.month.toString();
+  startDate='$currentmonth%';
+  } else if (filter == 'This Year') {
+    final now = DateTime.now();
+  String currentYear = now.year.toString();
+  startDate='%$currentYear';
+  }
 
-  // Create a mapping for specific email values to their broader categories
+  // Build the query
+  const String query = '''
+    SELECT myTable.email, COUNT(*) AS count
+    FROM progress
+    JOIN myTable ON myTable.id = progress.progressId
+    WHERE myTable.email != "Healthy"
+   AND progress.$progressDate LIKE ?
+   GROUP BY myTable.email;
+  ''';
+
+  // Fetch results
+  final List<Map<String, dynamic>> results = await db!.rawQuery(query, [startDate]);
+
+  // Map specific email values to broader categories
   const emailMap = {
     'Mild Early Blight Disease': 'Early Blight',
     'Severe Early Blight Disease': 'Early Blight',
@@ -213,40 +237,54 @@ Future<Map<String, int>> countDiseasesByType() async {
     'Critical Leaf Curl Disease': 'Leaf Curl',
   };
 
-  // Convert results to a map with grouped email counts
+  // Convert results to a grouped map
   final Map<String, int> groupedEmailCounts = {};
-  
   for (var e in results) {
-    // Get the current email
     final email = e['email'] as String;
-    
-    // Find the corresponding broader category
-    final category = emailMap[email] ?? email; // Default to original if not found
-
-    // Increment the count for the corresponding category
+    final category = emailMap[email] ?? email; // Map to broader category or keep original
     groupedEmailCounts[category] = (groupedEmailCounts[category] ?? 0) + (e['count'] as int);
   }
 
   return groupedEmailCounts;
 }
 
-Future<Map<String, int>> countPesticidesUsed() async {
-  // Access the database
+
+Future<Map<String, int>> countPesticidesUsed({String? filter}) async {
   final db = await instance.database;
 
-  // Fetch pesticide counts grouped by listpest, excluding unwanted values,
-  // ordered by count in descending order, limited to 5
-  final List<Map<String, dynamic>> results = await db!.rawQuery(
-    '''SELECT listpest, COUNT(*) as count 
-       FROM $progressTable 
-       WHERE listpest NOT IN ('na', 'none', 'n/a', '') 
-       GROUP BY listpest 
-       ORDER BY count DESC 
-       LIMIT 5'''
-  );
+  String? startDate;
+  if (filter == 'Today') {
+    final now = DateTime.now();
+    String currentmonth = now.month.toString();
+  String currentday = now.day.toString();
+  startDate='$currentmonth-$currentday%';
+  } else if (filter == 'This Month') {
+    final now = DateTime.now();
+  String currentmonth = now.month.toString();
+  startDate='$currentmonth%';
+  } else if (filter == 'This Year') {
+    final now = DateTime.now();
+  String currentYear = now.year.toString();
+  startDate='%$currentYear';
+  }
 
-  // Convert results to a map
-  return { for (var e in results) e['listpest'] as String: e['count'] as int };
+  const query = '''
+    SELECT listpest, COUNT(*) as count 
+    FROM $progressTable 
+    WHERE listpest NOT IN ('na', 'none', 'n/a', '') 
+    AND $progressDate LIKE ?
+    GROUP BY listpest 
+    ORDER BY count DESC 
+    LIMIT 5
+  ''';
+
+  try {
+    final results = await db!.rawQuery(query, [startDate]);
+    return {for (var e in results) e['listpest'] as String: e['count'] as int};
+  } catch (e) {
+    print('Error fetching data: $e');
+    return {}; // Or handle the error differently, e.g., throw an exception
+  }
 }
 
  // New Method to count progressId grouped by progressDate for the current month
@@ -268,5 +306,8 @@ Future<Map<String, int>> countPesticidesUsed() async {
     // Convert results to a map
     return { for (var e in results) e['date'] as String: e['count'] as int };
   }
-  
+
+
+
+
 }

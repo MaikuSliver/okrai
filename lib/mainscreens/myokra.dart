@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:okrai/diagnose/care.dart';
+import 'package:okrai/mainscreens/Harvest.dart';
 import 'package:okrai/mainscreens/settings.dart';
 import 'package:page_transition/page_transition.dart';
 import '../database/db_helper.dart';
@@ -216,6 +217,10 @@ class _myokraState extends State<myokra> {
                     PageTransition(type: PageTransitionType.fade, child: const Home()),
                   );
                 },
+              ),
+              IconButton(
+                icon: const Icon(Icons.show_chart, color: Colors.grey),
+                onPressed: () => Navigator.pushReplacement(context, PageTransition(type: PageTransitionType.fade, child: const Harvest())),
               ),
               IconButton(
                 icon: const Icon(Icons.energy_savings_leaf),

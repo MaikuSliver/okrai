@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:okrai/facts/contactus.dart';
 import 'package:okrai/facts/help.dart';
+import 'package:okrai/mainscreens/Harvest.dart';
 import 'package:okrai/mainscreens/myokra.dart';
 import 'package:page_transition/page_transition.dart';
 import 'Home.dart';
@@ -36,6 +37,10 @@ class _settingsState extends State<settings> {
                   Navigator.pushReplacement(context,
                       PageTransition(type: PageTransitionType.fade, child: const Home()));
                 },
+              ),
+              IconButton(
+                icon: const Icon(Icons.show_chart, color: Colors.grey),
+                onPressed: () => Navigator.pushReplacement(context, PageTransition(type: PageTransitionType.fade, child: const Harvest())),
               ),
               IconButton(
                 icon: const Icon(Icons.energy_savings_leaf),

@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:okrai/forecast/predictyield.dart';
 import 'package:okrai/mainscreens/Disease.dart';
+import 'package:okrai/mainscreens/Harvest.dart';
 import 'package:okrai/mainscreens/myokra.dart';
 import 'package:okrai/mainscreens/okrainfo.dart';
 import 'package:okrai/mainscreens/settings.dart';
@@ -132,6 +133,10 @@ ChartData('Diseased', double.parse((_totalDisease / _totalScans * 100).toStringA
               IconButton(
                 icon: const Icon(Icons.home, color: Color(0xff44c377)),
                 onPressed: () => Navigator.pushReplacement(context, PageTransition(type: PageTransitionType.fade, child: const Home())),
+              ),
+               IconButton(
+                icon: const Icon(Icons.show_chart, color: Colors.grey),
+                onPressed: () => Navigator.pushReplacement(context, PageTransition(type: PageTransitionType.fade, child: const Harvest())),
               ),
               IconButton(
                 icon: const Icon(Icons.energy_savings_leaf, color: Colors.grey),

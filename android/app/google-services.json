@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "730282013216",
+    "project_id": "okrai-36082",
+    "storage_bucket": "okrai-36082.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:730282013216:android:8f8d96ba1147e99e3c8245",
+        "android_client_info": {
+          "package_name": "com.example.okrai"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBdHm5CDOnZ-Z2xdFF9we0ak13DTcMmSg8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

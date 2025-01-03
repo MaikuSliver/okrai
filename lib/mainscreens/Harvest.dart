@@ -7,6 +7,7 @@ import 'package:page_transition/page_transition.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 class Harvest extends StatefulWidget {
   const Harvest({super.key});
@@ -15,8 +16,8 @@ class Harvest extends StatefulWidget {
   State<Harvest> createState() => _HarvestState();
 }
   
-String selectedFilter = 'This Year';
-String RowselectedFilter = 'Row 1';
+String RowselectedFilter = 'Area 1';
+String RowselectedDiseaseFilter = 'Leaf Curl';
 
 class _HarvestState extends State<Harvest> {
   @override
@@ -171,9 +172,10 @@ void _showInsertHarvestDialog() {
       String date = "";
       String area = "";
       String disease = "";
+      String numberOfDiseases = "";
       String pesticides = "";
       String harvest = "";
-      List<String> areaOptions = ["Area 1","Area 2","Area 3","Area 4","Area 5",];
+      List<String> areaOptions = ["Area 1", "Area 2", "Area 3", "Area 4", "Area 5"];
       List<String> diseaseOptions = ["Yellow Vein", "Leaf Curl", "Early Blight"];
 
       return StatefulBuilder(
@@ -182,8 +184,14 @@ void _showInsertHarvestDialog() {
             return date.isNotEmpty &&
                 area.isNotEmpty &&
                 disease.isNotEmpty &&
+                numberOfDiseases.isNotEmpty &&
                 pesticides.isNotEmpty &&
                 harvest.isNotEmpty;
+          }
+
+          Future<bool> isOnline() async {
+            var connectivityResult = await Connectivity().checkConnectivity();
+            return connectivityResult != ConnectivityResult.none;
           }
 
           return AlertDialog(
@@ -251,6 +259,18 @@ void _showInsertHarvestDialog() {
                   ),
                   const SizedBox(height: 10),
 
+                  // Number of Encountered Diseases (Number Input)
+                  TextField(
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(labelText: "No. Encountered Diseases"),
+                    onChanged: (value) {
+                      setState(() {
+                        numberOfDiseases = value;
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 10),
+
                   // Pesticides TextField
                   TextField(
                     decoration: const InputDecoration(labelText: "Pesticides"),
@@ -283,20 +303,37 @@ void _showInsertHarvestDialog() {
               ElevatedButton(
                 onPressed: isInputComplete()
                     ? () async {
-                        // Save the harvest data to Firestore
-                        try {
-                          await FirebaseFirestore.instance.collection('harvests').add({
-                            'date': date,
-                            'area': area,
-                            'disease': disease,
-                            'pesticides': pesticides,
-                            'harvest': int.parse(harvest),
+                        if (await isOnline()) {
+                          // Save the harvest data to Firestore
+                          try {
+                            await FirebaseFirestore.instance.collection('harvests').add({
+                              'date': date,
+                              'area': area,
+                              'disease': disease,
+                              'number_of_diseases': int.parse(numberOfDiseases),
+                              'pesticides': pesticides,
+                              'harvest': int.parse(harvest),
+                            });
+                            print("Harvest data saved successfully.");
+                            Navigator.of(context).pop();
+                          } catch (e) {
+                            print("Failed to save harvest data: $e");
+                          }
+                        } else {
+                          // Show snackbar for no internet
+                          setState(() {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  "Failed to insert data please check your internet connection.",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                backgroundColor: Colors.red,
+                                behavior: SnackBarBehavior.floating,
+                              ),
+                            );
                           });
-                          print("Harvest data saved successfully.");
-                        } catch (e) {
-                          print("Failed to save harvest data: $e");
                         }
-                        Navigator.of(context).pop();
                       }
                     : null, // Disable button if inputs are incomplete
                 child: const Text("Save"),
@@ -725,180 +762,1048 @@ Container(
 }
 
 
-
-
-
-
-
-
 Widget _buildDiseaseCharts() {
-  // Use the temporary data when no actual data is available
-  final bool hasBarData = barChartData.isNotEmpty;
-  final List<ChartData> chartDataToShow = hasBarData ? barChartData : barChartData;
-
   return Center(
-    child: SizedBox(
-      height: MediaQuery.of(context).size.height * 0.5, // Adjust height based on screen size
-      width: MediaQuery.of(context).size.height * 1, // Adjust width based on screen size
-      child: 
-          // Bar Chart or No Data Message with Dropdown
-          Container(
-            margin: const EdgeInsets.only(left: 20, right: 20), // Add horizontal space
+    child: GFCarousel(
+      items: [
+        ///////////////////////////////daily////////////////
+        Container(
+          child: FutureBuilder<QuerySnapshot>(
+            future: fetchHarvestData(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+
+              // Extract unique disease and area values from Firestore data
+              final List<String> diseaseOptions = snapshot.hasData
+                  ? snapshot.data!.docs
+                      .map((doc) => (doc.data() as Map<String, dynamic>)['disease'] ?? '')
+                      .where((disease) => disease.toString().isNotEmpty)
+                      .toSet()
+                      .cast<String>()
+                      .toList()
+                  : [];
+              diseaseOptions.sort();
+
+              final List<String> areaOptions = snapshot.hasData
+                  ? snapshot.data!.docs
+                      .map((doc) => (doc.data() as Map<String, dynamic>)['area'] ?? '')
+                      .where((area) => area.toString().isNotEmpty)
+                      .toSet()
+                      .cast<String>()
+                      .toList()
+                  : [];
+              areaOptions.sort();
+
+              // Ensure filters have valid default values
+              if (!diseaseOptions.contains(RowselectedDiseaseFilter) && diseaseOptions.isNotEmpty) {
+                RowselectedDiseaseFilter = diseaseOptions.first;
+              }
+              if (!areaOptions.contains(RowselectedFilter) && areaOptions.isNotEmpty) {
+                RowselectedFilter = areaOptions.first;
+              }
+
+             final List<ChartData> chartDataToShow = snapshot.hasData
+    ? snapshot.data!.docs
+        .map((doc) {
+          final data = doc.data() as Map<String, dynamic>;
+          final String dateString = (data['date'] ?? '').toString();
+          final int numberOfDiseases = (data['numberOfDiseases'] ?? 0);
+          final String disease = (data['disease'] ?? '').toString();
+          final String area = (data['area'] ?? '').toString();
+
+          try {
+            final DateFormat formatter = DateFormat('yyyy-M-d');
+            final DateTime parsedDate = formatter.parse(dateString);
+
+            // Get the first and last date of the current month
+            final DateTime now = DateTime.now();
+            final DateTime startOfMonth = DateTime(now.year, now.month, 1);
+            final DateTime endOfMonth = DateTime(now.year, now.month + 1, 0);
+
+            // Filter data by selected disease, area, and date range
+            if (disease == RowselectedDiseaseFilter &&
+                area == RowselectedFilter &&
+                parsedDate.isAfter(startOfMonth.subtract(const Duration(days: 1))) &&
+                parsedDate.isBefore(endOfMonth.add(const Duration(days: 1)))) {
+              return ChartData(parsedDate.toIso8601String(), numberOfDiseases);
+            }
+          } catch (e) {
+            print("Invalid date format: $dateString. Error: $e");
+          }
+          return null;
+        })
+        .where((data) => data != null)
+        .cast<ChartData>()
+        .toList()
+    : [];
+
+
+              // Sort chart data by the parsed DateTime object
+              chartDataToShow.sort((a, b) {
+                final DateTime dateA = DateTime.parse(a.category);
+                final DateTime dateB = DateTime.parse(b.category);
+                return dateA.compareTo(dateB);
+              });
+
+              return Center(
+                child: SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.5,
+                  width: MediaQuery.of(context).size.width * 1,
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          'Daily Disease Detected - ${DateFormat('MMMM').format(DateTime.now())}',
+  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                       
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            // Dropdown for disease filter
+                            Expanded(
+                              child: DropdownButton<String>(
+                                value: RowselectedDiseaseFilter,
+                                onChanged: (String? newValue) {
+                                  if (newValue != null) {
+                                    setState(() {
+                                      RowselectedDiseaseFilter = newValue;
+                                    });
+                                  }
+                                },
+                                items: diseaseOptions.map((String disease) {
+                                  return DropdownMenuItem<String>(
+                                    value: disease,
+                                    child: Text(disease),
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            // Dropdown for area filter
+                            Expanded(
+                              child: DropdownButton<String>(
+                                value: RowselectedFilter,
+                                onChanged: (String? newValue) {
+                                  if (newValue != null) {
+                                    setState(() {
+                                      RowselectedFilter = newValue;
+                                    });
+                                  }
+                                },
+                                items: areaOptions.map((String area) {
+                                  return DropdownMenuItem<String>(
+                                    value: area,
+                                    child: Text(area),
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                          ],
+                        ),
+                        if (chartDataToShow.isEmpty)
+                          const Expanded(
+                            child: Center(
+                              child: Text(
+                                "No data available",
+                                style: TextStyle(fontSize: 20),
+                              ),
+                            ),
+                          )
+                        else
+                         Expanded(
+  child: SfCartesianChart(
+    primaryXAxis: const CategoryAxis(
+      labelRotation: 45, // Rotate labels for better readability
+    ),
+    series: <CartesianSeries<ChartData, String>>[
+      ColumnSeries<ChartData, String>(
+        dataSource: chartDataToShow,
+        xValueMapper: (ChartData data, _) {
+          final DateTime date = DateTime.parse(data.category);
+          return DateFormat('d').format(date); // Display only the day of the month
+        },
+        yValueMapper: (ChartData data, _) => data.value,
+        color: const Color.fromARGB(255, 212, 22, 8), // Chart color
+      ),
+    ],
+  ),
+),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+        ///////////////////////////////MMONTHLY
+        Container(
+  child: FutureBuilder<QuerySnapshot>(
+    future: fetchHarvestData(),
+    builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      }
+
+      // Extract unique disease and area values from Firestore data
+      final List<String> diseaseOptions = snapshot.hasData
+          ? snapshot.data!.docs
+              .map((doc) => (doc.data() as Map<String, dynamic>)['disease'] ?? '')
+              .where((disease) => disease.toString().isNotEmpty)
+              .toSet()
+              .cast<String>()
+              .toList()
+          : [];
+      diseaseOptions.sort();
+
+      final List<String> areaOptions = snapshot.hasData
+          ? snapshot.data!.docs
+              .map((doc) => (doc.data() as Map<String, dynamic>)['area'] ?? '')
+              .where((area) => area.toString().isNotEmpty)
+              .toSet()
+              .cast<String>()
+              .toList()
+          : [];
+      areaOptions.sort();
+
+      // Ensure filters have valid default values
+      if (!diseaseOptions.contains(RowselectedDiseaseFilter) && diseaseOptions.isNotEmpty) {
+        RowselectedDiseaseFilter = diseaseOptions.first;
+      }
+      if (!areaOptions.contains(RowselectedFilter) && areaOptions.isNotEmpty) {
+        RowselectedFilter = areaOptions.first;
+      }
+
+      // Group and sum diseases per month for the current year
+      final Map<String, int> monthlyDiseaseSums = {};
+      if (snapshot.hasData) {
+        for (var doc in snapshot.data!.docs) {
+          final data = doc.data() as Map<String, dynamic>;
+          final String dateString = (data['date'] ?? '').toString();
+          final int numberOfDiseases = (data['numberOfDiseases'] ?? 0);
+          final String disease = (data['disease'] ?? '').toString();
+          final String area = (data['area'] ?? '').toString();
+
+          try {
+            final DateFormat formatter = DateFormat('yyyy-M-d');
+            final DateTime parsedDate = formatter.parse(dateString);
+
+            final DateTime now = DateTime.now();
+            if (parsedDate.year == now.year &&
+                disease == RowselectedDiseaseFilter &&
+                area == RowselectedFilter) {
+              final String monthName = DateFormat('MMMM').format(parsedDate); // Get month name
+              monthlyDiseaseSums[monthName] = (monthlyDiseaseSums[monthName] ?? 0) + numberOfDiseases;
+            }
+          } catch (e) {
+            print("Invalid date format: $dateString. Error: $e");
+          }
+        }
+      }
+
+      // Sort months in order starting from January
+      final List<ChartData> chartDataToShow = monthlyDiseaseSums.entries
+          .map((entry) => ChartData(entry.key, entry.value))
+          .toList();
+      chartDataToShow.sort((a, b) => DateFormat('MMMM').parse(a.category).month.compareTo(DateFormat('MMMM').parse(b.category).month));
+
+      return Center(
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height * 0.5,
+          width: MediaQuery.of(context).size.width * 1,
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                Text(
+                  'Monthly Disease Detected - ${DateTime.now().year}',
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      'Disease Detect',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    // Dropdown for disease filter
+                    Expanded(
+                      child: DropdownButton<String>(
+                        value: RowselectedDiseaseFilter,
+                        onChanged: (String? newValue) {
+                          if (newValue != null) {
+                            setState(() {
+                              RowselectedDiseaseFilter = newValue;
+                            });
+                          }
+                        },
+                        items: diseaseOptions.map((String disease) {
+                          return DropdownMenuItem<String>(
+                            value: disease,
+                            child: Text(disease),
+                          );
+                        }).toList(),
+                      ),
                     ),
-                    DropdownButton<String>(
-                      value: RowselectedFilter,
-                      onChanged: (String? newValue) {
-                        if (newValue != null) {
-                          setState(() {
-                            RowselectedFilter = newValue;
-                          });
-                        }
-                      },
-                      items: ['Row 1', 'Row 2', 'All'].map((String filter) {
-                        return DropdownMenuItem<String>(
-                          value: filter,
-                          child: Text(filter),
-                        );
-                      }).toList(),
-                    ),
-                      DropdownButton<String>(
-                      value: selectedFilter,
-                      onChanged: (String? newValue) {
-                        if (newValue != null) {
-                          setState(() {
-                            selectedFilter = newValue;
-                          });
-                        }
-                      },
-                      items: ['This Week', 'This Month', 'This Year'].map((String filter) {
-                        return DropdownMenuItem<String>(
-                          value: filter,
-                          child: Text(filter),
-                        );
-                      }).toList(),
+                    const SizedBox(width: 10),
+                    // Dropdown for area filter
+                    Expanded(
+                      child: DropdownButton<String>(
+                        value: RowselectedFilter,
+                        onChanged: (String? newValue) {
+                          if (newValue != null) {
+                            setState(() {
+                              RowselectedFilter = newValue;
+                            });
+                          }
+                        },
+                        items: areaOptions.map((String area) {
+                          return DropdownMenuItem<String>(
+                            value: area,
+                            child: Text(area),
+                          );
+                        }).toList(),
+                      ),
                     ),
                   ],
                 ),
-                Expanded(
-                  child: hasBarData || chartDataToShow.isNotEmpty
-                      ? SfCartesianChart(
-                          primaryXAxis: const CategoryAxis(),
-                          title: const ChartTitle(text: ''),
-                          series: <CartesianSeries<ChartData, String>>[
-                            ColumnSeries<ChartData, String>(
-                              dataSource: chartDataToShow,
-                              xValueMapper: (ChartData data, _) => data.category,
-                              yValueMapper: (ChartData data, _) => data.value,
-                              color: const Color.fromARGB(255, 212, 22, 8),
-                              borderColor: const Color.fromARGB(255, 245, 245, 245),
-                              borderWidth: 1,
-                            ),
-                          ],
-                        )
-                      : const Center(
-                          child: Text("No data yet", style: TextStyle(fontSize: 20)),
+                if (chartDataToShow.isEmpty)
+                  const Expanded(
+                    child: Center(
+                      child: Text(
+                        "No data available",
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    ),
+                  )
+                else
+                  Expanded(
+                    child: SfCartesianChart(
+                      primaryXAxis: const CategoryAxis(
+                        labelRotation: 45,
+                      ),
+                      series: <CartesianSeries<ChartData, String>>[
+                        ColumnSeries<ChartData, String>(
+                          dataSource: chartDataToShow,
+                          xValueMapper: (ChartData data, _) => data.category,
+                          yValueMapper: (ChartData data, _) => data.value,
+                          color: const Color.fromARGB(255, 212, 22, 8), // Chart color
                         ),
-                ),
+                      ],
+                    ),
+                  ),
               ],
             ),
           ),
-        
-   
+        ),
+      );
+    },
+  ),
+),
+//////////////////////yearly
+Container(
+  child: FutureBuilder<QuerySnapshot>(
+    future: fetchHarvestData(),
+    builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      }
+
+      // Extract unique disease and area values from Firestore data
+      final List<String> diseaseOptions = snapshot.hasData
+          ? snapshot.data!.docs
+              .map((doc) => (doc.data() as Map<String, dynamic>)['disease'] ?? '')
+              .where((disease) => disease.toString().isNotEmpty)
+              .toSet()
+              .cast<String>()
+              .toList()
+          : [];
+      diseaseOptions.sort();
+
+      final List<String> areaOptions = snapshot.hasData
+          ? snapshot.data!.docs
+              .map((doc) => (doc.data() as Map<String, dynamic>)['area'] ?? '')
+              .where((area) => area.toString().isNotEmpty)
+              .toSet()
+              .cast<String>()
+              .toList()
+          : [];
+      areaOptions.sort();
+
+      // Ensure filters have valid default values
+      if (!diseaseOptions.contains(RowselectedDiseaseFilter) && diseaseOptions.isNotEmpty) {
+        RowselectedDiseaseFilter = diseaseOptions.first;
+      }
+      if (!areaOptions.contains(RowselectedFilter) && areaOptions.isNotEmpty) {
+        RowselectedFilter = areaOptions.first;
+      }
+
+      // Group and sum diseases per year
+      final Map<int, int> yearlyDiseaseSums = {};
+      if (snapshot.hasData) {
+        for (var doc in snapshot.data!.docs) {
+          final data = doc.data() as Map<String, dynamic>;
+          final String dateString = (data['date'] ?? '').toString();
+          final int numberOfDiseases = (data['numberOfDiseases'] ?? 0);
+          final String disease = (data['disease'] ?? '').toString();
+          final String area = (data['area'] ?? '').toString();
+
+          try {
+            final DateFormat formatter = DateFormat('yyyy-M-d');
+            final DateTime parsedDate = formatter.parse(dateString);
+
+            if (disease == RowselectedDiseaseFilter && area == RowselectedFilter) {
+              final int year = parsedDate.year; // Extract year
+              yearlyDiseaseSums[year] = (yearlyDiseaseSums[year] ?? 0) + numberOfDiseases;
+            }
+          } catch (e) {
+            print("Invalid date format: $dateString. Error: $e");
+          }
+        }
+      }
+
+      // Convert yearly sums to a list of ChartData and sort by year
+      final List<ChartData> chartDataToShow = yearlyDiseaseSums.entries
+          .map((entry) => ChartData(entry.key.toString(), entry.value))
+          .toList();
+      chartDataToShow.sort((a, b) => int.parse(a.category).compareTo(int.parse(b.category))); // Sort by year
+
+      return Center(
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height * 0.5,
+          width: MediaQuery.of(context).size.width * 1,
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Text(
+                  'Yearly Disease Detected',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Dropdown for disease filter
+                    Expanded(
+                      child: DropdownButton<String>(
+                        value: RowselectedDiseaseFilter,
+                        onChanged: (String? newValue) {
+                          if (newValue != null) {
+                            setState(() {
+                              RowselectedDiseaseFilter = newValue;
+                            });
+                          }
+                        },
+                        items: diseaseOptions.map((String disease) {
+                          return DropdownMenuItem<String>(
+                            value: disease,
+                            child: Text(disease),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    // Dropdown for area filter
+                    Expanded(
+                      child: DropdownButton<String>(
+                        value: RowselectedFilter,
+                        onChanged: (String? newValue) {
+                          if (newValue != null) {
+                            setState(() {
+                              RowselectedFilter = newValue;
+                            });
+                          }
+                        },
+                        items: areaOptions.map((String area) {
+                          return DropdownMenuItem<String>(
+                            value: area,
+                            child: Text(area),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ],
+                ),
+                if (chartDataToShow.isEmpty)
+                  const Expanded(
+                    child: Center(
+                      child: Text(
+                        "No data available",
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    ),
+                  )
+                else
+                  Expanded(
+                    child: SfCartesianChart(
+                      primaryXAxis: const CategoryAxis(
+                        labelRotation: 0, // No label rotation needed for years
+                      ),
+                      series: <CartesianSeries<ChartData, String>>[
+                        ColumnSeries<ChartData, String>(
+                          dataSource: chartDataToShow,
+                          xValueMapper: (ChartData data, _) => data.category, // Year
+                          yValueMapper: (ChartData data, _) => data.value,   // Sum of diseases
+                          color: const Color.fromARGB(255, 212, 22, 8), // Chart color
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      );
+    },
+  ),
+)
+
+      ],
     ),
   );
 }
 
-Widget _buildPestCharts() {
-  // Use the temporary data when no actual data is available
-  final bool hasBarData = barChartData.isNotEmpty;
-  final List<ChartData> chartDataToShow = hasBarData ? barChartData : barChartData;
 
-  return Center(
-    child: SizedBox(
-      height: MediaQuery.of(context).size.height * 0.5, // Adjust height based on screen size
-      width: MediaQuery.of(context).size.height * 1, // Adjust width based on screen size
-      child: 
-          // Bar Chart or No Data Message with Dropdown
-          Container(
-            margin: const EdgeInsets.only(left: 20, right: 20), // Add horizontal space
+Widget _buildPestCharts() {
+ return Center(
+    child: GFCarousel(
+      items: [
+        ///////////////////////////////daily////////////////
+    Container(
+  child: FutureBuilder<QuerySnapshot>(
+    future: fetchHarvestData(),
+    builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      }
+
+      // Extract unique disease and area values from Firestore data
+      final List<String> diseaseOptions = snapshot.hasData
+          ? snapshot.data!.docs
+              .map((doc) => (doc.data() as Map<String, dynamic>)['disease'] ?? '')
+              .where((disease) => disease.toString().isNotEmpty)
+              .toSet()
+              .cast<String>()
+              .toList()
+          : [];
+      diseaseOptions.sort();
+
+      final List<String> areaOptions = snapshot.hasData
+          ? snapshot.data!.docs
+              .map((doc) => (doc.data() as Map<String, dynamic>)['area'] ?? '')
+              .where((area) => area.toString().isNotEmpty)
+              .toSet()
+              .cast<String>()
+              .toList()
+          : [];
+      areaOptions.sort();
+
+      // Ensure filters have valid default values
+      if (!diseaseOptions.contains(RowselectedDiseaseFilter) && diseaseOptions.isNotEmpty) {
+        RowselectedDiseaseFilter = diseaseOptions.first;
+      }
+      if (!areaOptions.contains(RowselectedFilter) && areaOptions.isNotEmpty) {
+        RowselectedFilter = areaOptions.first;
+      }
+
+      // Chart data for pesticides used
+      final Map<String, int> pesticideCounts = snapshot.hasData
+          ? snapshot.data!.docs
+              .where((doc) {
+                final data = doc.data() as Map<String, dynamic>;
+                final String dateString = (data['date'] ?? '').toString();
+                final String disease = (data['disease'] ?? '').toString();
+                final String area = (data['area'] ?? '').toString();
+
+                try {
+                  final DateFormat formatter = DateFormat('yyyy-M-d');
+                  final DateTime parsedDate = formatter.parse(dateString);
+
+                  // Get the first and last date of the current month
+                  final DateTime now = DateTime.now();
+                  final DateTime startOfMonth = DateTime(now.year, now.month, 1);
+                  final DateTime endOfMonth = DateTime(now.year, now.month + 1, 0);
+
+                  // Filter data by selected disease, area, and date range
+                  return disease == RowselectedDiseaseFilter &&
+                      area == RowselectedFilter &&
+                      parsedDate.isAfter(startOfMonth.subtract(const Duration(days: 1))) &&
+                      parsedDate.isBefore(endOfMonth.add(const Duration(days: 1)));
+                } catch (e) {
+                  print("Invalid date format: $dateString. Error: $e");
+                  return false;
+                }
+              })
+              .fold<Map<String, int>>({}, (counts, doc) {
+                final data = doc.data() as Map<String, dynamic>;
+                final String pesticide = (data['pesticides'] ?? '').toString();
+
+                if (pesticide.isNotEmpty) {
+                  counts[pesticide] = (counts[pesticide] ?? 0) + 1;
+                }
+                return counts;
+              })
+          : {};
+
+      // Get the top 5 pesticides by count
+      final List<ChartData> pesticideChartData = pesticideCounts.entries
+          .map((entry) => ChartData(entry.key, entry.value))
+          .toList()
+          ..sort((a, b) => b.value.compareTo(a.value)); // Sort by descending order
+      final List<ChartData> top5Pesticides = pesticideChartData.take(5).toList();
+
+      return Center(
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height * 0.5,
+          width: MediaQuery.of(context).size.width * 1,
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                Text(
+                  'Top 5 Pesticides Used - ${DateFormat('MMMM').format(DateTime.now())}',
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      'Pesticides Used',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    // Dropdown for disease filter
+                    Expanded(
+                      child: DropdownButton<String>(
+                        value: RowselectedDiseaseFilter,
+                        onChanged: (String? newValue) {
+                          if (newValue != null) {
+                            setState(() {
+                              RowselectedDiseaseFilter = newValue;
+                            });
+                          }
+                        },
+                        items: diseaseOptions.map((String disease) {
+                          return DropdownMenuItem<String>(
+                            value: disease,
+                            child: Text(disease),
+                          );
+                        }).toList(),
+                      ),
                     ),
-                    DropdownButton<String>(
-                      value: RowselectedFilter,
-                      onChanged: (String? newValue) {
-                        if (newValue != null) {
-                          setState(() {
-                            RowselectedFilter = newValue;
-                          });
-                        }
-                      },
-                      items: ['Row 1', 'Row 2', 'All'].map((String filter) {
-                        return DropdownMenuItem<String>(
-                          value: filter,
-                          child: Text(filter),
-                        );
-                      }).toList(),
-                    ),
-                      DropdownButton<String>(
-                      value: selectedFilter,
-                      onChanged: (String? newValue) {
-                        if (newValue != null) {
-                          setState(() {
-                            selectedFilter = newValue;
-                          });
-                        }
-                      },
-                      items: ['This Week', 'This Month', 'This Year'].map((String filter) {
-                        return DropdownMenuItem<String>(
-                          value: filter,
-                          child: Text(filter),
-                        );
-                      }).toList(),
+                    const SizedBox(width: 10),
+                    // Dropdown for area filter
+                    Expanded(
+                      child: DropdownButton<String>(
+                        value: RowselectedFilter,
+                        onChanged: (String? newValue) {
+                          if (newValue != null) {
+                            setState(() {
+                              RowselectedFilter = newValue;
+                            });
+                          }
+                        },
+                        items: areaOptions.map((String area) {
+                          return DropdownMenuItem<String>(
+                            value: area,
+                            child: Text(area),
+                          );
+                        }).toList(),
+                      ),
                     ),
                   ],
                 ),
-                Expanded(
-                  child: hasBarData || chartDataToShow.isNotEmpty
-                      ? SfCartesianChart(
-                          primaryXAxis: const CategoryAxis(),
-                          title: const ChartTitle(text: ''),
-                          series: <CartesianSeries<ChartData, String>>[
-                            ColumnSeries<ChartData, String>(
-                              dataSource: chartDataToShow,
-                              xValueMapper: (ChartData data, _) => data.category,
-                              yValueMapper: (ChartData data, _) => data.value,
-                              color: const Color(0xff44c377),
-                              borderColor: const Color.fromARGB(255, 245, 245, 245),
-                              borderWidth: 1,
-                            ),
-                          ],
-                        )
-                      : const Center(
-                          child: Text("No data yet", style: TextStyle(fontSize: 20)),
+                if (top5Pesticides.isEmpty)
+                  const Expanded(
+                    child: Center(
+                      child: Text(
+                        "No pesticide data available",
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    ),
+                  )
+                else
+                  Expanded(
+                    child: SfCartesianChart(
+                      primaryXAxis: const CategoryAxis(
+                        labelRotation: 45, // Rotate labels for better readability
+                        title: AxisTitle(text: "Pesticides"),
+                      ),
+                      primaryYAxis: const NumericAxis(
+                        title: AxisTitle(text: "Count"),
+                      ),
+                      series: <CartesianSeries<ChartData, String>>[
+                        ColumnSeries<ChartData, String>(
+                          dataSource: top5Pesticides,
+                          xValueMapper: (ChartData data, _) => data.category, // Pesticide name
+                          yValueMapper: (ChartData data, _) => data.value, // Count of usage
+                          color: const Color(0xff44c377), // Chart color
                         ),
-                ),
+                      ],
+                    ),
+                  ),
               ],
             ),
           ),
-        
-   
+        ),
+      );
+    },
+  ),
+),
+
+        ///////////////////////////////monthly
+        ///
+        Container(
+  child: FutureBuilder<QuerySnapshot>(
+    future: fetchHarvestData(),
+    builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      }
+
+      // Extract unique disease and area values from Firestore data
+      final List<String> diseaseOptions = snapshot.hasData
+          ? snapshot.data!.docs
+              .map((doc) => (doc.data() as Map<String, dynamic>)['disease'] ?? '')
+              .where((disease) => disease.toString().isNotEmpty)
+              .toSet()
+              .cast<String>()
+              .toList()
+          : [];
+      diseaseOptions.sort();
+
+      final List<String> areaOptions = snapshot.hasData
+          ? snapshot.data!.docs
+              .map((doc) => (doc.data() as Map<String, dynamic>)['area'] ?? '')
+              .where((area) => area.toString().isNotEmpty)
+              .toSet()
+              .cast<String>()
+              .toList()
+          : [];
+      areaOptions.sort();
+
+      // Ensure filters have valid default values
+      if (!diseaseOptions.contains(RowselectedDiseaseFilter) && diseaseOptions.isNotEmpty) {
+        RowselectedDiseaseFilter = diseaseOptions.first;
+      }
+      if (!areaOptions.contains(RowselectedFilter) && areaOptions.isNotEmpty) {
+        RowselectedFilter = areaOptions.first;
+      }
+
+      // Chart data for pesticides used in the current year
+      final Map<String, int> pesticideCounts = snapshot.hasData
+          ? snapshot.data!.docs
+              .where((doc) {
+                final data = doc.data() as Map<String, dynamic>;
+                final String dateString = (data['date'] ?? '').toString();
+                final String disease = (data['disease'] ?? '').toString();
+                final String area = (data['area'] ?? '').toString();
+
+                try {
+                  final DateFormat formatter = DateFormat('yyyy-M-d');
+                  final DateTime parsedDate = formatter.parse(dateString);
+
+                  // Get the first and last date of the current year
+                  final DateTime now = DateTime.now();
+                  final DateTime startOfYear = DateTime(now.year, 1, 1);
+                  final DateTime endOfYear = DateTime(now.year, 12, 31);
+
+                  // Filter data by selected disease, area, and date range
+                  return disease == RowselectedDiseaseFilter &&
+                      area == RowselectedFilter &&
+                      parsedDate.isAfter(startOfYear.subtract(const Duration(days: 1))) &&
+                      parsedDate.isBefore(endOfYear.add(const Duration(days: 1)));
+                } catch (e) {
+                  print("Invalid date format: $dateString. Error: $e");
+                  return false;
+                }
+              })
+              .fold<Map<String, int>>({}, (counts, doc) {
+                final data = doc.data() as Map<String, dynamic>;
+                final String pesticide = (data['pesticides'] ?? '').toString();
+
+                if (pesticide.isNotEmpty) {
+                  counts[pesticide] = (counts[pesticide] ?? 0) + 1;
+                }
+                return counts;
+              })
+          : {};
+
+      // Get the top 5 pesticides by count
+      final List<ChartData> pesticideChartData = pesticideCounts.entries
+          .map((entry) => ChartData(entry.key, entry.value))
+          .toList()
+          ..sort((a, b) => b.value.compareTo(a.value)); // Sort by descending order
+      final List<ChartData> top5Pesticides = pesticideChartData.take(5).toList();
+
+      return Center(
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height * 0.5,
+          width: MediaQuery.of(context).size.width * 1,
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  'Top 5 Pesticides Used - ${DateFormat('yyyy').format(DateTime.now())}',
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Dropdown for disease filter
+                    Expanded(
+                      child: DropdownButton<String>(
+                        value: RowselectedDiseaseFilter,
+                        onChanged: (String? newValue) {
+                          if (newValue != null) {
+                            setState(() {
+                              RowselectedDiseaseFilter = newValue;
+                            });
+                          }
+                        },
+                        items: diseaseOptions.map((String disease) {
+                          return DropdownMenuItem<String>(
+                            value: disease,
+                            child: Text(disease),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    // Dropdown for area filter
+                    Expanded(
+                      child: DropdownButton<String>(
+                        value: RowselectedFilter,
+                        onChanged: (String? newValue) {
+                          if (newValue != null) {
+                            setState(() {
+                              RowselectedFilter = newValue;
+                            });
+                          }
+                        },
+                        items: areaOptions.map((String area) {
+                          return DropdownMenuItem<String>(
+                            value: area,
+                            child: Text(area),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ],
+                ),
+                if (top5Pesticides.isEmpty)
+                  const Expanded(
+                    child: Center(
+                      child: Text(
+                        "No pesticide data available for this year",
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    ),
+                  )
+                else
+                  Expanded(
+                    child: SfCartesianChart(
+                      primaryXAxis: const CategoryAxis(
+                        labelRotation: 45, // Rotate labels for better readability
+                        title: AxisTitle(text: "Pesticides"),
+                      ),
+                      primaryYAxis: const NumericAxis(
+                        title: AxisTitle(text: "Count"),
+                      ),
+                      series: <CartesianSeries<ChartData, String>>[
+                        ColumnSeries<ChartData, String>(
+                          dataSource: top5Pesticides,
+                          xValueMapper: (ChartData data, _) => data.category, // Pesticide name
+                          yValueMapper: (ChartData data, _) => data.value, // Count of usage
+                          color: const Color(0xff44c377), // Chart color
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      );
+    },
+  ),
+),
+/////////////////////////
+Container(
+  child: FutureBuilder<QuerySnapshot>(
+    future: fetchHarvestData(),
+    builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      }
+
+      // Extract unique disease and area values from Firestore data
+      final List<String> diseaseOptions = snapshot.hasData
+          ? snapshot.data!.docs
+              .map((doc) => (doc.data() as Map<String, dynamic>)['disease'] ?? '')
+              .where((disease) => disease.toString().isNotEmpty)
+              .toSet()
+              .cast<String>()
+              .toList()
+          : [];
+      diseaseOptions.sort();
+
+      final List<String> areaOptions = snapshot.hasData
+          ? snapshot.data!.docs
+              .map((doc) => (doc.data() as Map<String, dynamic>)['area'] ?? '')
+              .where((area) => area.toString().isNotEmpty)
+              .toSet()
+              .cast<String>()
+              .toList()
+          : [];
+      areaOptions.sort();
+
+      // Ensure filters have valid default values
+      if (!diseaseOptions.contains(RowselectedDiseaseFilter) && diseaseOptions.isNotEmpty) {
+        RowselectedDiseaseFilter = diseaseOptions.first;
+      }
+      if (!areaOptions.contains(RowselectedFilter) && areaOptions.isNotEmpty) {
+        RowselectedFilter = areaOptions.first;
+      }
+
+      // Chart data for overall pesticide usage
+      final Map<String, int> pesticideCounts = snapshot.hasData
+          ? snapshot.data!.docs
+              .where((doc) {
+                final data = doc.data() as Map<String, dynamic>;
+                final String disease = (data['disease'] ?? '').toString();
+                final String area = (data['area'] ?? '').toString();
+
+                // Filter data by selected disease and area
+                return disease == RowselectedDiseaseFilter && area == RowselectedFilter;
+              })
+              .fold<Map<String, int>>({}, (counts, doc) {
+                final data = doc.data() as Map<String, dynamic>;
+                final String pesticide = (data['pesticides'] ?? '').toString();
+
+                if (pesticide.isNotEmpty) {
+                  counts[pesticide] = (counts[pesticide] ?? 0) + 1;
+                }
+                return counts;
+              })
+          : {};
+
+      // Get the top 5 pesticides by count
+      final List<ChartData> pesticideChartData = pesticideCounts.entries
+          .map((entry) => ChartData(entry.key, entry.value))
+          .toList()
+          ..sort((a, b) => b.value.compareTo(a.value)); // Sort by descending order
+      final List<ChartData> top5Pesticides = pesticideChartData.take(5).toList();
+
+      return Center(
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height * 0.5,
+          width: MediaQuery.of(context).size.width * 1,
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Text(
+                  'Top 5 Pesticides Used - Overall',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Dropdown for disease filter
+                    Expanded(
+                      child: DropdownButton<String>(
+                        value: RowselectedDiseaseFilter,
+                        onChanged: (String? newValue) {
+                          if (newValue != null) {
+                            setState(() {
+                              RowselectedDiseaseFilter = newValue;
+                            });
+                          }
+                        },
+                        items: diseaseOptions.map((String disease) {
+                          return DropdownMenuItem<String>(
+                            value: disease,
+                            child: Text(disease),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    // Dropdown for area filter
+                    Expanded(
+                      child: DropdownButton<String>(
+                        value: RowselectedFilter,
+                        onChanged: (String? newValue) {
+                          if (newValue != null) {
+                            setState(() {
+                              RowselectedFilter = newValue;
+                            });
+                          }
+                        },
+                        items: areaOptions.map((String area) {
+                          return DropdownMenuItem<String>(
+                            value: area,
+                            child: Text(area),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ],
+                ),
+                if (top5Pesticides.isEmpty)
+                  const Expanded(
+                    child: Center(
+                      child: Text(
+                        "No pesticide data available",
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    ),
+                  )
+                else
+                  Expanded(
+                    child: SfCartesianChart(
+                      primaryXAxis: const CategoryAxis(
+                        labelRotation: 45, // Rotate labels for better readability
+                        title: AxisTitle(text: "Pesticides"),
+                      ),
+                      primaryYAxis: const NumericAxis(
+                        title: AxisTitle(text: "Count"),
+                      ),
+                      series: <CartesianSeries<ChartData, String>>[
+                        ColumnSeries<ChartData, String>(
+                          dataSource: top5Pesticides,
+                          xValueMapper: (ChartData data, _) => data.category, // Pesticide name
+                          yValueMapper: (ChartData data, _) => data.value, // Count of usage
+                          color: const Color(0xff44c377), // Chart color
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      );
+    },
+  ),
+),
+
+      ],
     ),
   );
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:getwidget/components/carousel/gf_carousel.dart';
 import 'package:okrai/mainscreens/Home.dart';
+import 'package:okrai/mainscreens/Tables.dart';
 import 'package:okrai/mainscreens/myokra.dart';
 import 'package:okrai/mainscreens/settings.dart';
 import 'package:page_transition/page_transition.dart';
@@ -16,9 +17,6 @@ class Harvest extends StatefulWidget {
   State<Harvest> createState() => _HarvestState();
 }
   
-String RowselectedFilter = 'Area 1';
-String RowselectedDiseaseFilter = 'Leaf Curl';
-
 class _HarvestState extends State<Harvest> {
   @override
   Widget build(BuildContext context) {
@@ -84,10 +82,49 @@ class _HarvestState extends State<Harvest> {
             child: ListView(
               padding: const EdgeInsets.all(0),
               children: [
+                  const SizedBox(height: 10,),
                 _addHarvest(),
+                  const SizedBox(height: 10,),
                 _buildHarvestCharts(),
+                   const SizedBox(height: 10,),
+                   const Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: LinearProgressIndicator(
+                      backgroundColor: Color(0xffc8c7c7),
+                      valueColor:
+                      AlwaysStoppedAnimation<Color>(Color(0xff3a57e8)),
+                      value: 0,
+                      minHeight: 3),
+                ),
+              ],
+            ),
+             const SizedBox(height: 10,),
                 _buildDiseaseCharts(),
+                        const SizedBox(height: 10,),
+                   const Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: LinearProgressIndicator(
+                      backgroundColor: Color(0xffc8c7c7),
+                      valueColor:
+                      AlwaysStoppedAnimation<Color>(Color(0xff3a57e8)),
+                      value: 0,
+                      minHeight: 3),
+                ),
+              ],
+            ),
+             const SizedBox(height: 10,),
                 _buildPestCharts(),
+                  const SizedBox(height: 10,),
               ],
             ),
           ),
@@ -97,73 +134,101 @@ class _HarvestState extends State<Harvest> {
   }
 
   Widget _addHarvest() {
-    return Container(
-      margin: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: const Color(0xff44c377), width: 3),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Padding(
-            padding: EdgeInsets.fromLTRB(10, 10, 0, 0),
-            child: Text(
-              "Okra Harvest",
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+  return Container(
+    margin: const EdgeInsets.all(10),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      border: Border.all(color: const Color(0xff44c377), width: 3),
+      borderRadius: BorderRadius.circular(10),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.fromLTRB(10, 10, 0, 0),
+          child: Text(
+            "Okra Harvest",
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+          ),
+        ),
+        const Padding(
+          padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+          child: Text(
+            "STATISTICAL CHARTS",
+            style: TextStyle(fontSize: 25, fontWeight: FontWeight.w800),
+          ),
+        ),
+        const Padding(
+          padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+          child: Center(
+            child: Icon(
+              Icons.stacked_bar_chart,
+              size: 50,
+              color: Color(0xff44c377),
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-            child: Text(
-              "STATISTICAL CHARTS",
-              style: TextStyle(fontSize: 25, fontWeight: FontWeight.w800),
-            ),
-          ),
-          const Padding(
-            padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-            child: Center(
-              child: Icon(
-                Icons.stacked_bar_chart,
-                size: 50,
-                color: Color(0xff44c377),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _showInsertHarvestDialog,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xff44c377),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30.0),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+          child: Center(
+            child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: _showInsertHarvestDialog,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xff44c377),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                       ),
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                    ),
-                    child: const Text(
-                      "Insert New Harvest",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                        color: Colors.white,
+                      child: const Text(
+                        "Insert New Harvest",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 12,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ),
-                ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                    onPressed: () => Navigator.push(context, PageTransition(type: PageTransitionType.fade, child: const Tables())),
+                      icon: const Icon(Icons.table_chart, color: Colors.white),
+                      label: const Text(
+                        "List",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 12,
+                          color: Colors.white,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      ),
+                    ),
+                  ),
+                   const SizedBox(width: 10),
+                ],
               ),
             ),
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
+}
+
 
 void _showInsertHarvestDialog() {
   showDialog(
@@ -368,6 +433,10 @@ Future<QuerySnapshot> fetchHarvestData() async {
   }
 }
 
+String dailySelectedFilter = 'Area 1';
+String monthlySelectedFilter = 'Area 1';
+String yearlySelectedFilter = 'Area 1';
+
 Widget _buildHarvestCharts() {
   return Center(
     child: GFCarousel(
@@ -395,8 +464,8 @@ Widget _buildHarvestCharts() {
       areaOptions.sort();
 
       // Ensure RowselectedFilter has a valid default value
-      if (!areaOptions.contains(RowselectedFilter) && areaOptions.isNotEmpty) {
-        RowselectedFilter = areaOptions.first;
+      if (!areaOptions.contains(dailySelectedFilter) && areaOptions.isNotEmpty) {
+        dailySelectedFilter = areaOptions.first;
       }
 
       // Calculate the start and end dates for the current month
@@ -417,7 +486,7 @@ Widget _buildHarvestCharts() {
                   final DateFormat formatter = DateFormat('yyyy-M-d');
                   final DateTime parsedDate = formatter.parse(dateString);
 
-                  if (area == RowselectedFilter &&
+                  if (area == dailySelectedFilter &&
                       parsedDate.isAfter(startDate.subtract(const Duration(seconds: 1))) &&
                       parsedDate.isBefore(endDate.add(const Duration(days: 1)))) {
                     return ChartData(parsedDate.toIso8601String(), harvest); // Store ISO8601 for sorting
@@ -453,11 +522,11 @@ Widget _buildHarvestCharts() {
   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
 ),
                 DropdownButton<String>(
-                  value: RowselectedFilter,
+                  value: dailySelectedFilter,
                   onChanged: (String? newValue) {
                     if (newValue != null) {
                       setState(() {
-                        RowselectedFilter = newValue;
+                        dailySelectedFilter = newValue;
                       });
                     }
                   },
@@ -531,8 +600,8 @@ Widget _buildHarvestCharts() {
       areaOptions.sort();
 
       // Ensure RowselectedFilter has a valid default value
-      if (!areaOptions.contains(RowselectedFilter) && areaOptions.isNotEmpty) {
-        RowselectedFilter = areaOptions.first;
+      if (!areaOptions.contains(monthlySelectedFilter) && areaOptions.isNotEmpty) {
+        monthlySelectedFilter = areaOptions.first;
       }
 
       // Filter Firestore data and group by month
@@ -548,7 +617,7 @@ Widget _buildHarvestCharts() {
             final DateFormat formatter = DateFormat('yyyy-M-d');
             final DateTime parsedDate = formatter.parse(dateString);
 
-            if (area == RowselectedFilter && parsedDate.year == DateTime.now().year) {
+            if (area == monthlySelectedFilter && parsedDate.year == DateTime.now().year) {
               final int monthNumber = parsedDate.month;  // Get month as a number (1-12)
               monthlyHarvests[monthNumber] = (monthlyHarvests[monthNumber] ?? 0) + harvest;
             }
@@ -587,11 +656,11 @@ Widget _buildHarvestCharts() {
   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
 ),
                 DropdownButton<String>(
-                  value: RowselectedFilter,
+                  value: monthlySelectedFilter,
                   onChanged: (String? newValue) {
                     if (newValue != null) {
                       setState(() {
-                        RowselectedFilter = newValue;
+                        monthlySelectedFilter = newValue;
                       });
                     }
                   },
@@ -658,8 +727,8 @@ Container(
       areaOptions.sort();
 
       // Ensure RowselectedFilter has a valid default value
-      if (!areaOptions.contains(RowselectedFilter) && areaOptions.isNotEmpty) {
-        RowselectedFilter = areaOptions.first;
+      if (!areaOptions.contains(yearlySelectedFilter) && areaOptions.isNotEmpty) {
+        yearlySelectedFilter = areaOptions.first;
       }
 
       // Filter Firestore data and group by year
@@ -675,7 +744,7 @@ Container(
             final DateFormat formatter = DateFormat('yyyy-M-d');
             final DateTime parsedDate = formatter.parse(dateString);
 
-            if (area == RowselectedFilter) {
+            if (area == yearlySelectedFilter) {
               final int year = parsedDate.year;  // Get the year
               yearlyHarvests[year] = (yearlyHarvests[year] ?? 0) + harvest;
             }
@@ -707,11 +776,11 @@ Container(
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 DropdownButton<String>(
-                  value: RowselectedFilter,
+                  value: yearlySelectedFilter,
                   onChanged: (String? newValue) {
                     if (newValue != null) {
                       setState(() {
-                        RowselectedFilter = newValue;
+                        yearlySelectedFilter = newValue;
                       });
                     }
                   },
@@ -761,6 +830,14 @@ Container(
   );
 }
 
+String dailyDiseaseArea = 'Area 1';
+String dailyDiseaseType = 'Leaf Curl';
+
+String monthlyDiseaseArea = 'Area 1';
+String monthlyDiseaseType = 'Leaf Curl';
+
+String yearlyDiseaseArea = 'Area 1';
+String yearlyDiseaseType = 'Leaf Curl';
 
 Widget _buildDiseaseCharts() {
   return Center(
@@ -799,11 +876,11 @@ Widget _buildDiseaseCharts() {
               areaOptions.sort();
 
               // Ensure filters have valid default values
-              if (!diseaseOptions.contains(RowselectedDiseaseFilter) && diseaseOptions.isNotEmpty) {
-                RowselectedDiseaseFilter = diseaseOptions.first;
+              if (!diseaseOptions.contains(dailyDiseaseType) && diseaseOptions.isNotEmpty) {
+                dailyDiseaseType = diseaseOptions.first;
               }
-              if (!areaOptions.contains(RowselectedFilter) && areaOptions.isNotEmpty) {
-                RowselectedFilter = areaOptions.first;
+              if (!areaOptions.contains(dailyDiseaseArea) && areaOptions.isNotEmpty) {
+                dailyDiseaseArea = areaOptions.first;
               }
 
              final List<ChartData> chartDataToShow = snapshot.hasData
@@ -825,8 +902,8 @@ Widget _buildDiseaseCharts() {
             final DateTime endOfMonth = DateTime(now.year, now.month + 1, 0);
 
             // Filter data by selected disease, area, and date range
-            if (disease == RowselectedDiseaseFilter &&
-                area == RowselectedFilter &&
+            if (disease == dailyDiseaseType &&
+                area == dailyDiseaseArea &&
                 parsedDate.isAfter(startOfMonth.subtract(const Duration(days: 1))) &&
                 parsedDate.isBefore(endOfMonth.add(const Duration(days: 1)))) {
               return ChartData(parsedDate.toIso8601String(), numberOfDiseases);
@@ -869,11 +946,11 @@ Widget _buildDiseaseCharts() {
                             // Dropdown for disease filter
                             Expanded(
                               child: DropdownButton<String>(
-                                value: RowselectedDiseaseFilter,
+                                value: dailyDiseaseType,
                                 onChanged: (String? newValue) {
                                   if (newValue != null) {
                                     setState(() {
-                                      RowselectedDiseaseFilter = newValue;
+                                      dailyDiseaseType = newValue;
                                     });
                                   }
                                 },
@@ -889,11 +966,11 @@ Widget _buildDiseaseCharts() {
                             // Dropdown for area filter
                             Expanded(
                               child: DropdownButton<String>(
-                                value: RowselectedFilter,
+                                value: dailyDiseaseArea,
                                 onChanged: (String? newValue) {
                                   if (newValue != null) {
                                     setState(() {
-                                      RowselectedFilter = newValue;
+                                      dailyDiseaseArea = newValue;
                                     });
                                   }
                                 },
@@ -976,11 +1053,11 @@ Widget _buildDiseaseCharts() {
       areaOptions.sort();
 
       // Ensure filters have valid default values
-      if (!diseaseOptions.contains(RowselectedDiseaseFilter) && diseaseOptions.isNotEmpty) {
-        RowselectedDiseaseFilter = diseaseOptions.first;
+      if (!diseaseOptions.contains(monthlyDiseaseType) && diseaseOptions.isNotEmpty) {
+        monthlyDiseaseType = diseaseOptions.first;
       }
-      if (!areaOptions.contains(RowselectedFilter) && areaOptions.isNotEmpty) {
-        RowselectedFilter = areaOptions.first;
+      if (!areaOptions.contains(monthlyDiseaseArea) && areaOptions.isNotEmpty) {
+        monthlyDiseaseArea = areaOptions.first;
       }
 
       // Group and sum diseases per month for the current year
@@ -999,8 +1076,8 @@ Widget _buildDiseaseCharts() {
 
             final DateTime now = DateTime.now();
             if (parsedDate.year == now.year &&
-                disease == RowselectedDiseaseFilter &&
-                area == RowselectedFilter) {
+                disease == monthlyDiseaseType &&
+                area == monthlyDiseaseArea) {
               final String monthName = DateFormat('MMMM').format(parsedDate); // Get month name
               monthlyDiseaseSums[monthName] = (monthlyDiseaseSums[monthName] ?? 0) + numberOfDiseases;
             }
@@ -1035,11 +1112,11 @@ Widget _buildDiseaseCharts() {
                     // Dropdown for disease filter
                     Expanded(
                       child: DropdownButton<String>(
-                        value: RowselectedDiseaseFilter,
+                        value: monthlyDiseaseType,
                         onChanged: (String? newValue) {
                           if (newValue != null) {
                             setState(() {
-                              RowselectedDiseaseFilter = newValue;
+                              monthlyDiseaseType = newValue;
                             });
                           }
                         },
@@ -1055,11 +1132,11 @@ Widget _buildDiseaseCharts() {
                     // Dropdown for area filter
                     Expanded(
                       child: DropdownButton<String>(
-                        value: RowselectedFilter,
+                        value: monthlyDiseaseArea,
                         onChanged: (String? newValue) {
                           if (newValue != null) {
                             setState(() {
-                              RowselectedFilter = newValue;
+                              monthlyDiseaseArea = newValue;
                             });
                           }
                         },
@@ -1139,11 +1216,11 @@ Container(
       areaOptions.sort();
 
       // Ensure filters have valid default values
-      if (!diseaseOptions.contains(RowselectedDiseaseFilter) && diseaseOptions.isNotEmpty) {
-        RowselectedDiseaseFilter = diseaseOptions.first;
+      if (!diseaseOptions.contains(yearlyDiseaseType) && diseaseOptions.isNotEmpty) {
+        yearlyDiseaseType = diseaseOptions.first;
       }
-      if (!areaOptions.contains(RowselectedFilter) && areaOptions.isNotEmpty) {
-        RowselectedFilter = areaOptions.first;
+      if (!areaOptions.contains(yearlyDiseaseArea) && areaOptions.isNotEmpty) {
+        yearlyDiseaseArea = areaOptions.first;
       }
 
       // Group and sum diseases per year
@@ -1160,7 +1237,7 @@ Container(
             final DateFormat formatter = DateFormat('yyyy-M-d');
             final DateTime parsedDate = formatter.parse(dateString);
 
-            if (disease == RowselectedDiseaseFilter && area == RowselectedFilter) {
+            if (disease == yearlyDiseaseType && area == yearlyDiseaseArea) {
               final int year = parsedDate.year; // Extract year
               yearlyDiseaseSums[year] = (yearlyDiseaseSums[year] ?? 0) + numberOfDiseases;
             }
@@ -1195,11 +1272,11 @@ Container(
                     // Dropdown for disease filter
                     Expanded(
                       child: DropdownButton<String>(
-                        value: RowselectedDiseaseFilter,
+                        value: yearlyDiseaseType,
                         onChanged: (String? newValue) {
                           if (newValue != null) {
                             setState(() {
-                              RowselectedDiseaseFilter = newValue;
+                              yearlyDiseaseType = newValue;
                             });
                           }
                         },
@@ -1215,11 +1292,11 @@ Container(
                     // Dropdown for area filter
                     Expanded(
                       child: DropdownButton<String>(
-                        value: RowselectedFilter,
+                        value: yearlyDiseaseArea,
                         onChanged: (String? newValue) {
                           if (newValue != null) {
                             setState(() {
-                              RowselectedFilter = newValue;
+                              yearlyDiseaseArea = newValue;
                             });
                           }
                         },
@@ -1272,6 +1349,14 @@ Container(
   );
 }
 
+String dailyPestArea = 'Area 1';
+String dailyPestType = 'Leaf Curl';
+
+String monthlyPestArea = 'Area 1';
+String monthlyPestType = 'Leaf Curl';
+
+String yearlyPestArea = 'Area 1';
+String yearlyPestType = 'Leaf Curl';
 
 Widget _buildPestCharts() {
  return Center(
@@ -1310,11 +1395,11 @@ Widget _buildPestCharts() {
       areaOptions.sort();
 
       // Ensure filters have valid default values
-      if (!diseaseOptions.contains(RowselectedDiseaseFilter) && diseaseOptions.isNotEmpty) {
-        RowselectedDiseaseFilter = diseaseOptions.first;
+      if (!diseaseOptions.contains(dailyPestType) && diseaseOptions.isNotEmpty) {
+        dailyPestType = diseaseOptions.first;
       }
-      if (!areaOptions.contains(RowselectedFilter) && areaOptions.isNotEmpty) {
-        RowselectedFilter = areaOptions.first;
+      if (!areaOptions.contains(dailyPestArea) && areaOptions.isNotEmpty) {
+        dailyPestArea = areaOptions.first;
       }
 
       // Chart data for pesticides used
@@ -1336,8 +1421,8 @@ Widget _buildPestCharts() {
                   final DateTime endOfMonth = DateTime(now.year, now.month + 1, 0);
 
                   // Filter data by selected disease, area, and date range
-                  return disease == RowselectedDiseaseFilter &&
-                      area == RowselectedFilter &&
+                  return disease == dailyPestType &&
+                      area == dailyPestArea &&
                       parsedDate.isAfter(startOfMonth.subtract(const Duration(days: 1))) &&
                       parsedDate.isBefore(endOfMonth.add(const Duration(days: 1)));
                 } catch (e) {
@@ -1382,11 +1467,11 @@ Widget _buildPestCharts() {
                     // Dropdown for disease filter
                     Expanded(
                       child: DropdownButton<String>(
-                        value: RowselectedDiseaseFilter,
+                        value: dailyPestType,
                         onChanged: (String? newValue) {
                           if (newValue != null) {
                             setState(() {
-                              RowselectedDiseaseFilter = newValue;
+                              dailyPestType = newValue;
                             });
                           }
                         },
@@ -1402,11 +1487,11 @@ Widget _buildPestCharts() {
                     // Dropdown for area filter
                     Expanded(
                       child: DropdownButton<String>(
-                        value: RowselectedFilter,
+                        value: dailyPestArea,
                         onChanged: (String? newValue) {
                           if (newValue != null) {
                             setState(() {
-                              RowselectedFilter = newValue;
+                              dailyPestArea = newValue;
                             });
                           }
                         },
@@ -1492,11 +1577,11 @@ Widget _buildPestCharts() {
       areaOptions.sort();
 
       // Ensure filters have valid default values
-      if (!diseaseOptions.contains(RowselectedDiseaseFilter) && diseaseOptions.isNotEmpty) {
-        RowselectedDiseaseFilter = diseaseOptions.first;
+      if (!diseaseOptions.contains(monthlyPestType) && diseaseOptions.isNotEmpty) {
+        monthlyPestType = diseaseOptions.first;
       }
-      if (!areaOptions.contains(RowselectedFilter) && areaOptions.isNotEmpty) {
-        RowselectedFilter = areaOptions.first;
+      if (!areaOptions.contains(monthlyPestArea) && areaOptions.isNotEmpty) {
+        monthlyPestArea = areaOptions.first;
       }
 
       // Chart data for pesticides used in the current year
@@ -1518,8 +1603,8 @@ Widget _buildPestCharts() {
                   final DateTime endOfYear = DateTime(now.year, 12, 31);
 
                   // Filter data by selected disease, area, and date range
-                  return disease == RowselectedDiseaseFilter &&
-                      area == RowselectedFilter &&
+                  return disease == monthlyPestType &&
+                      area == monthlyPestArea &&
                       parsedDate.isAfter(startOfYear.subtract(const Duration(days: 1))) &&
                       parsedDate.isBefore(endOfYear.add(const Duration(days: 1)));
                 } catch (e) {
@@ -1564,11 +1649,11 @@ Widget _buildPestCharts() {
                     // Dropdown for disease filter
                     Expanded(
                       child: DropdownButton<String>(
-                        value: RowselectedDiseaseFilter,
+                        value: monthlyPestType,
                         onChanged: (String? newValue) {
                           if (newValue != null) {
                             setState(() {
-                              RowselectedDiseaseFilter = newValue;
+                              monthlyPestType= newValue;
                             });
                           }
                         },
@@ -1584,11 +1669,11 @@ Widget _buildPestCharts() {
                     // Dropdown for area filter
                     Expanded(
                       child: DropdownButton<String>(
-                        value: RowselectedFilter,
+                        value: monthlyPestArea,
                         onChanged: (String? newValue) {
                           if (newValue != null) {
                             setState(() {
-                              RowselectedFilter = newValue;
+                              monthlyPestArea = newValue;
                             });
                           }
                         },
@@ -1672,11 +1757,11 @@ Container(
       areaOptions.sort();
 
       // Ensure filters have valid default values
-      if (!diseaseOptions.contains(RowselectedDiseaseFilter) && diseaseOptions.isNotEmpty) {
-        RowselectedDiseaseFilter = diseaseOptions.first;
+      if (!diseaseOptions.contains(yearlyPestType) && diseaseOptions.isNotEmpty) {
+        yearlyPestType = diseaseOptions.first;
       }
-      if (!areaOptions.contains(RowselectedFilter) && areaOptions.isNotEmpty) {
-        RowselectedFilter = areaOptions.first;
+      if (!areaOptions.contains(yearlyPestArea) && areaOptions.isNotEmpty) {
+        yearlyPestArea = areaOptions.first;
       }
 
       // Chart data for overall pesticide usage
@@ -1688,7 +1773,7 @@ Container(
                 final String area = (data['area'] ?? '').toString();
 
                 // Filter data by selected disease and area
-                return disease == RowselectedDiseaseFilter && area == RowselectedFilter;
+                return disease == yearlyPestType && area == yearlyPestArea;
               })
               .fold<Map<String, int>>({}, (counts, doc) {
                 final data = doc.data() as Map<String, dynamic>;
@@ -1727,11 +1812,11 @@ Container(
                     // Dropdown for disease filter
                     Expanded(
                       child: DropdownButton<String>(
-                        value: RowselectedDiseaseFilter,
+                        value: yearlyPestType,
                         onChanged: (String? newValue) {
                           if (newValue != null) {
                             setState(() {
-                              RowselectedDiseaseFilter = newValue;
+                              yearlyPestType = newValue;
                             });
                           }
                         },
@@ -1747,11 +1832,11 @@ Container(
                     // Dropdown for area filter
                     Expanded(
                       child: DropdownButton<String>(
-                        value: RowselectedFilter,
+                        value: yearlyPestArea,
                         onChanged: (String? newValue) {
                           if (newValue != null) {
                             setState(() {
-                              RowselectedFilter = newValue;
+                              yearlyPestArea = newValue;
                             });
                           }
                         },

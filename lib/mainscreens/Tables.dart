@@ -1,5 +1,9 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:csv/csv.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class Tables extends StatefulWidget {
   const Tables({super.key});
@@ -63,6 +67,64 @@ class _TablesState extends State<Tables> {
     });
   }
 
+  Future<void> _exportToCsv() async {
+    try {
+      // Check permissions (for Android)
+      if (Platform.isAndroid) {
+        final status = await Permission.storage.request();
+        if (!status.isGranted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Storage permission is required to save CSV files.'),
+            ),
+          );
+          return;
+        }
+      }
+
+      // Prepare CSV data
+      List<List<String>> csvData = [
+        // Headers
+        ['Date', 'Area', 'Disease', 'Number of Diseases', 'Pesticides', 'Harvest (kg)'],
+        // Data rows
+        ..._documents.map((doc) {
+          final data = doc.data() as Map<String, dynamic>;
+          return [
+            data['date']?.toString() ?? '',
+            data['area']?.toString() ?? '',
+            data['disease']?.toString() ?? '',
+            data['number_of_diseases']?.toString() ?? '',
+            data['pesticides']?.toString() ?? '',
+            data['harvest']?.toString() ?? '',
+          ];
+        }).toList(),
+      ];
+
+      // Convert to CSV format
+      String csv = const ListToCsvConverter().convert(csvData);
+
+      // Get directory to save file
+      final directory = await getExternalStorageDirectory();
+      final path = '${directory!.path}/harvest_data.csv';
+
+      // Save the file
+      final file = File(path);
+      await file.writeAsString(csv);
+
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('CSV file saved to $path'),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error exporting CSV: $e'),
+        ),
+      );
+    }
+  }
 void _deleteDocument(String docId) async {
     bool confirmDelete = await _showDeleteConfirmationDialog();
     if (confirmDelete) {
@@ -187,7 +249,6 @@ void _deleteDocument(String docId) async {
       ),
     );
 }
-
   void _onSearch(String value) {
     setState(() {
       _searchFilter = value.trim();
@@ -238,6 +299,11 @@ void _deleteDocument(String docId) async {
               _fetchData();
             },
           ),
+          IconButton(
+            icon: const Icon(Icons.download),
+            tooltip: 'Export as CSV',
+            onPressed: _exportToCsv,
+          ),
         ],
       ),
       body: Padding(
@@ -267,6 +333,7 @@ void _deleteDocument(String docId) async {
                             DataColumn(label: Text('Area')),
                             DataColumn(label: Text('Date')),
                             DataColumn(label: Text('Disease')),
+                            DataColumn(label: Text('No. of Diseases')),
                             DataColumn(label: Text('Harvest (kg)')),
                             DataColumn(label: Text('Pesticides')),
                             DataColumn(label: Text('Actions')),
@@ -277,7 +344,8 @@ void _deleteDocument(String docId) async {
                               DataCell(Text(data['area'] ?? '')),
                               DataCell(Text(data['date'] ?? '')),
                               DataCell(Text(data['disease'] ?? '')),
-                              DataCell(Text('${data['harvest'] ?? 0}')),
+                              DataCell(Text(data['number_of_diseases'].toString())),
+                              DataCell(Text(data['harvest'].toString())),
                               DataCell(Text(data['pesticides'] ?? '')),
                               DataCell(
                                 Row(

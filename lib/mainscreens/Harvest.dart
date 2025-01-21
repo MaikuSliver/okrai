@@ -84,6 +84,16 @@ class _HarvestState extends State<Harvest> {
               children: [
                   const SizedBox(height: 10,),
                 _addHarvest(),
+                 const SizedBox(height: 10,),
+                 Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 15),
+                  child: const Text(
+                    'The Okrai Harvest statistical charts provide a comprehensive overview of harvest productivity and crop health. With features like "Insert New Harvest" for data logging and "List View" for easy record management, the dashboard empowers farmers to make informed decisions for improved harvest outcomes.',
+                    textAlign: TextAlign.justify,
+                    style: TextStyle(fontSize: 10),
+                  ),
+                ),
+                 
                   const SizedBox(height: 10,),
                 _buildHarvestCharts(),
                    const SizedBox(height: 10,),
@@ -375,7 +385,7 @@ void _showInsertHarvestDialog() {
                               'date': date,
                               'area': area,
                               'disease': disease,
-                              'number_of_diseases': int.parse(numberOfDiseases),
+                              'numberOfDiseases': int.parse(numberOfDiseases),
                               'pesticides': pesticides,
                               'harvest': int.parse(harvest),
                             });
@@ -1519,10 +1529,10 @@ Widget _buildPestCharts() {
                     child: SfCartesianChart(
                       primaryXAxis: const CategoryAxis(
                         labelRotation: 45, // Rotate labels for better readability
-                        title: AxisTitle(text: "Pesticides"),
+                    
                       ),
                       primaryYAxis: const NumericAxis(
-                        title: AxisTitle(text: "Count"),
+                    
                       ),
                       series: <CartesianSeries<ChartData, String>>[
                         ColumnSeries<ChartData, String>(
@@ -1701,10 +1711,10 @@ Widget _buildPestCharts() {
                     child: SfCartesianChart(
                       primaryXAxis: const CategoryAxis(
                         labelRotation: 45, // Rotate labels for better readability
-                        title: AxisTitle(text: "Pesticides"),
+                      
                       ),
                       primaryYAxis: const NumericAxis(
-                        title: AxisTitle(text: "Count"),
+                     
                       ),
                       series: <CartesianSeries<ChartData, String>>[
                         ColumnSeries<ChartData, String>(
@@ -1864,10 +1874,10 @@ Container(
                     child: SfCartesianChart(
                       primaryXAxis: const CategoryAxis(
                         labelRotation: 45, // Rotate labels for better readability
-                        title: AxisTitle(text: "Pesticides"),
+                       
                       ),
                       primaryYAxis: const NumericAxis(
-                        title: AxisTitle(text: "Count"),
+                     
                       ),
                       series: <CartesianSeries<ChartData, String>>[
                         ColumnSeries<ChartData, String>(

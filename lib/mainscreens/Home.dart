@@ -27,7 +27,7 @@ class _HomeState extends State<Home> {
   String description = 'This tool aids farmers in preserving their harvests. This app has a useful built-in camera that enables the farmer to take a picture of the crop that is ill and send it for diagnosis.';
   int _totalHealthy = 0;
   int _totalDisease = 0;
-  String selectedFilter = 'This Year';
+  String selectedFilter = 'This Month';
  //int _currentIndex = 0; // Current index for the carousel
   //late Timer _timer; // Timer for auto slide
 

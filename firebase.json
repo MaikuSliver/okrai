@@ -1,1 +1,39 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"okrai-36082","appId":"1:730282013216:android:8f8d96ba1147e99e3c8245","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"okrai-36082","configurations":{"android":"1:730282013216:android:8f8d96ba1147e99e3c8245","web":"1:730282013216:web:906ec2ad0fe9144c3c8245","windows":"1:730282013216:web:0635ca2ce3e357d23c8245"}}}}}}
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "okrai-36082",
+          "appId": "1:730282013216:android:8f8d96ba1147e99e3c8245",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "okrai-36082",
+          "configurations": {
+            "android": "1:730282013216:android:8f8d96ba1147e99e3c8245",
+            "web": "1:730282013216:web:906ec2ad0fe9144c3c8245",
+            "windows": "1:730282013216:web:0635ca2ce3e357d23c8245"
+          }
+        }
+      }
+    }
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ],
+      "predeploy": [
+       
+      ]
+    }
+  ]
+}

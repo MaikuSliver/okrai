@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:ml_algo/ml_algo.dart';
 import 'package:ml_dataframe/ml_dataframe.dart';
-import 'package:path_provider/path_provider.dart';
+//import 'package:path_provider/path_provider.dart';
 import 'package:csv/csv.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -136,7 +136,7 @@ class _TrainModelPageState extends State<TrainModelPage> {
           return;
         }
       }
-      final directory = await getApplicationDocumentsDirectory();
+      //final directory = await getApplicationDocumentsDirectory();
       const filePath = '/storage/emulated/0/Android/data/com.example.okrai/files/harvest_model.json';
 
       final json = await model.saveAsJson('harvest_model');

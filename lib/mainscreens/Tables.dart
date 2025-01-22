@@ -93,7 +93,7 @@ class _TablesState extends State<Tables> {
             data['date']?.toString() ?? '',
             data['area']?.toString() ?? '',
             data['disease']?.toString() ?? '',
-            data['number_of_diseases']?.toString() ?? '',
+            data['numberOfDiseases']?.toString() ?? '',
             data['pesticides']?.toString() ?? '',
             data['harvest']?.toString() ?? '',
           ];
@@ -168,7 +168,7 @@ void _deleteDocument(String docId) async {
     String date = data['date'];
     String area = data['area'];
     String disease = data['disease'];
-    String numberOfDiseases = data['number_of_diseases'].toString();
+    String numberOfDiseases = data['numberOfDiseases'].toString();
     String pesticides = data['pesticides'];
     String harvest = data['harvest'].toString();
 
@@ -224,7 +224,7 @@ void _deleteDocument(String docId) async {
               await _firestore.collection('harvests').doc(doc.id).update({
                 'area': area,
                 'disease': disease,
-                'number_of_diseases': int.tryParse(numberOfDiseases) ?? 0,
+                'numberOfDiseases': int.tryParse(numberOfDiseases) ?? 0,
                 'pesticides': pesticides,
                 'harvest': int.tryParse(harvest) ?? 0,
               });
@@ -344,7 +344,7 @@ void _deleteDocument(String docId) async {
                               DataCell(Text(data['area'] ?? '')),
                               DataCell(Text(data['date'] ?? '')),
                               DataCell(Text(data['disease'] ?? '')),
-                              DataCell(Text(data['number_of_diseases'].toString())),
+                              DataCell(Text(data['numberOfDiseases'].toString())),
                               DataCell(Text(data['harvest'].toString())),
                               DataCell(Text(data['pesticides'] ?? '')),
                               DataCell(

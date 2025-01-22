@@ -14,6 +14,8 @@ import '../mlmodel/TfliteModel.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
+import 'trainmodelpage.dart';
+
 class Home extends StatefulWidget {
   const Home({super.key});
 
@@ -247,6 +249,40 @@ ChartData('Diseased', double.parse((_totalDisease / _totalScans * 100).toStringA
           ),
           const Text(
             "Disease",
+            style: TextStyle(
+              fontWeight: FontWeight.w400,
+              fontSize: 14,
+            ),
+          ),
+        ],
+      ),
+    ),
+     Card(
+      margin: const EdgeInsets.fromLTRB(12, 5, 5, 5),
+      color: const Color(0xffffffff),
+      elevation: 1,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(4.0),
+        side: const BorderSide(color: Color(0x4d9e9e9e), width: 1),
+      ),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 0),
+            child: IconButton(
+              icon: Image.asset(
+                'assets/images/pest.png',
+                height: 30, // Adjust the size as needed
+                width: 50,
+              ),
+              onPressed: () => Navigator.push(
+                context,
+                PageTransition(type: PageTransitionType.fade, child: const TrainModelPage()),
+              ),
+            ),
+          ),
+          const Text(
+            "Train Model",
             style: TextStyle(
               fontWeight: FontWeight.w400,
               fontSize: 14,

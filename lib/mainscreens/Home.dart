@@ -1,6 +1,6 @@
 // ignore_for_file: file_names
 //import 'dart:async';
-
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:okrai/forecast/predictyield.dart';
 import 'package:okrai/mainscreens/Disease.dart';
@@ -13,7 +13,7 @@ import '../database/db_helper.dart';
 import '../mlmodel/TfliteModel.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'trainmodelpage.dart';
 
 class Home extends StatefulWidget {
@@ -37,6 +37,7 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
     _refreshScans(selectedFilter);
+    _checkFirstTime();
       // Start the timer for auto sliding
     // _timer = Timer.periodic(const Duration(seconds: 15), (Timer timer) {
     //   setState(() {
@@ -49,11 +50,99 @@ class _HomeState extends State<Home> {
   List<ChartData> lineChartData = [];
    List<ChartData> barChartData = [];
     List<ChartData> pesticideChartData = [];
+    final CollectionReference usersCollection = FirebaseFirestore.instance.collection('users');
   @override
   void dispose() {
    // _timer.cancel(); // Cancel the timer when disposing
     super.dispose();
   }
+void _checkFirstTime() async {
+  var box = await Hive.openBox('appBox');
+  bool isFirstTime = box.get('isFirstTime', defaultValue: true);
+
+  if (isFirstTime) {
+    // Show the welcome message
+    _showWelcomePopup();
+
+    // Update the flag
+    box.put('isFirstTime', false);
+  }
+}
+
+void _showWelcomePopup() {
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text("Welcome!"),
+        content: const Text(
+          "Thank you for installing the Okrai app! Here's how you can get started with your journey.",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () async {
+              // Insert data locally and sync to Firestore
+              await _addUserOffline();
+
+              // Close the dialog
+              Navigator.of(context).pop();
+            },
+            child: const Text("Got it!"),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+Future<void> _addUserOffline() async {
+  try {
+    // Generate a unique ID for the user
+    String userId = DateTime.now().millisecondsSinceEpoch.toString();
+
+    // Save user data locally using Hive
+    var box = await Hive.openBox('offlineUsers');
+    await box.add({
+      'id': userId,
+      'timestamp': DateTime.now().toIso8601String(),
+    });
+
+    debugPrint("User data saved locally with ID: $userId");
+
+    // Attempt to sync the data to Firestore
+    _syncOfflineData();
+  } catch (e) {
+    debugPrint("Error saving user data locally: $e");
+  }
+}
+
+Future<void> _syncOfflineData() async {
+  try {
+    var box = await Hive.openBox('offlineUsers');
+    var users = box.values.toList();
+
+    if (users.isNotEmpty) {
+      // Reference to the Firestore collection
+      CollectionReference usersCollection =
+          FirebaseFirestore.instance.collection('users');
+
+      // Upload each user to Firestore
+      for (var user in users) {
+        await usersCollection.add({
+          'id': user['id'],
+          'timestamp': FieldValue.serverTimestamp(),
+        });
+
+        debugPrint("User synced with ID: ${user['id']}");
+      }
+
+      // Clear the locally saved data after syncing
+      await box.clear();
+    }
+  } catch (e) {
+    debugPrint("Error syncing offline data: $e");
+  }
+}
 
 void _refreshScans(String filter) async {
    setState(() => _isLoading = true);
@@ -742,6 +831,56 @@ Widget _buildCharts() {
                     child: Text("No data yet", style: TextStyle(fontSize: 20)),
                   ),
           ),
+           // Pie Chart (No Dropdown)
+         
+             FutureBuilder<DocumentSnapshot>(
+        future: usersCollection.doc().get(const GetOptions(source: Source.cache)),
+        builder: (context, futureSnapshot) {
+          return StreamBuilder<QuerySnapshot>(
+            stream: usersCollection.snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting &&
+                  !futureSnapshot.hasData) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (snapshot.hasError) {
+                return const Center(child: Text('Error fetching user count.'));
+              }
+
+              // Use live data if available, otherwise fallback to cache
+              final totalUsers = snapshot.hasData
+                  ? snapshot.data?.docs.length ?? 0
+                  : futureSnapshot.data?.exists ?? false ? 1 : 0;
+
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      'Total Users:',
+                      style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 15),
+                       Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            '$totalUsers',
+                            style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                            ),
+                            const Icon(Icons.people, color: Colors.green, size: 35),
+                        ],
+                    ),
+                  ],
+                ),
+                
+                
+              );
+            },
+          );
+        },
+          ),
+         
         ],
       ),
     ),

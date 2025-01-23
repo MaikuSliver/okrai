@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'mainscreens/Home.dart';
 import 'package:double_tap_to_exit/double_tap_to_exit.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 Future<void> main() async {
     WidgetsFlutterBinding.ensureInitialized();
@@ -11,6 +12,12 @@ Future<void> main() async {
   FirebaseFirestore.instance.settings = const Settings(
     persistenceEnabled: true,
   );
+
+  // Initialize Hive
+  await Hive.initFlutter();
+
+  // Open a box for your app's preferences
+  await Hive.openBox('appBox');
   
   runApp(const MyApp());
 }

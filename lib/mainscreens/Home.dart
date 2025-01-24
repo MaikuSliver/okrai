@@ -354,16 +354,12 @@ ChartData('Diseased', double.parse((_totalDisease / _totalScans * 100).toStringA
         borderRadius: BorderRadius.circular(4.0),
         side: const BorderSide(color: Color(0x4d9e9e9e), width: 1),
       ),
-      child: Column(
+            child: Column(
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 0),
             child: IconButton(
-              icon: Image.asset(
-                'assets/images/pest.png',
-                height: 30, // Adjust the size as needed
-                width: 50,
-              ),
+              icon: const Icon(Icons.settings, color: Colors.green),
               onPressed: () => Navigator.push(
                 context,
                 PageTransition(type: PageTransitionType.fade, child: const TrainModelPage()),

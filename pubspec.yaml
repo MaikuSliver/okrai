@@ -45,7 +45,7 @@ dependencies:
   firebase_core: ^3.9.0
   cloud_firestore: ^5.6.0
   intl: ^0.19.0
-  connectivity_plus: ^6.1.1
+  connectivity_plus: ^4.0.0
   csv: ^5.0.0
   googleapis_auth: ^1.4.1  # Older compatible version
   googleapis: ^5.0.0 

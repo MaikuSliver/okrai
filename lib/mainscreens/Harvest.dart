@@ -18,6 +18,40 @@ class Harvest extends StatefulWidget {
 }
   
 class _HarvestState extends State<Harvest> {
+bool isOnline = false;
+
+@override
+  void initState() {
+    super.initState();
+    _initializeConnectivity();
+    _listenToConnectivityChanges();
+  }
+
+ void _initializeConnectivity() async {
+  try {
+    // Get the current connectivity status
+    final ConnectivityResult connectivityResult = await Connectivity().checkConnectivity();
+    _updateStatus(connectivityResult); // Pass the single ConnectivityResult
+  } catch (e) {
+    // Handle exceptions, such as plugin errors
+    setState(() {
+      isOnline = false;
+    });
+  }
+}
+
+void _listenToConnectivityChanges() {
+  Connectivity().onConnectivityChanged.listen((ConnectivityResult connectivityResult) {
+    _updateStatus(connectivityResult); // Listen and pass the single ConnectivityResult
+  });
+}
+
+void _updateStatus(ConnectivityResult connectivityResult) {
+  setState(() {
+    isOnline = connectivityResult == ConnectivityResult.mobile ||
+        connectivityResult == ConnectivityResult.wifi;
+  });
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,15 +98,47 @@ class _HarvestState extends State<Harvest> {
       ),
       appBar: AppBar(
         backgroundColor: const Color(0xff43c175),
-        title: const Center(
-          child: Text(
-            'Harvest',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
+        title: const Text(
+          'Harvest',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
           ),
         ),
+        actions: [
+         Container(
+          decoration: BoxDecoration(
+    color: Colors.white, // White background
+    borderRadius: BorderRadius.circular(15), // Curved edges
+    boxShadow: const [
+      BoxShadow(
+        color: Colors.black12, // Optional shadow for better appearance
+        blurRadius: 5,
+        offset: Offset(0, 3),
+      ),
+    ],
+  ),
+     margin: const EdgeInsets.symmetric(horizontal: 10,vertical: 10),
+    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), // Optional padding
+    child: Row(
+      children: [
+         Icon(
+          isOnline ? Icons.wifi : Icons.wifi_off,
+          color: isOnline ? Colors.green : Colors.red,
+        ),
+        const SizedBox(width: 8),
+        Text(
+          isOnline ? 'Online' : 'Offline',
+          style: TextStyle(
+            color: isOnline ? Colors.green : Colors.red,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(width: 8),
+      ],
+    ),
+  ),
+        ],
       ),
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -186,26 +252,27 @@ class _HarvestState extends State<Harvest> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: _showInsertHarvestDialog,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xff44c377),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30.0),
-                        ),
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                      ),
-                      child: const Text(
-                        "Insert New Harvest",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 12,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
+                Expanded(
+  child: ElevatedButton(
+    onPressed: isOnline ? _showInsertHarvestDialog : null, // Disable when offline
+    style: ElevatedButton.styleFrom(
+      backgroundColor: isOnline ? const Color(0xff44c377) : Colors.grey, // Change color
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(30.0),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+    ),
+    child: Text(
+      isOnline ? "Insert New Harvest" : "No Internet", // Change text
+      style: const TextStyle(
+        fontWeight: FontWeight.w600,
+        fontSize: 12,
+        color: Colors.white,
+      ),
+    ),
+  ),
+),
+
                   const SizedBox(width: 10),
                   Expanded(
                     child: ElevatedButton.icon(

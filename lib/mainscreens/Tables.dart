@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:csv/csv.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 class Tables extends StatefulWidget {
   const Tables({super.key});
@@ -21,13 +22,39 @@ class _TablesState extends State<Tables> {
   String _searchFilter = "";
   final int _limit = 10;
   int _currentPage = 1;
-
+  bool isOnline = false;
   @override
   void initState() {
     super.initState();
     _fetchData();
+     _initializeConnectivity();
+    _listenToConnectivityChanges();
   }
+void _initializeConnectivity() async {
+  try {
+    // Get the current connectivity status
+    final ConnectivityResult connectivityResult = await Connectivity().checkConnectivity();
+    _updateStatus(connectivityResult); // Pass the single ConnectivityResult
+  } catch (e) {
+    // Handle exceptions, such as plugin errors
+    setState(() {
+      isOnline = false;
+    });
+  }
+}
 
+void _listenToConnectivityChanges() {
+  Connectivity().onConnectivityChanged.listen((ConnectivityResult connectivityResult) {
+    _updateStatus(connectivityResult); // Listen and pass the single ConnectivityResult
+  });
+}
+
+void _updateStatus(ConnectivityResult connectivityResult) {
+  setState(() {
+    isOnline = connectivityResult == ConnectivityResult.mobile ||
+        connectivityResult == ConnectivityResult.wifi;
+  });
+}
   Future<void> _fetchData({bool loadNextPage = false, bool loadPreviousPage = false}) async {
     if (_isLoading) return;
 
@@ -349,18 +376,19 @@ void _deleteDocument(String docId) async {
                               DataCell(Text(data['pesticides'] ?? '')),
                               DataCell(
                                 Row(
-                                  children: [
-                                    IconButton(
-                                      icon: const Icon(Icons.edit),
-                                      onPressed: () => _showUpdateDialog(doc),
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(Icons.delete),
-                                      color: Colors.red,
-                                      onPressed: () => _deleteDocument(doc.id),
-                                    ),
-                                  ],
-                                ),
+  children: [
+    IconButton(
+      icon: const Icon(Icons.edit),
+      onPressed: isOnline ? () => _showUpdateDialog(doc) : null, // Disable when offline
+      color: isOnline ? Colors.black : Colors.grey, // Change color to indicate disabled
+    ),
+    IconButton(
+      icon: const Icon(Icons.delete),
+      color: isOnline ? Colors.red : Colors.grey, // Change color to gray when disabled
+      onPressed: isOnline ? () => _deleteDocument(doc.id) : null, // Disable when offline
+    ),
+  ],
+),
                               ),
                             ]);
                           }).toList(),

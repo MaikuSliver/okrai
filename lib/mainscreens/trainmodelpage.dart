@@ -1,301 +1,380 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:ml_algo/ml_algo.dart';
-import 'package:ml_dataframe/ml_dataframe.dart';
-//import 'package:path_provider/path_provider.dart';
 import 'package:csv/csv.dart';
+import 'package:ml_dataframe/ml_dataframe.dart';
+import 'package:ml_algo/ml_algo.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:fl_chart/fl_chart.dart';
 
-class TrainModelPage extends StatefulWidget {
-  const TrainModelPage({super.key});
+class HarvestPredictionScreen extends StatefulWidget {
+  const HarvestPredictionScreen({super.key});
 
   @override
-  _TrainModelPageState createState() => _TrainModelPageState();
+  _HarvestPredictionScreenState createState() => _HarvestPredictionScreenState();
 }
 
-class _TrainModelPageState extends State<TrainModelPage> {
-  late DataFrame dataframe;
-  late LinearRegressor model;
-  bool modelTrained = false;
+class _HarvestPredictionScreenState extends State<HarvestPredictionScreen> {
+  final String filePath = '/storage/emulated/0/Android/data/com.example.okrai/files/harvest_data.csv';
 
-  List<String> areaOptions = [];
-  List<String> diseaseOptions = [];
-  List<String> pesticidesOptions = [];
-
+  List<String> areas = [];
+  List<String> diseases = [];
+  List<String> pesticides = [];
   String? selectedArea;
   String? selectedDisease;
-  String? selectedPesticides;
+  String? selectedPesticide;
   TextEditingController numberOfDiseasesController = TextEditingController();
 
-  Future<void> requestStoragePermission() async {
-    if (await Permission.storage.request().isGranted) {
-      print("Storage permission granted");
-    } else {
-      throw Exception("Storage permission denied");
-    }
+  late DataFrame dataframe;
+  LinearRegressor? model;
+  double? predictedHarvest;
+  List<FlSpot> trainingDataPoints = [];
+
+  @override
+  void initState() {
+    super.initState();
+    loadCSV();
   }
 
-  Future<void> loadAndProcessCSV() async {
-    try {
-      await requestStoragePermission();
+bool isFormFilled() {
+  return selectedArea != null &&
+         selectedDisease != null &&
+         selectedPesticide != null &&
+         numberOfDiseasesController.text.isNotEmpty;
+}
 
-      const filePath = '/storage/emulated/0/Android/data/com.example.okrai/files/harvest_data.csv';
-      final file = File(filePath);
-
-      if (await file.exists()) {
-        final csvData = await file.readAsString();
-        final rows = const CsvToListConverter().convert(csvData);
-
-        final header = rows.first.map((e) => e.toString()).toList();
-        final data = rows.sublist(1);
-
-        final areaSet = <String>{};
-        final diseaseSet = <String>{};
-        final pesticidesSet = <String>{};
-
-        final processedData = data.map((row) {
-          final area = row[header.indexOf('Area')].toString();
-          final disease = row[header.indexOf('Disease')].toString();
-          final pesticides = row[header.indexOf('Pesticides')].toString();
-
-          areaSet.add(area);
-          diseaseSet.add(disease);
-          pesticidesSet.add(pesticides);
-
-          final numberOfDiseases = row[header.indexOf('Number of Diseases')] as int;
-          final harvest = row[header.indexOf('Harvest (kg)')] as int;
-
-          return [
-            area == 'Area 2' ? 1.0 : 0.0,
-            disease == 'Yellow Vein' ? 1.0 : 0.0,
-            numberOfDiseases.toDouble(),
-            pesticides == 'rtgx' ? 1.0 : 0.0,
-            harvest.toDouble(),
-          ];
-        }).toList();
-
-        setState(() {
-          areaOptions = areaSet.toList();
-          diseaseOptions = diseaseSet.toList();
-          pesticidesOptions = pesticidesSet.toList();
-          dataframe = DataFrame(processedData, header: [
-            'Area',
-            'Disease',
-            'Number of Diseases',
-            'Pesticides',
-            'Harvest (kg)',
-          ]);
-        });
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("CSV Loaded and Processed Successfully")),
-        );
-      } else {
-        throw Exception("File not found");
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error loading CSV: $e")),
-      );
-    }
+void evaluateModel() {
+  if (model == null) {
+    print('Model not trained yet.');
+    return;
   }
 
-  Future<void> trainModel() async {
-    try {
-      const targetName = 'Harvest (kg)'; // Target column name
+  final actualValues = dataframe['Harvest'].data.map((e) => double.parse(e.toString())).toList();
+    final features = dataframe.dropSeries(names: ['Harvest']);
+  final predictions = model!.predict(features).rows.map((row) => row.first as double).toList();
 
-      model = LinearRegressor(
-        dataframe,
-        targetName,
-      );
-
-      setState(() {
-        modelTrained = true;
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Model Trained Successfully")),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error training model: $e")),
-      );
-    }
+  if (actualValues.length != predictions.length) {
+    print('Mismatch in actual and predicted values.');
+    return;
   }
 
-  Future<void> saveModel() async {
-    try {
-      if (Platform.isAndroid) {
-        final status = await Permission.storage.request();
-        if (!status.isGranted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Storage permission is required to save Model.'),
-            ),
-          );
-          return;
-        }
-      }
-      //final directory = await getApplicationDocumentsDirectory();
-      const filePath = '/storage/emulated/0/Android/data/com.example.okrai/files/harvest_model.json';
+  // Compute MAE
+  double mae = actualValues.asMap().entries
+      .map((entry) => (entry.value - predictions[entry.key]).abs())
+      .reduce((a, b) => a + b) / actualValues.length;
 
-      final json = await model.saveAsJson('harvest_model');
-      if (json is! String) {
-        throw Exception("Model's JSON is not a string");
-      }
+  // Compute MSE
+  double mse = actualValues.asMap().entries
+      .map((entry) => (entry.value - predictions[entry.key]) * (entry.value - predictions[entry.key]))
+      .reduce((a, b) => a + b) / actualValues.length;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Model saved to $filePath")),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error saving model: $e")),
-      );
-    }
+  // Compute R-squared
+  double meanActual = actualValues.reduce((a, b) => a + b) / actualValues.length;
+  double ssTotal = actualValues.map((e) => (e - meanActual) * (e - meanActual)).reduce((a, b) => a + b);
+  double ssResidual = actualValues.asMap().entries
+      .map((entry) => (entry.value - predictions[entry.key]) * (entry.value - predictions[entry.key]))
+      .reduce((a, b) => a + b);
+  double rSquared = 1 - (ssResidual / ssTotal);
+
+  print('Model Evaluation:');
+  print('MAE: ${mae.toStringAsFixed(4)}');
+  print('MSE: ${mse.toStringAsFixed(4)}');
+  print('R²: ${rSquared.toStringAsFixed(4)}');
+
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text('MAE: ${mae.toStringAsFixed(4)}, MSE: ${mse.toStringAsFixed(4)}, R²: ${rSquared.toStringAsFixed(4)}',
+      style: const TextStyle(color: Colors.white),),
+      duration: const Duration(seconds: 5),
+      backgroundColor: const Color(0xff44c377),
+    ),
+  );
+}
+  /// 📌 Load and Train Model
+  Future<void> loadCSV() async {
+  if (!(await Permission.storage.request().isGranted)) {
+    print('Storage permission denied');
+    return;
   }
 
- Future<void> testModel() async {
+  final file = File(filePath);
+  if (!await file.exists()) {
+    print('CSV file not found at $filePath');
+    return;
+  }
+
+  final csvString = await file.readAsString();
+  final rawCsvData = const CsvToListConverter().convert(csvString);
+
+  if (rawCsvData.isEmpty || rawCsvData.length < 2) {
+    print('CSV file is empty or contains only headers.');
+    return;
+  }
+
+  final headers = rawCsvData.first.map((col) => col.toString().trim()).toList();
+  final rows = rawCsvData.skip(1).where((row) => row.isNotEmpty).toList();
+
+  final indexHarvest = headers.indexOf('Harvest (kg)');
+  if (indexHarvest == -1) {
+    print("Error: Column 'Harvest (kg)' not found in CSV headers.");
+    return;
+  }
+
+  headers[indexHarvest] = 'Harvest'; // Rename column for easier reference
+
+  setState(() {
+    areas = rows.map((row) => row[1].toString()).toSet().toList();
+    diseases = rows.map((row) => row[2].toString()).toSet().toList();
+    pesticides = rows.map((row) => row[4].toString()).toSet().toList();
+  });
+
   try {
-    if (!modelTrained) {
-      throw Exception("Model not trained yet");
+    final formattedData = rows.map((row) {
+      double harvestValue = double.tryParse(row[indexHarvest].toString()) ?? 0;
+
+      return [
+        areas.indexOf(row[1].toString()).toDouble(),  // Area as categorical numeric value
+        diseases.indexOf(row[2].toString()).toDouble(),  // Disease as categorical numeric value
+        pesticides.indexOf(row[4].toString()).toDouble(),  // Pesticides as categorical numeric value
+        int.tryParse(row[3].toString())?.toDouble() ?? 0,  // Number of Diseases
+        harvestValue
+      ];
+    }).toList();
+
+    // Ensure dataset is valid
+    if (formattedData.length < 5) {
+      print("Not enough data for reliable training. Minimum 5 records required.");
+      return;
     }
 
-    // Parse inputs
-    final areaValue = selectedArea == '' ? 1.0 : 0.0;
-    final diseaseValue = selectedDisease == '' ? 1.0 : 0.0;
-    final pesticidesValue = selectedPesticides == '' ? 1.0 : 0.0;
-    final numberOfDiseasesValue = double.tryParse(numberOfDiseasesController.text) ?? 0.0;
-
-    final inputs = [areaValue, diseaseValue, numberOfDiseasesValue, pesticidesValue];
-
-    // Debugging prints
-    print("Input Values: $inputs");
-    print("Expected Feature Count: ${dataframe.header.length - 1}");
-
-    // Ensure inputs array matches the expected feature count
-    if (inputs.length != dataframe.header.length - 1) {
-      throw Exception(
-        "Input count (${inputs.length}) does not match model feature count (${dataframe.header.length - 1})",
-      );
-    }
-
-    // Construct the DataFrame for prediction
-    final predictionDataFrame = DataFrame(
-      [inputs], // List containing a single row of inputs
-      header: ['Area', 'Disease', 'Number of Diseases', 'Pesticides'], // Headers matching the model features
+    // Convert data to DataFrame
+    dataframe = DataFrame(
+      [ ['Area', 'Disease', 'Pesticides', 'NumDiseases', 'Harvest'] ] +
+      formattedData.map((row) => row.map((e) => e.toString()).toList()).toList(),
+      headerExists: true
     );
 
-    // Debugging prints for validation
-    print("Prediction DataFrame Header: ${predictionDataFrame.header}");
-    print("Prediction DataFrame Row Count: ${predictionDataFrame.rows.length}");
-    print("Prediction DataFrame: ${predictionDataFrame.toString()}");
+    // Train Multi-Linear Regression Model
+    model = model = LinearRegressor(
+  dataframe,
+  'Harvest',
+  fitIntercept: true,
+  iterationsLimit: 100,
+  learningRateType: LearningRateType.constant,
+);
 
-    // Perform prediction
-    final prediction = model.predict(predictionDataFrame);
+evaluateModel(); // Call after training
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Prediction: ${prediction[0]} kg")),
-    );
+    print('Model trained successfully!');
+
+    // Generate graph data
+    setState(() {
+      trainingDataPoints = formattedData.map((row) => FlSpot(row[3], row[4])).toList();
+    });
   } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Error testing model: $e")),
-    );
+    print('Error parsing CSV: $e');
   }
 }
 
 
-
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Train ML Model"),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            ElevatedButton(
-              onPressed: loadAndProcessCSV,
-              child: const Text("Load and Process CSV"),
-            ),
-            ElevatedButton(
-              onPressed: trainModel,
-              child: const Text("Train Model"),
-            ),
-            ElevatedButton(
-              onPressed: saveModel,
-              child: const Text("Save Model"),
-            ),
-            const SizedBox(height: 16),
-            if (areaOptions.isNotEmpty)
-              DropdownButton<String>(
-                value: selectedArea,
-                hint: const Text("Select Area"),
-                items: areaOptions.map((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    selectedArea = value;
-                  });
-                },
-              ),
-            const SizedBox(height: 8),
-            if (diseaseOptions.isNotEmpty)
-              DropdownButton<String>(
-                value: selectedDisease,
-                hint: const Text("Select Disease"),
-                items: diseaseOptions.map((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    selectedDisease = value;
-                  });
-                },
-              ),
-            const SizedBox(height: 8),
-            if (pesticidesOptions.isNotEmpty)
-              DropdownButton<String>(
-                value: selectedPesticides,
-                hint: const Text("Select Pesticides"),
-                items: pesticidesOptions.map((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    selectedPesticides = value;
-                  });
-                },
-              ),
-            const SizedBox(height: 8),
-            TextField(
-              controller: numberOfDiseasesController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Number of Diseases',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: testModel,
-              child: const Text("Test Model"),
-            ),
-          ],
-        ),
-      ),
-    );
+  /// 📌 Predict Harvest Output
+  void predictHarvest() {
+  if (selectedArea == null || selectedDisease == null || selectedPesticide == null || numberOfDiseasesController.text.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please fill all inputs')));
+    return;
   }
+
+  final testSample = DataFrame([
+    [
+      areas.indexOf(selectedArea!).toDouble(),
+      diseases.indexOf(selectedDisease!).toDouble(),
+      pesticides.indexOf(selectedPesticide!).toDouble(),
+      int.tryParse(numberOfDiseasesController.text)?.toDouble() ?? 0,
+    ]
+  ], headerExists: false);
+
+  final prediction = model?.predict(testSample);
+  double? predictedValue = prediction?.rows.first.first;
+
+  // Ensure prediction is meaningful
+  if (predictedValue != null && predictedValue <= 0) {
+    predictedValue = (dataframe['Harvest'] as List).reduce((a, b) => a + b) / dataframe.rows.length; // Use average harvest
+  }
+
+  setState(() {
+    predictedHarvest = predictedValue;
+  });
+
+  print('Predicted Harvest: ${predictedHarvest?.toStringAsFixed(2)} kg');
+}
+
+
+  /// 📊 Graph Widget
+  Widget buildGraph() {
+  return Container(
+    height: 300,
+    padding: const EdgeInsets.all(10),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(10),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.grey.withOpacity(0.2),
+          blurRadius: 5,
+          spreadRadius: 2,
+        ),
+      ],
+    ),
+    child: LineChart(
+      LineChartData(
+        titlesData: const FlTitlesData(
+          leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: true, reservedSize: 40)),
+          bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: true, reservedSize: 40)),
+        ),
+        gridData: const FlGridData(show: true, drawVerticalLine: false),
+        borderData: FlBorderData(
+          show: true,
+          border: Border.all(color: const Color(0xff43c175), width: 1.5),
+        ),
+        lineBarsData: [
+          LineChartBarData(
+            spots: trainingDataPoints,
+            isCurved: true,
+            color: const Color(0xff43c175), // Changed to green
+            dotData: const FlDotData(show: true),
+            belowBarData: BarAreaData(show: false),
+          ),
+          if (predictedHarvest != null)
+            LineChartBarData(
+              spots: [
+                FlSpot(1.20250122, predictedHarvest!),
+              ],
+              isCurved: false,
+              color: Colors.red,
+              dotData: const FlDotData(show: true),
+              belowBarData: BarAreaData(show: false),
+            ),
+        ],
+      ),
+    ),
+  );
+}
+
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+        title: const Center(
+          child: Text(
+            "Harvest Prediction",
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+          ),
+        ),
+        backgroundColor: const Color(0xff44c377),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          color: Colors.white,
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        leadingWidth: 5,
+      ),
+    body: SingleChildScrollView(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          buildGraph(),
+          const SizedBox(height: 16),
+          const Text(
+            'Select Parameters',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xff43c175)),
+          ),
+          const SizedBox(height: 10),
+          DropdownButtonFormField<String>(
+            value: selectedArea,
+            items: areas.map((area) => DropdownMenuItem(value: area, child: Text(area))).toList(),
+            onChanged: (value) => setState(() => selectedArea = value),
+            decoration: const InputDecoration(
+              labelText: 'Select Area',
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Color(0xff43c175)),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey),
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          DropdownButtonFormField<String>(
+            value: selectedDisease,
+            items: diseases.map((disease) => DropdownMenuItem(value: disease, child: Text(disease))).toList(),
+            onChanged: (value) => setState(() => selectedDisease = value),
+            decoration: const InputDecoration(
+              labelText: 'Select Disease',
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Color(0xff43c175)),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey),
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          DropdownButtonFormField<String>(
+            value: selectedPesticide,
+            items: pesticides.map((pesticide) => DropdownMenuItem(value: pesticide, child: Text(pesticide))).toList(),
+            onChanged: (value) => setState(() => selectedPesticide = value),
+            decoration: const InputDecoration(
+              labelText: 'Select Pesticide',
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Color(0xff43c175)),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey),
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          TextField(
+  controller: numberOfDiseasesController,
+  keyboardType: TextInputType.number,
+  decoration: const InputDecoration(
+    labelText: 'Number of Diseases',
+    focusedBorder: OutlineInputBorder(
+      borderSide: BorderSide(color: Color(0xff43c175)),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderSide: BorderSide(color: Colors.grey),
+    ),
+  ),
+  onChanged: (value) {
+    setState(() {});
+  },
+),
+          const SizedBox(height: 20),
+          Center(
+            child: ElevatedButton(
+              onPressed: isFormFilled() ? predictHarvest : null, // Disable if fields are empty
+              style: ElevatedButton.styleFrom(
+                backgroundColor: isFormFilled() ? const Color(0xff43c175) : Colors.grey, 
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              ),
+              child: const Text('Predict Harvest', style: TextStyle(fontSize: 16)),
+            ),
+          ),
+          const SizedBox(height: 20),
+          Center(
+            child: Text(
+              predictedHarvest == null ? 'Prediction: -- kg' : 'Prediction: ${predictedHarvest?.toStringAsFixed(2)} kg',
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
 }

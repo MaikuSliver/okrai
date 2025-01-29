@@ -2,7 +2,6 @@
 //import 'dart:async';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:okrai/forecast/predictyield.dart';
 import 'package:okrai/mainscreens/Disease.dart';
 import 'package:okrai/mainscreens/Harvest.dart';
 import 'package:okrai/mainscreens/myokra.dart';
@@ -346,36 +345,36 @@ ChartData('Diseased', double.parse((_totalDisease / _totalScans * 100).toStringA
         ],
       ),
     ),
-     Card(
-      margin: const EdgeInsets.fromLTRB(12, 5, 5, 5),
-      color: const Color(0xffffffff),
-      elevation: 1,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(4.0),
-        side: const BorderSide(color: Color(0x4d9e9e9e), width: 1),
-      ),
-            child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 0),
-            child: IconButton(
-              icon: const Icon(Icons.settings, color: Colors.green),
-              onPressed: () => Navigator.push(
-                context,
-                PageTransition(type: PageTransitionType.fade, child: const TrainModelPage()),
-              ),
-            ),
-          ),
-          const Text(
-            "Train Model",
-            style: TextStyle(
-              fontWeight: FontWeight.w400,
-              fontSize: 14,
-            ),
-          ),
-        ],
-      ),
-    ),
+    //  Card(
+    //   margin: const EdgeInsets.fromLTRB(12, 5, 5, 5),
+    //   color: const Color(0xffffffff),
+    //   elevation: 1,
+    //   shape: RoundedRectangleBorder(
+    //     borderRadius: BorderRadius.circular(4.0),
+    //     side: const BorderSide(color: Color(0x4d9e9e9e), width: 1),
+    //   ),
+    //         child: Column(
+    //     children: [
+    //       Padding(
+    //         padding: const EdgeInsets.symmetric(vertical: 0),
+    //         child: IconButton(
+    //           icon: const Icon(Icons.settings, color: Colors.green),
+    //           onPressed: () => Navigator.push(
+    //             context,
+    //             PageTransition(type: PageTransitionType.fade, child: HarvestPredictionScreen()),
+    //           ),
+    //         ),
+    //       ),
+    //       const Text(
+    //         "Train Model",
+    //         style: TextStyle(
+    //           fontWeight: FontWeight.w400,
+    //           fontSize: 14,
+    //         ),
+    //       ),
+    //     ],
+    //   ),
+    // ),
   ],
 )
 
@@ -629,7 +628,7 @@ Widget _buildTotalScanCard() {
     child: ElevatedButton(
       onPressed: () => Navigator.push(
         context, 
-        PageTransition(type: PageTransitionType.fade, child: const PredictYield()),
+        PageTransition(type: PageTransitionType.fade, child: const HarvestPredictionScreen()),
       ),
       style: ElevatedButton.styleFrom(
         backgroundColor: const Color(0xff44c377),

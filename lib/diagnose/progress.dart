@@ -91,7 +91,7 @@ late double okrapercent;
   icon: 
   const Icon(Icons.arrow_back),color: const Color(0xff44c377), onPressed: () {Navigator.pop(context);
 },
-), leadingWidth: 8,),
+), leadingWidth: 5,),
       body:  SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Container(

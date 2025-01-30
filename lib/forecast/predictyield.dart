@@ -1,5 +1,9 @@
+import 'dart:io';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
-import 'package:tflite_flutter/tflite_flutter.dart';
+import 'package:csv/csv.dart';
+import 'package:path_provider/path_provider.dart';
 
 class PredictYield extends StatefulWidget {
   const PredictYield({super.key});
@@ -9,262 +13,219 @@ class PredictYield extends StatefulWidget {
 }
 
 class _PredictYieldState extends State<PredictYield> {
- Interpreter? _interpreter;
-
-  // Mapping strings to integers (Label Encoding)
-  final Map<String, int> _diseaseTypeMapping = {
-    'Early Blight Disease': 0,
-    'Leaf Curl Disease': 1,
-    'Yellow Vein Disease': 2,
-    'None': 3,
-  };
-
-  final Map<String, int> _pesticideMapping = {
-    'Acetamiprid 250 grams': 0,
-    'Acetamiprid 300 grams': 1,
-    'Acetamiprid 400 grams': 2,
-    'Carbaryl 250 grams': 3,
-    'Carbaryl 400 grams': 4,
-    'Carbaryl 500 grams': 5,
-    'Cull': 6,
-    'Fungaran 200 grams': 7,
-    'Fungaran 400 grams': 8,
-    'Vermicast': 9,
-    'None': 10,
-  };
-
-  String? _selectedTypeOfDisease;
-  String? _selectedPesticide;
-  int? _encounteredDiseaseCount;
-  double? _predictedHarvestKilos;
+late RegressionModel model;
+  String _prediction = '';
+  Map<String, double> pesticideEncoding = {}; // Map to store pesticide encodings
+  String _metrics = ''; // To store evaluation metrics
 
   @override
   void initState() {
     super.initState();
-    _loadModel();
+    _initializeModel();
   }
 
-  Future<void> _loadModel() async {
-    try {
-      _interpreter = await Interpreter.fromAsset('assets/okra_yield_model.tflite');
-    } catch (e) {
-     // print('Error loading model: $e');
-    }
-  }
+  void _initializeModel() async {
+    List<DataPoint> dataPoints = await loadAndPreprocessData();
+    model = RegressionModel();
+    model.train(dataPoints, 1000); // Train for 1000 epochs
 
- void _predictYield() {
-  if (_interpreter == null || _encounteredDiseaseCount == null || _selectedTypeOfDisease == null || _selectedPesticide == null) {
-    return;
-  }
+    // Calculate metrics
+    List<double> actual = dataPoints.map((data) => data.harvest).toList();
+    List<double> predicted = model.computePredictions(dataPoints);
 
-  // Prepare each input tensor as a List<Object>
-  var diseaseTypeInput = [_diseaseTypeMapping[_selectedTypeOfDisease]!.toDouble()];
-  var numberAffectedInput = [_encounteredDiseaseCount!.toDouble()];
-  var solutionInput = [_pesticideMapping[_selectedPesticide]!.toDouble()];
+    double mse = calculateMSE(actual, predicted);
+    double mae = calculateMAE(actual, predicted);
+    double rmse = calculateRMSE(actual, predicted);
+    double rSquared = calculateRSquared(actual, predicted);
 
-  // Prepare output tensor
-   var output = <int, List<List<double>>>{0: List.filled(1, [0.0])}; // Adjust as needed based on model output
-
-  try {
-    // Run the interpreter with the three inputs
-    _interpreter?.runForMultipleInputs([diseaseTypeInput, numberAffectedInput, solutionInput], output);
-    
-    
     setState(() {
-      _predictedHarvestKilos = output[0]![0][0];
-
-      // Ensure that _predictedHarvestKilos is not null before performing operations
-      double harvestAdjustment = 0;
-
-      if (_encounteredDiseaseCount != null) {
-        if (_encounteredDiseaseCount! < 10) {
-          harvestAdjustment += 600;  // 1 digit
-        } else if (_encounteredDiseaseCount! < 100) {
-          harvestAdjustment += 400;  // 2 digits
-        } else if (_encounteredDiseaseCount! < 300) {
-          harvestAdjustment += 200;  // 3 digits
-        } else if (_encounteredDiseaseCount! < 500) {
-          harvestAdjustment -= 30;   // 400 up to 500
-        } else if (_encounteredDiseaseCount! < 1000) {
-          harvestAdjustment -= 200*0.76;  // 800 up to 1000
-        } else if (_encounteredDiseaseCount! < 1500) {
-          harvestAdjustment -= 500;  // 1100 up to 1500
-           } else if (_encounteredDiseaseCount! < 2000) {
-          harvestAdjustment -= 1000;  // 1500 up to 2000
-        } else {
-          // 2000 and above
-          _predictedHarvestKilos = 0; // Set to 0 for very low harvest
-          // You can add a message to inform the user if needed
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Very Low Harvest')),
-          );
-          return; // Exit the function to avoid further processing
-        }
-      }
-
-      // Apply the adjustment to the predicted harvest
-      _predictedHarvestKilos = (_predictedHarvestKilos ?? 0) + harvestAdjustment; // Use null coalescing operator
+      _metrics = '''
+MSE: ${mse.toStringAsFixed(2)}
+MAE: ${mae.toStringAsFixed(2)}
+RMSE: ${rmse.toStringAsFixed(2)}
+R²: ${rSquared.toStringAsFixed(2)}
+''';
     });
-  } catch (e) {
-    //print("Error during prediction: $e");
   }
+
+
+  Future<List<DataPoint>> loadAndPreprocessData() async {
+    // Get the path to the CSV file in local storage
+    final directory = await getExternalStorageDirectory();
+    final filePath = '${directory?.path}/harvest_data.csv';
+    final file = File(filePath);
+
+    // Read the CSV file
+    final rawData = await file.readAsString();
+    List<List<dynamic>> csvTable = const CsvToListConverter().convert(rawData);
+
+    // Preprocess the data
+    List<DataPoint> dataPoints = [];
+    for (var row in csvTable.skip(1)) {
+      // Skip header row
+      double area = row[1] == 'Area 1' ? 0.0 : 1.0; // Convert Area to numerical
+      double disease = row[2] == 'Leaf Curl' ? 0.0 : 1.0; // Convert Disease to numerical
+      double numberOfDiseases = row[3].toDouble();
+
+      // Convert Pesticide (string) to numerical using label encoding
+      String pesticide = row[4];
+      double encodedPesticide = _encodePesticide(pesticide);
+
+      double harvest = row[5].toDouble();
+
+      dataPoints.add(DataPoint(
+        area: area,
+        disease: disease,
+        numberOfDiseases: numberOfDiseases,
+        pesticides: encodedPesticide,
+        harvest: harvest,
+      ));
+    }
+
+    return dataPoints;
+  }
+
+  double _encodePesticide(String pesticide) {
+    // Assign a unique numerical value to each pesticide
+    if (!pesticideEncoding.containsKey(pesticide)) {
+      pesticideEncoding[pesticide] = pesticideEncoding.length.toDouble();
+    }
+    return pesticideEncoding[pesticide]!;
+  }
+
+  void _predict() {
+    // Example input for prediction
+    double area = 0.0; // Area 1
+    double disease = 1.0; // Yellow Vein
+    double numberOfDiseases = 200.0;
+    double pesticides = _encodePesticide('tytg'); // Example pesticide
+
+    List<double> features = [area, disease, numberOfDiseases, pesticides];
+    double prediction = model.predict(features);
+    setState(() {
+      _prediction = 'Predicted Harvest: $prediction kg';
+    });
+  }
+double calculateMSE(List<double> actual, List<double> predicted) {
+  double sum = 0.0;
+  for (int i = 0; i < actual.length; i++) {
+    sum += (actual[i] - predicted[i]) * (actual[i] - predicted[i]);
+  }
+  return sum / actual.length;
 }
 
-  bool _isButtonEnabled() {
-    return _encounteredDiseaseCount != null && _selectedTypeOfDisease != null && _selectedPesticide != null;
+double calculateMAE(List<double> actual, List<double> predicted) {
+  double sum = 0.0;
+  for (int i = 0; i < actual.length; i++) {
+    sum += (actual[i] - predicted[i]).abs();
+  }
+  return sum / actual.length;
+}
+
+double calculateRMSE(List<double> actual, List<double> predicted) {
+  return sqrt(calculateMSE(actual, predicted));
+}
+
+double calculateRSquared(List<double> actual, List<double> predicted) {
+  double meanActual = actual.reduce((a, b) => a + b) / actual.length;
+  double ssTotal = 0.0;
+  double ssResidual = 0.0;
+
+  for (int i = 0; i < actual.length; i++) {
+    ssTotal += (actual[i] - meanActual) * (actual[i] - meanActual);
+    ssResidual += (actual[i] - predicted[i]) * (actual[i] - predicted[i]);
   }
 
+  return 1 - (ssResidual / ssTotal);
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Center(
-          child: Text(
-            "Predict Okra Yield",
-            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-          ),
-        ),
-        backgroundColor: const Color(0xff44c377),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          color: Colors.white,
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        leadingWidth: 8,
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-               Center(
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(vertical: 25),
-                    child:  const ClipRRect(
-                           borderRadius: BorderRadius.all(Radius.circular(20)),
-                      child: Image(
-                        image: AssetImage('assets/images/okrafarm.webp'), // Add the correct path to your icon image
-                        width: 175,
-                        height: 175,
-                      ),
-                    ),
-                  ),
-               
-               
-              ),
-              const SizedBox(height: 10,),
-              const Text("Encountered Disease in Okra"),
-TextField(
-  keyboardType: TextInputType.number,
-  decoration: InputDecoration(
-    hintText: "Enter number of encountered diseases",
-    border: OutlineInputBorder(
-      borderSide: const BorderSide(color: Color(0xff44c377)), // Green border
-      borderRadius: BorderRadius.circular(10), // Optional: rounded corners
-    ),
-    enabledBorder: OutlineInputBorder(
-      borderSide: const BorderSide(color: Color(0xff44c377)), // Green border when enabled
-      borderRadius: BorderRadius.circular(10), // Optional: rounded corners
-    ),
-    focusedBorder: OutlineInputBorder(
-      borderSide: const BorderSide(color: Color(0xff44c377), width: 2), // Thicker green border when focused
-      borderRadius: BorderRadius.circular(10), // Optional: rounded corners
-    ),
-  ),
-  onChanged: (value) {
-    setState(() {
-      _encounteredDiseaseCount = int.tryParse(value);
-    });
-  },
-),
-const SizedBox(height: 16),
-
-const Text("What Types of Disease"),
-Container(
-  decoration: BoxDecoration(
-    border: Border.all(color: const Color(0xff44c377)), // Green border
-    borderRadius: BorderRadius.circular(10), // Optional: rounded corners
-  ),
-  child: DropdownButton<String>(
-    isExpanded: true,
-    value: _selectedTypeOfDisease,
-    items: _diseaseTypeMapping.keys.map((String value) {
-      return DropdownMenuItem<String>(
-        value: value,
-        child: Text(value),
-      );
-    }).toList(),
-    onChanged: (String? newValue) {
-      setState(() {
-        _selectedTypeOfDisease = newValue!;
-      });
-    },
-    hint: const Text("Select Type of Disease"),
-    underline: Container(), // Remove the default underline
-  ),
-),
-const SizedBox(height: 16),
-
-const Text("Name of Used Pesticides"),
-Container(
-  decoration: BoxDecoration(
-    border: Border.all(color: const Color(0xff44c377)), // Green border
-    borderRadius: BorderRadius.circular(10), // Optional: rounded corners
-  ),
-  child: DropdownButton<String>(
-    isExpanded: true,
-    value: _selectedPesticide,
-    items: _pesticideMapping.keys.map((String value) {
-      return DropdownMenuItem<String>(
-        value: value,
-        child: Text(value),
-      );
-    }).toList(),
-    onChanged: (String? newValue) {
-      setState(() {
-        _selectedPesticide = newValue!;
-      });
-    },
-    hint: const Text("Select Pesticide"),
-    underline: Container(), // Remove the default underline
-  ),
-),
-const SizedBox(height: 16),
-
-ElevatedButton(
-  onPressed: _isButtonEnabled() ? _predictYield : null,
-  style: ElevatedButton.styleFrom(
-    backgroundColor: const Color(0xff44c377),
-    disabledBackgroundColor: Colors.grey,
-  ),
-  child: const Text(
-    "Predict Harvest Kilos",
-    style: TextStyle(color: Colors.white),
-  ),
-),
-const SizedBox(height: 16),
-
-if (_predictedHarvestKilos != null)
-  Center(
-    child: Text(
-      "Predicted Harvest: ${_predictedHarvestKilos!.toStringAsFixed(2)} kg",
-      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-    ),
-  ),
-
-            ],
-          ),
+      appBar: AppBar(title: const Text('Regression Model')),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            ElevatedButton(
+              onPressed: _predict,
+              child: const Text('Predict Harvest'),
+            ),
+            const SizedBox(height: 20),
+            Text(_prediction),
+            const SizedBox(height: 20),
+            Text('Evaluation Metrics:\n$_metrics'), // Display metrics
+          ],
         ),
       ),
     );
   }
+}
 
-  @override
-  void dispose() {
-    _interpreter?.close();
-    super.dispose();
+
+class DataPoint {
+  final double area;
+  final double disease;
+  final double numberOfDiseases;
+  final double pesticides; // Now a numerical value
+  final double harvest;
+
+  DataPoint({
+    required this.area,
+    required this.disease,
+    required this.numberOfDiseases,
+    required this.pesticides,
+    required this.harvest,
+  });
+}
+
+class RegressionModel {
+  List<double> weights; // Model weights
+  double bias; // Model bias
+  final double learningRate; // Learning rate for gradient descent
+
+  // Constructor to initialize weights, bias, and learning rate
+  RegressionModel({List<double>? weights, this.bias = 0.0, this.learningRate = 0.01})
+      : weights = weights ?? [0.0, 0.0, 0.0, 0.0];
+
+  // Predict the output based on input features
+  double predict(List<double> features) {
+    double prediction = bias;
+    for (int i = 0; i < features.length; i++) {
+      prediction += weights[i] * features[i];
+    }
+    return prediction;
+  }
+
+  // Train the model using gradient descent
+  void train(List<DataPoint> dataPoints, int epochs) {
+    for (int epoch = 0; epoch < epochs; epoch++) {
+      for (var data in dataPoints) {
+        // Create a new modifiable list for features
+        List<double> features = [data.area, data.disease, data.numberOfDiseases, data.pesticides];
+        double target = data.harvest;
+
+        // Compute prediction
+        double prediction = predict(features);
+
+        // Compute error
+        double error = prediction - target;
+
+        // Update weights and bias using gradient descent
+        for (int i = 0; i < weights.length; i++) {
+          weights[i] -= learningRate * error * features[i];
+        }
+        bias -= learningRate * error;
+      }
+    }
+  }
+
+  // Compute predictions for the entire dataset
+  List<double> computePredictions(List<DataPoint> dataPoints) {
+    List<double> predictions = [];
+    for (var data in dataPoints) {
+      List<double> features = [data.area, data.disease, data.numberOfDiseases, data.pesticides];
+      predictions.add(predict(features));
+    }
+    return predictions;
   }
 }

@@ -355,15 +355,33 @@ Widget build(BuildContext context) {
           const SizedBox(height: 20),
           Center(
             child: ElevatedButton(
-              onPressed: isFormFilled() ? predictHarvest : null, // Disable if fields are empty
-              style: ElevatedButton.styleFrom(
-                backgroundColor: isFormFilled() ? const Color(0xff43c175) : Colors.grey, 
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+  onPressed: isFormFilled()
+      ? () async {
+          try {
+            predictHarvest(); // Call the predictHarvest function
+          } catch (e) {
+            // Show error Snackbar if predictHarvest fails
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                  'Please insert accurate number of disease', // Display the error message
+                  style: TextStyle(color: Colors.white),
+                ),
+                backgroundColor: Colors.red, // Red background
+                duration: Duration(seconds: 3), // Display for 3 seconds
               ),
-              child: const Text('Predict Harvest', style: TextStyle(fontSize: 16)),
-            ),
+            );
+          }
+        }
+      : null, // Disable the button if the form is not filled
+  style: ElevatedButton.styleFrom(
+    backgroundColor: isFormFilled() ? const Color(0xff43c175) : Colors.grey,
+    foregroundColor: Colors.white,
+    padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+  ),
+  child: const Text('Predict Harvest', style: TextStyle(fontSize: 16)),
+),
           ),
           const SizedBox(height: 20),
           Center(

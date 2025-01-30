@@ -1,6 +1,7 @@
 // ignore_for_file: camel_case_types, deprecated_member_use
 import 'dart:async';
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:okrai/diagnose/progress.dart';
@@ -40,6 +41,51 @@ late String okraname;
 late String okrapest;
 late String okradate;
 late int okragraph;
+
+Future<Map<String, int>> fetchPesticideData(int okragraph) async {
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+  // Map okragraph to disease name
+  String diseaseName;
+  switch (okragraph) {
+    case 1:
+      diseaseName = 'Early Blight';
+      break;
+    case 2:
+      diseaseName = 'Leaf Curl';
+      break;
+    case 3:
+      diseaseName = 'Yellow Vein';
+      break;
+    default:
+      throw Exception('Invalid okragraph value: $okragraph. Expected 1, 2, or 3.');
+  }
+
+  // Query Firestore for the specific disease
+  QuerySnapshot querySnapshot = await firestore
+      .collection('harvests')
+      .where('disease', isEqualTo: diseaseName)
+      .get();
+
+  // Process the data to count pesticides
+  Map<String, int> pesticideCounts = {};
+  for (var doc in querySnapshot.docs) {
+    String pesticide = doc['pesticide'];
+    pesticideCounts[pesticide] = (pesticideCounts[pesticide] ?? 0) + 1;
+  }
+
+  // Sort the pesticides by count and get the top 3
+  var sortedPesticides = pesticideCounts.entries.toList()
+    ..sort((a, b) => b.value.compareTo(a.value));
+
+  Map<String, int> topPesticides = {};
+  for (var i = 0; i < sortedPesticides.length && i < 3; i++) {
+    topPesticides[sortedPesticides[i].key] = sortedPesticides[i].value;
+  }
+
+  return topPesticides;
+}
+
 @override
   void initState() {
     super.initState();
@@ -123,35 +169,12 @@ late int okragraph;
   }
 @override
 Widget build(BuildContext context) {
-    final okra okrainfoss = okrainfos.okraList[okrainfoid];
-     // Prepare the pesticide data based on the disease type
-  Map<String, int> pesticideData = {};
-  
-  // Example Data - Replace this with your actual data processing logic
-  if (okragraph == 2) {
-    pesticideData = {
-      'Carbaryl\n250g': 22,
-      'Carbaryl\n400g': 2,
-      'Carbaryl\n500g': 1,
-      'Vermicast': 1,
-    };
-  } else if (okragraph == 3) {
-    pesticideData = {
-      'Acetamiprid\n250g': 11,
-      'Acetamiprid\n300g': 9,
-      'Acetamiprid\n400g': 4,
-    };
-  } else if (okragraph == 1) {
-    pesticideData = {
-      'Fungaran\n200g': 5,
-      'Fungaran\n400g': 1,
-    };
-  }
+     final okra okrainfoss = okrainfos.okraList[okrainfoid];
 return Scaffold(
 backgroundColor: const Color(0xffffffff),
 appBar: 
 AppBar(
-  leadingWidth: 8,
+  leadingWidth: 5,
 elevation:3,
 centerTitle:false,
 automaticallyImplyLeading: false,
@@ -632,15 +655,25 @@ body:Container(
   
   children:[
   
-  Container(
-  margin: const EdgeInsets.only(top: 10),
-  child:PesticideUsageChart(
-              diseaseType: okratype,
-              pesticideData: pesticideData,
-               okragraph: okragraph,  // Pass okragraph to the widget
-            ),
-  
-  ),
+   if (okragraph == 4)
+                      const Center(
+                        child: Text(
+                          "No need to Implement Pesticides",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.green,
+                          ),
+                        ),
+                      )
+                    else
+                      Expanded(
+                        child: PesticideUsageChart(
+                          diseaseType: okratype,
+                          okragraph: okragraph,
+                        ),
+                      ),
+
   ],),
   const Row(
   mainAxisAlignment:MainAxisAlignment.start,
@@ -728,72 +761,133 @@ body:Container(
 
 class PesticideUsageChart extends StatelessWidget {
   final String diseaseType;
-  final Map<String, int> pesticideData;
-  final int okragraph; // Add okragraph as a parameter
+  final int okragraph;
 
   const PesticideUsageChart({
     Key? key,
     required this.diseaseType,
-    required this.pesticideData,
-    required this.okragraph, // Include okragraph in the constructor
+    required this.okragraph,
   }) : super(key: key);
+
+  // Define fetchPesticideData inside the widget
+  Future<Map<String, int>> fetchPesticideData(int okragraph) async {
+    final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+    // Map okragraph to disease name
+    String diseaseName;
+    switch (okragraph) {
+      case 1:
+        diseaseName = 'Early Blight';
+        break;
+      case 2:
+        diseaseName = 'Leaf Curl';
+        break;
+      case 3:
+        diseaseName = 'Yellow Vein';
+        break;
+      default:
+        throw Exception('Invalid okragraph value: $okragraph. Expected 1, 2, or 3.');
+    }
+
+    // Query Firestore for the specific disease
+    QuerySnapshot querySnapshot = await firestore
+        .collection('harvests')
+        .where('disease', isEqualTo: diseaseName)
+        .get();
+
+    // Process the data to count pesticides
+    Map<String, int> pesticideCounts = {};
+    for (var doc in querySnapshot.docs) {
+      String pesticide = doc['pesticides'];
+      pesticideCounts[pesticide] = (pesticideCounts[pesticide] ?? 0) + 1;
+    }
+
+    // Sort the pesticides by count and get the top 3
+    var sortedPesticides = pesticideCounts.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+
+    Map<String, int> topPesticides = {};
+    for (var i = 0; i < sortedPesticides.length && i < 3; i++) {
+      topPesticides[sortedPesticides[i].key] = sortedPesticides[i].value;
+    }
+
+    return topPesticides;
+  }
 
   @override
   Widget build(BuildContext context) {
+    // Handle the healthy state (okragraph == 4)
     if (okragraph == 4) {
-      // If the okragraph is 4 (healthy state), show a centered message
       return const Center(
         child: Text(
           "No need to Implement Pesticides",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.green),
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.green,
+          ),
         ),
       );
     }
 
-    // Prepare the data for the chart if okragraph is not 4
-    final List<ChartData> chartData = pesticideData.entries
-        .map((entry) => ChartData(entry.key, entry.value))
-        .toList();
+    // For other states, fetch and display the chart
+    return FutureBuilder<Map<String, int>>(
+      future: fetchPesticideData(okragraph), // Use the defined function
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const Center(child: Text('No data available'));
+        }
 
-    return Padding(
-      padding: const EdgeInsets.all(5.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-            Text(
-              'Pesticide Trends for\n$diseaseType:',
-        textAlign: TextAlign.justify,
-      overflow: TextOverflow.visible,
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-            ),
-          const SizedBox(height: 16),
-          SingleChildScrollView(
+        final Map<String, int> pesticideData = snapshot.data!;
+        final List<ChartData> chartData = pesticideData.entries
+            .map((entry) => ChartData(entry.key, entry.value))
+            .toList();
+
+        return Padding(
+          padding: const EdgeInsets.all(5.0),
+          child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
-            child: Container(
-              constraints: const BoxConstraints(maxHeight: 275, maxWidth: 275),
-              child: SfCartesianChart(
-                primaryXAxis: const CategoryAxis(
-                  labelStyle: TextStyle(fontSize: 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Pesticide Trends for\n$diseaseType:',
+                  textAlign: TextAlign.justify,
+                  overflow: TextOverflow.visible,
+                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                 ),
-                primaryYAxis: const NumericAxis(
-                  labelStyle: TextStyle(fontSize: 10),
-                ),
-                series: <CartesianSeries<ChartData, String>>[
-                  ColumnSeries<ChartData, String>(
-                    dataSource: chartData,
-                    xValueMapper: (ChartData data, _) => data.pesticide,
-                    yValueMapper: (ChartData data, _) => data.usage,
-                    color: const Color(0xff67bd74),
-                    borderColor: Colors.green,
-                    borderWidth: 1,
+                const SizedBox(height: 16),
+                Container(
+                  constraints: const BoxConstraints(maxHeight: 200, maxWidth: 200),
+                  child: SfCartesianChart(
+                    primaryXAxis: const CategoryAxis(
+                      labelStyle: TextStyle(fontSize: 10),
+                    ),
+                    primaryYAxis: const NumericAxis(
+                      labelStyle: TextStyle(fontSize: 10),
+                    ),
+                    series: <CartesianSeries<ChartData, String>>[
+                      ColumnSeries<ChartData, String>(
+                        dataSource: chartData,
+                        xValueMapper: (ChartData data, _) => data.pesticide,
+                        yValueMapper: (ChartData data, _) => data.usage,
+                        color: const Color(0xff67bd74),
+                        borderColor: Colors.green,
+                        borderWidth: 1,
+                      ),
+                    ],
+                    tooltipBehavior: TooltipBehavior(enable: true),
                   ),
-                ],
-                tooltipBehavior: TooltipBehavior(enable: true),
-              ),
+                ),
+              ],
             ),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

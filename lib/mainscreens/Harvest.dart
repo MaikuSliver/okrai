@@ -318,7 +318,7 @@ void _showInsertHarvestDialog() {
       String pesticides = "";
       String harvest = "";
       List<String> areaOptions = ["Area 1", "Area 2", "Area 3", "Area 4", "Area 5"];
-      List<String> diseaseOptions = ["Yellow Vein", "Leaf Curl", "Early Blight"];
+      List<String> diseaseOptions = ["Yellow Vein", "Leaf Curl", "Early Blight","None"];
 
       return StatefulBuilder(
         builder: (context, setState) {

@@ -351,7 +351,7 @@ void _showInsertHarvestDialog() {
                       DateTime? pickedDate = await showDatePicker(
                         context: context,
                         initialDate: today,
-                        firstDate: today, // Disables past dates
+                        firstDate: DateTime(2000),
                         lastDate: DateTime(2101),
                       );
                       if (pickedDate != null) {

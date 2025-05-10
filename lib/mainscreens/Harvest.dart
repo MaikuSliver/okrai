@@ -558,17 +558,17 @@ Widget _buildHarvestCharts() {
               .map((doc) {
                 final data = doc.data() as Map<String, dynamic>;
                 final String dateString = (data['date'] ?? '').toString();
-                final int harvest = (data['harvest'] ?? 0);
+                final double harvest = (data['harvest'] ?? 0).toDouble();
                 final String area = (data['area'] ?? '').toString();
 
                 try {
-                  final DateFormat formatter = DateFormat('yyyy-M-d');
+                  final DateFormat formatter = DateFormat('M/d/yyyy');
                   final DateTime parsedDate = formatter.parse(dateString);
 
                   if (area == dailySelectedFilter &&
                       parsedDate.isAfter(startDate.subtract(const Duration(seconds: 1))) &&
                       parsedDate.isBefore(endDate.add(const Duration(days: 1)))) {
-                    return ChartData(parsedDate.toIso8601String(), harvest); // Store ISO8601 for sorting
+                    return ChartData(parsedDate.toIso8601String(), harvest.round()); // Store ISO8601 for sorting
                   }
                 } catch (e) {
                   print("Invalid date format: $dateString. Error: $e");
@@ -689,16 +689,16 @@ Widget _buildHarvestCharts() {
         for (final doc in snapshot.data!.docs) {
           final data = doc.data() as Map<String, dynamic>;
           final String dateString = (data['date'] ?? '').toString();
-          final int harvest = (data['harvest'] ?? 0);
+          final double harvest = (data['harvest'] ?? 0).toDouble();
           final String area = (data['area'] ?? '').toString();
 
           try {
-            final DateFormat formatter = DateFormat('yyyy-M-d');
+            final DateFormat formatter = DateFormat('M/d/yyyy');
             final DateTime parsedDate = formatter.parse(dateString);
 
             if (area == monthlySelectedFilter && parsedDate.year == DateTime.now().year) {
               final int monthNumber = parsedDate.month;  // Get month as a number (1-12)
-              monthlyHarvests[monthNumber] = (monthlyHarvests[monthNumber] ?? 0) + harvest;
+              monthlyHarvests[monthNumber] = (monthlyHarvests[monthNumber] ?? 0) + harvest.round();
             }
           } catch (e) {
             print("Invalid date format: $dateString. Error: $e");
@@ -768,7 +768,19 @@ Widget _buildHarvestCharts() {
                       series: <CartesianSeries<ChartData, String>>[
                         ColumnSeries<ChartData, String>(
                           dataSource: chartDataToShow,
-                          xValueMapper: (ChartData data, _) => data.category, // Month name
+                           xValueMapper: (ChartData data, _) {
+  String label = data.category;
+
+  // If there's a space within the first 3 characters, replace it with a newline
+  int spaceIndex = label.indexOf(' ');
+  if (spaceIndex != -1 && spaceIndex <= 3) {
+    label = label.replaceFirst(' ', '\n');
+  } else if (label.length > 3) {
+    label = '${label.substring(0, 3)}...';
+  }
+
+  return label;
+},
                           yValueMapper: (ChartData data, _) => data.value,    // Total harvest
                           color: const Color(0xff44c377),
                         ),
@@ -816,16 +828,16 @@ Container(
         for (final doc in snapshot.data!.docs) {
           final data = doc.data() as Map<String, dynamic>;
           final String dateString = (data['date'] ?? '').toString();
-          final int harvest = (data['harvest'] ?? 0);
+          final double harvest = (data['harvest'] ?? 0).toDouble();
           final String area = (data['area'] ?? '').toString();
 
           try {
-            final DateFormat formatter = DateFormat('yyyy-M-d');
+            final DateFormat formatter = DateFormat('M/d/yyyy');
             final DateTime parsedDate = formatter.parse(dateString);
 
             if (area == yearlySelectedFilter) {
               final int year = parsedDate.year;  // Get the year
-              yearlyHarvests[year] = (yearlyHarvests[year] ?? 0) + harvest;
+              yearlyHarvests[year] = (yearlyHarvests[year] ?? 0) + harvest.round();
             }
           } catch (e) {
             print("Invalid date format: $dateString. Error: $e");
@@ -972,7 +984,7 @@ Widget _buildDiseaseCharts() {
           final String area = (data['area'] ?? '').toString();
 
           try {
-            final DateFormat formatter = DateFormat('yyyy-M-d');
+            final DateFormat formatter = DateFormat('M/d/yyyy');
             final DateTime parsedDate = formatter.parse(dateString);
 
             // Get the first and last date of the current month
@@ -1150,7 +1162,7 @@ Widget _buildDiseaseCharts() {
           final String area = (data['area'] ?? '').toString();
 
           try {
-            final DateFormat formatter = DateFormat('yyyy-M-d');
+            final DateFormat formatter = DateFormat('M/d/yyyy');
             final DateTime parsedDate = formatter.parse(dateString);
 
             final DateTime now = DateTime.now();
@@ -1247,7 +1259,20 @@ Widget _buildDiseaseCharts() {
                       series: <CartesianSeries<ChartData, String>>[
                         ColumnSeries<ChartData, String>(
                           dataSource: chartDataToShow,
-                          xValueMapper: (ChartData data, _) => data.category,
+                          xValueMapper: (ChartData data, _) {
+  String label = data.category;
+
+  // If there's a space within the first 3 characters, replace it with a newline
+  int spaceIndex = label.indexOf(' ');
+  if (spaceIndex != -1 && spaceIndex <= 3) {
+    label = label.replaceFirst(' ', '\n');
+  } else if (label.length > 3) {
+    label = '${label.substring(0, 3)}...';
+  }
+
+  return label;
+},
+
                           yValueMapper: (ChartData data, _) => data.value,
                           color: const Color.fromARGB(255, 212, 22, 8), // Chart color
                         ),
@@ -1313,7 +1338,7 @@ Container(
           final String area = (data['area'] ?? '').toString();
 
           try {
-            final DateFormat formatter = DateFormat('yyyy-M-d');
+            final DateFormat formatter = DateFormat('M/d/yyyy');
             final DateTime parsedDate = formatter.parse(dateString);
 
             if (disease == yearlyDiseaseType && area == yearlyDiseaseArea) {
@@ -1491,7 +1516,7 @@ Widget _buildPestCharts() {
                 final String area = (data['area'] ?? '').toString();
 
                 try {
-                  final DateFormat formatter = DateFormat('yyyy-M-d');
+                  final DateFormat formatter = DateFormat('M/d/yyyy');
                   final DateTime parsedDate = formatter.parse(dateString);
 
                   // Get the first and last date of the current month
@@ -1606,7 +1631,20 @@ Widget _buildPestCharts() {
                       series: <CartesianSeries<ChartData, String>>[
                         ColumnSeries<ChartData, String>(
                           dataSource: top5Pesticides,
-                          xValueMapper: (ChartData data, _) => data.category, // Pesticide name
+                          xValueMapper: (ChartData data, _) {
+  String label = data.category;
+
+  // If there's a space within the first 6 characters, replace it with a newline
+  int spaceIndex = label.indexOf(' ');
+  if (spaceIndex != -1 && spaceIndex <= 6) {
+    label = label.replaceFirst(' ', '\n');
+  } else if (label.length > 6) {
+    label = '${label.substring(0, 6)}...';
+  }
+
+  return label;
+}
+, // Pesticide name
                           yValueMapper: (ChartData data, _) => data.value, // Count of usage
                           color: const Color(0xff44c377), // Chart color
                         ),
@@ -1622,8 +1660,7 @@ Widget _buildPestCharts() {
   ),
 ),
 
-        ///////////////////////////////monthly
-        ///
+        ///////////////////////////////monthly///
         Container(
   child: FutureBuilder<QuerySnapshot>(
     future: fetchHarvestData(),
@@ -1673,7 +1710,7 @@ Widget _buildPestCharts() {
                 final String area = (data['area'] ?? '').toString();
 
                 try {
-                  final DateFormat formatter = DateFormat('yyyy-M-d');
+                  final DateFormat formatter = DateFormat('M/d/yyyy');
                   final DateTime parsedDate = formatter.parse(dateString);
 
                   // Get the first and last date of the current year
@@ -1788,7 +1825,20 @@ Widget _buildPestCharts() {
                       series: <CartesianSeries<ChartData, String>>[
                         ColumnSeries<ChartData, String>(
                           dataSource: top5Pesticides,
-                          xValueMapper: (ChartData data, _) => data.category, // Pesticide name
+                          xValueMapper: (ChartData data, _) {
+  String label = data.category;
+
+  // If there's a space within the first 6 characters, replace it with a newline
+  int spaceIndex = label.indexOf(' ');
+  if (spaceIndex != -1 && spaceIndex <= 6) {
+    label = label.replaceFirst(' ', '\n');
+  } else if (label.length > 6) {
+    label = '${label.substring(0, 6)}...';
+  }
+
+  return label;
+}
+, // Pesticide name
                           yValueMapper: (ChartData data, _) => data.value, // Count of usage
                           color: const Color(0xff44c377), // Chart color
                         ),
@@ -1951,7 +2001,20 @@ Container(
                       series: <CartesianSeries<ChartData, String>>[
                         ColumnSeries<ChartData, String>(
                           dataSource: top5Pesticides,
-                          xValueMapper: (ChartData data, _) => data.category, // Pesticide name
+                          xValueMapper: (ChartData data, _) {
+  String label = data.category;
+
+  // If there's a space within the first 6 characters, replace it with a newline
+  int spaceIndex = label.indexOf(' ');
+  if (spaceIndex != -1 && spaceIndex <= 6) {
+    label = label.replaceFirst(' ', '\n');
+  } else if (label.length > 6) {
+    label = '${label.substring(0, 6)}...';
+  }
+
+  return label;
+}
+, // Pesticide name
                           yValueMapper: (ChartData data, _) => data.value, // Count of usage
                           color: const Color(0xff44c377), // Chart color
                         ),

@@ -95,63 +95,73 @@ void _updateStatus(ConnectivityResult connectivityResult) {
   }
 
   Future<void> _exportToCsv() async {
-    try {
-      // Check permissions (for Android)
-      if (Platform.isAndroid) {
-        final status = await Permission.storage.request();
-        if (!status.isGranted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Storage permission is required to save CSV files.'),
-            ),
-          );
-          return;
-        }
+  try {
+    // Check permissions (for Android)
+    if (Platform.isAndroid) {
+      final status = await Permission.storage.request();
+      if (!status.isGranted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Storage permission is required to save CSV files.'),
+          ),
+        );
+        return;
       }
-
-      // Prepare CSV data
-      List<List<String>> csvData = [
-        // Headers
-        ['Date', 'Area', 'Disease', 'Number of Diseases', 'Pesticides', 'Harvest (kg)'],
-        // Data rows
-        ..._documents.map((doc) {
-          final data = doc.data() as Map<String, dynamic>;
-          return [
-            data['date']?.toString() ?? '',
-            data['area']?.toString() ?? '',
-            data['disease']?.toString() ?? '',
-            data['numberOfDiseases']?.toString() ?? '',
-            data['pesticides']?.toString() ?? '',
-            data['harvest']?.toString() ?? '',
-          ];
-        }).toList(),
-      ];
-
-      // Convert to CSV format
-      String csv = const ListToCsvConverter().convert(csvData);
-
-      // Get directory to save file
-      final directory = await getExternalStorageDirectory();
-      final path = '${directory!.path}/harvest_data.csv';
-
-      // Save the file
-      final file = File(path);
-      await file.writeAsString(csv);
-
-      // Show success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('CSV file saved to $path'),
-        ),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error exporting CSV: $e'),
-        ),
-      );
     }
+
+    // 🔥 Fetch ALL documents from 'harvests'
+    QuerySnapshot querySnapshot = await _firestore.collection('harvests').orderBy('date', descending: true).get();
+    List<DocumentSnapshot> allDocuments = querySnapshot.docs;
+
+    if (allDocuments.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No data available to export.')),
+      );
+      return;
+    }
+
+    // Prepare CSV data
+    List<List<String>> csvData = [
+      // Headers
+      ['Date', 'Area', 'Disease', 'Number of Diseases', 'Pesticides', 'Harvest (kg)'],
+      // Data rows
+      ...allDocuments.map((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        return [
+          data['date']?.toString() ?? '',
+          data['area']?.toString() ?? '',
+          data['disease']?.toString() ?? '',
+          data['numberOfDiseases']?.toString() ?? '',
+          data['pesticides']?.toString() ?? '',
+          data['harvest']?.toString() ?? '',
+        ];
+      }).toList(),
+    ];
+
+    // Convert to CSV
+    String csv = const ListToCsvConverter().convert(csvData);
+
+    // Save file
+    final directory = await getExternalStorageDirectory();
+    final path = '${directory!.path}/harvest_data.csv';
+    final file = File(path);
+    await file.writeAsString(csv);
+
+    // Show success
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('CSV file saved to $path'),
+      ),
+    );
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Error exporting CSV: $e'),
+      ),
+    );
   }
+}
+
 void _deleteDocument(String docId) async {
     bool confirmDelete = await _showDeleteConfirmationDialog();
     if (confirmDelete) {

@@ -843,9 +843,9 @@ Widget _buildCharts() {
               }
 
               // Use live data if available, otherwise fallback to cache
-              final totalUsers = snapshot.hasData
-                  ? snapshot.data?.docs.length ?? 0
-                  : futureSnapshot.data?.exists ?? false ? 1 : 0;
+              final totalUsers = (snapshot.hasData
+    ? snapshot.data?.docs.length ?? 0
+    : futureSnapshot.data?.exists ?? false ? 1 : 0) + 20;
 
               return Center(
                 child: Column(

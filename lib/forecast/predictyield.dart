@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'dart:math';
-
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:csv/csv.dart';
 import 'package:path_provider/path_provider.dart';
@@ -17,7 +17,7 @@ late RegressionModel model;
   String _prediction = '';
   Map<String, double> pesticideEncoding = {}; // Map to store pesticide encodings
   String _metrics = ''; // To store evaluation metrics
-
+List<DataPoint> _sortedDataPoints = []; // for sorted data
   @override
   void initState() {
     super.initState();
@@ -25,28 +25,31 @@ late RegressionModel model;
   }
 
   void _initializeModel() async {
-    List<DataPoint> dataPoints = await loadAndPreprocessData();
-    model = RegressionModel();
-    model.train(dataPoints, 1000); // Train for 1000 epochs
+  List<DataPoint> dataPoints = await loadAndPreprocessData();
+  model = RegressionModel();
+  model.train(dataPoints, 1000);
 
-    // Calculate metrics
-    List<double> actual = dataPoints.map((data) => data.harvest).toList();
-    List<double> predicted = model.computePredictions(dataPoints);
+  List<double> actual = dataPoints.map((data) => data.harvest).toList();
+  List<double> predicted = model.computePredictions(dataPoints);
 
-    double mse = calculateMSE(actual, predicted);
-    double mae = calculateMAE(actual, predicted);
-    double rmse = calculateRMSE(actual, predicted);
-    double rSquared = calculateRSquared(actual, predicted);
+  double mse = calculateMSE(actual, predicted);
+  double mae = calculateMAE(actual, predicted);
+  double rmse = calculateRMSE(actual, predicted);
+  double rSquared = calculateRSquared(actual, predicted);
 
-    setState(() {
-      _metrics = '''
+  // Sort dataPoints by harvest value (ascending)
+  dataPoints.sort((a, b) => a.harvest.compareTo(b.harvest));
+
+  setState(() {
+    _metrics = '''
 MSE: ${mse.toStringAsFixed(2)}
 MAE: ${mae.toStringAsFixed(2)}
 RMSE: ${rmse.toStringAsFixed(2)}
 R²: ${rSquared.toStringAsFixed(2)}
 ''';
-    });
-  }
+    _sortedDataPoints = dataPoints;
+  });
+}
 
 
   Future<List<DataPoint>> loadAndPreprocessData() async {

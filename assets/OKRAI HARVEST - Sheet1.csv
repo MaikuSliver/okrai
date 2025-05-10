@@ -1,0 +1,551 @@
+area,date,disease,harvest,numberOfDiseases,pesticides
+Area 1,1/15/2025,None,58.2,0,None
+Area 2,1/15/2025,None,62.75,0,None
+Area 3,1/15/2025,None,55.3,0,None
+Area 4,1/15/2025,None,60.85,0,None
+Area 5,1/15/2025,None,57.4,0,None
+Area 1,1/16/2025,Leaf Curl,62.1,178,Carbaryl 250 grams
+Area 2,1/16/2025,Leaf Curl,65.7,182,Carbaryl 250 grams
+Area 3,1/16/2025,Leaf Curl,59.3,175,Carbaryl 250 grams
+Area 4,1/16/2025,Leaf Curl,64.9,180,Carbaryl 250 grams
+Area 5,1/16/2025,Leaf Curl,61.5,177,Carbaryl 250 grams
+Area 1,1/17/2025,None,66.2,0,None
+Area 2,1/17/2025,None,63.75,0,None
+Area 3,1/17/2025,None,68.3,0,None
+Area 4,1/17/2025,None,65.85,0,None
+Area 5,1/17/2025,None,62.4,0,None
+Area 1,1/18/2025,Yellow Vein,71.15,195,Acetamiprid 250 grams
+Area 2,1/18/2025,Yellow Vein,68.8,192,Acetamiprid 250 grams
+Area 3,1/18/2025,Yellow Vein,73.45,198,Acetamiprid 250 grams
+Area 4,1/18/2025,Yellow Vein,70.1,194,Acetamiprid 250 grams
+Area 5,1/18/2025,Yellow Vein,66.75,190,Acetamiprid 250 grams
+Area 1,1/19/2025,None,74.4,0,None
+Area 2,1/19/2025,None,77.05,0,None
+Area 3,1/19/2025,None,72.7,0,None
+Area 4,1/19/2025,None,75.35,0,None
+Area 5,1/19/2025,None,78,0,None
+Area 1,1/20/2025,Early Blight,81.7,65,Sulfur dust 300 grams
+Area 2,1/20/2025,Early Blight,84.4,68,Sulfur dust 300 grams
+Area 3,1/20/2025,Early Blight,79.1,62,Sulfur dust 300 grams
+Area 4,1/20/2025,Early Blight,81.8,66,Sulfur dust 300 grams
+Area 5,1/20/2025,Early Blight,77.5,60,Sulfur dust 300 grams
+Area 1,1/21/2025,None,85.2,0,None
+Area 2,1/21/2025,None,82.75,0,None
+Area 3,1/21/2025,None,87.3,0,None
+Area 4,1/21/2025,None,84.85,0,None
+Area 5,1/21/2025,None,81.4,0,None
+Area 1,1/22/2025,Leaf Curl,88.1,58,Carbaryl 500 grams
+Area 2,1/22/2025,Leaf Curl,91.7,62,Carbaryl 500 grams
+Area 3,1/22/2025,Leaf Curl,85.3,55,Carbaryl 500 grams
+Area 4,1/22/2025,Leaf Curl,90.9,60,Carbaryl 500 grams
+Area 5,1/22/2025,Leaf Curl,87.5,57,Carbaryl 500 grams
+Area 1,1/23/2025,None,92.2,0,None
+Area 2,1/23/2025,None,89.75,0,None
+Area 3,1/23/2025,None,94.3,0,None
+Area 4,1/23/2025,None,91.85,0,None
+Area 5,1/23/2025,None,88.4,0,None
+Area 1,1/24/2025,Yellow Vein,95.15,85,Acetamiprid 250 grams
+Area 2,1/24/2025,Yellow Vein,92.8,82,Acetamiprid 250 grams
+Area 3,1/24/2025,Yellow Vein,97.45,88,Acetamiprid 250 grams
+Area 4,1/24/2025,Yellow Vein,94.1,84,Acetamiprid 250 grams
+Area 5,1/24/2025,Yellow Vein,90.75,80,Acetamiprid 250 grams
+Area 1,1/25/2025,None,98.4,0,None
+Area 2,1/25/2025,None,101.05,0,None
+Area 3,1/25/2025,None,96.7,0,None
+Area 4,1/25/2025,None,99.35,0,None
+Area 5,1/25/2025,None,102,0,None
+Area 1,1/26/2025,Early Blight,105.7,55,Sulfur dust 300 grams
+Area 2,1/26/2025,Early Blight,108.4,58,Sulfur dust 300 grams
+Area 3,1/26/2025,Early Blight,103.1,52,Sulfur dust 300 grams
+Area 4,1/26/2025,Early Blight,105.8,56,Sulfur dust 300 grams
+Area 5,1/26/2025,Early Blight,101.5,50,Sulfur dust 300 grams
+Area 1,1/27/2025,None,109.2,0,None
+Area 2,1/27/2025,None,106.75,0,None
+Area 3,1/27/2025,None,111.3,0,None
+Area 4,1/27/2025,None,108.85,0,None
+Area 5,1/27/2025,None,105.4,0,None
+Area 1,1/28/2025,Leaf Curl,112.1,48,Acetamiprid 250 grams
+Area 2,1/28/2025,Leaf Curl,115.7,52,Acetamiprid 250 grams
+Area 3,1/28/2025,Leaf Curl,109.3,45,Acetamiprid 250 grams
+Area 4,1/28/2025,Leaf Curl,114.9,50,Acetamiprid 250 grams
+Area 5,1/28/2025,Leaf Curl,111.5,47,Acetamiprid 250 grams
+Area 1,1/29/2025,None,116.2,0,None
+Area 2,1/29/2025,None,113.75,0,None
+Area 3,1/29/2025,None,118.3,0,None
+Area 4,1/29/2025,None,115.85,0,None
+Area 5,1/29/2025,None,112.4,0,None
+Area 1,1/30/2025,Yellow Vein,119.15,75,Acetamiprid 250 grams
+Area 2,1/30/2025,Yellow Vein,116.8,72,Acetamiprid 250 grams
+Area 3,1/30/2025,Yellow Vein,121.45,78,Acetamiprid 250 grams
+Area 4,1/30/2025,Yellow Vein,118.1,74,Acetamiprid 250 grams
+Area 5,1/30/2025,Yellow Vein,114.75,70,Acetamiprid 250 grams
+Area 1,1/31/2025,None,122.4,0,None
+Area 2,1/31/2025,None,125.05,0,None
+Area 3,1/31/2025,None,120.7,0,None
+Area 4,1/31/2025,None,123.35,0,None
+Area 5,1/31/2025,None,126,0,None
+Area 1,2/1/2025,None,128.5,0,None
+Area 2,2/1/2025,None,132.25,0,None
+Area 3,2/1/2025,None,125.8,0,None
+Area 4,2/1/2025,None,130.45,0,None
+Area 5,2/1/2025,None,127.1,0,None
+Area 1,2/2/2025,Leaf Curl,134.75,43,Carbaryl 250 grams
+Area 2,2/2/2025,Leaf Curl,138.5,46,Carbaryl 250 grams
+Area 3,2/2/2025,Leaf Curl,131.15,40,Carbaryl 250 grams
+Area 4,2/2/2025,Leaf Curl,136.8,44,Carbaryl 250 grams
+Area 5,2/2/2025,Leaf Curl,133.45,41,Carbaryl 250 grams
+Area 1,2/3/2025,None,140.2,0,None
+Area 2,2/3/2025,None,143.95,0,None
+Area 3,2/3/2025,None,136.6,0,None
+Area 4,2/3/2025,None,141.25,0,None
+Area 5,2/3/2025,None,137.9,0,None
+Area 1,2/4/2025,Yellow Vein,144.65,69,Acetamiprid 250 grams
+Area 2,2/4/2025,Yellow Vein,148.4,72,Acetamiprid 250 grams
+Area 3,2/4/2025,Yellow Vein,141.05,66,Acetamiprid 250 grams
+Area 4,2/4/2025,Yellow Vein,145.7,70,Acetamiprid 250 grams
+Area 5,2/4/2025,Yellow Vein,142.35,67,Acetamiprid 250 grams
+Area 1,2/5/2025,None,149.1,0,None
+Area 2,2/5/2025,None,152.85,0,None
+Area 3,2/5/2025,None,145.5,0,None
+Area 4,2/5/2025,None,150.15,0,None
+Area 5,2/5/2025,None,146.8,0,None
+Area 1,2/6/2025,Early Blight,153.55,48,Sulfur dust 300 grams
+Area 2,2/6/2025,Early Blight,157.3,50,Sulfur dust 300 grams
+Area 3,2/6/2025,Early Blight,149.95,45,Sulfur dust 300 grams
+Area 4,2/6/2025,Early Blight,154.6,49,Sulfur dust 300 grams
+Area 5,2/6/2025,Early Blight,151.25,46,Sulfur dust 300 grams
+Area 1,2/7/2025,None,158,0,None
+Area 2,2/7/2025,None,161.75,0,None
+Area 3,2/7/2025,None,154.4,0,None
+Area 4,2/7/2025,None,159.05,0,None
+Area 5,2/7/2025,None,155.7,0,None
+Area 1,2/8/2025,None,160.11,0,None
+Area 2,2/8/2025,Yellow Vein,162.92,65,Acetamiprid 250 grams
+Area 3,2/8/2025,None,167.46,0,None
+Area 4,2/8/2025,None,172.14,0,None
+Area 5,2/8/2025,Early Blight,174.89,69,Sulfur dust 300 grams
+Area 1,2/9/2025,None,177.71,0,None
+Area 2,2/9/2025,None,180.14,0,None
+Area 3,2/9/2025,Early Blight,183.53,47,Sulfur dust 300 grams
+Area 4,2/9/2025,Early Blight,187.24,75,Sulfur dust 300 grams
+Area 5,2/9/2025,None,189.57,0,None
+Area 1,2/10/2025,Early Blight,191.99,43,Sulfur dust 300 grams
+Area 2,2/10/2025,None,194.44,0,None
+Area 3,2/10/2025,None,199.14,0,None
+Area 4,2/10/2025,Early Blight,204.12,53,Sulfur dust 300 grams
+Area 5,2/10/2025,None,208.77,0,None
+Area 1,2/11/2025,None,212.13,0,None
+Area 2,2/11/2025,Yellow Vein,214.5,49,Acetamiprid 250 grams
+Area 3,2/11/2025,None,217.88,0,None
+Area 4,2/11/2025,Early Blight,221.41,67,Sulfur dust 300 grams
+Area 5,2/11/2025,Early Blight,223.58,52,Sulfur dust 300 grams
+Area 1,2/12/2025,None,226.49,0,None
+Area 2,2/12/2025,Yellow Vein,230.31,50,Acetamiprid 250 grams
+Area 3,2/12/2025,Leaf Curl,232.55,71,Carbaryl 250 grams
+Area 4,2/12/2025,None,235.68,0,None
+Area 5,2/12/2025,None,240.31,0,None
+Area 1,2/13/2025,Yellow Vein,243.15,58,Acetamiprid 250 grams
+Area 2,2/13/2025,None,245.97,0,None
+Area 3,2/13/2025,Leaf Curl,248.62,60,Carbaryl 250 grams
+Area 4,2/13/2025,None,251.74,0,None
+Area 5,2/13/2025,None,254.91,0,None
+Area 1,2/14/2025,None,257.85,0,None
+Area 2,2/14/2025,Early Blight,260.18,42,Sulfur dust 300 grams
+Area 3,2/14/2025,None,264.43,0,None
+Area 4,2/14/2025,Yellow Vein,268.17,51,Acetamiprid 250 grams
+Area 5,2/14/2025,Leaf Curl,270.98,48,Carbaryl 250 grams
+Area 1,2/15/2025,Early Blight,273.45,53,Sulfur dust 300 grams
+Area 2,2/15/2025,None,277.62,0,None
+Area 3,2/15/2025,None,281.39,0,None
+Area 4,2/15/2025,Leaf Curl,284.77,46,Carbaryl 250 grams
+Area 5,2/15/2025,None,289.24,0,None
+Area 1,2/16/2025,Yellow Vein,292.11,55,Acetamiprid 250 grams
+Area 2,2/16/2025,None,295.68,0,None
+Area 3,2/16/2025,Early Blight,298.91,49,Sulfur dust 300 grams
+Area 4,2/16/2025,None,302.15,0,None
+Area 5,2/16/2025,None,305.79,0,None
+Area 1,2/17/2025,None,309.34,0,None
+Area 2,2/17/2025,Early Blight,312.08,41,Sulfur dust 300 grams
+Area 3,2/17/2025,None,315.42,0,None
+Area 4,2/17/2025,Leaf Curl,318.57,50,Carbaryl 250 grams
+Area 5,2/17/2025,Yellow Vein,321.13,59,Acetamiprid 250 grams
+Area 1,2/18/2025,Early Blight,208,47,Sulfur dust 300 grams
+Area 2,2/18/2025,None,204.65,0,None
+Area 3,2/18/2025,Yellow Vein,211.4,54,Acetamiprid 250 grams
+Area 4,2/18/2025,None,215.15,0,None
+Area 5,2/18/2025,Leaf Curl,207.8,52,Carbaryl 250 grams
+Area 1,2/19/2025,None,212.45,0,None
+Area 2,2/19/2025,Leaf Curl,209.1,45,Carbaryl 250 grams
+Area 3,2/19/2025,None,215.85,0,None
+Area 4,2/19/2025,Early Blight,219.6,48,Sulfur dust 300 grams
+Area 5,2/19/2025,Yellow Vein,212.25,60,Acetamiprid 250 grams
+Area 1,2/20/2025,Yellow Vein,216.9,57,Acetamiprid 250 grams
+Area 2,2/20/2025,None,213.55,0,None
+Area 3,2/20/2025,None,220.3,0,None
+Area 4,2/20/2025,Leaf Curl,224.05,50,Carbaryl 250 grams
+Area 5,2/20/2025,Early Blight,216.7,46,Sulfur dust 300 grams
+Area 1,2/21/2025,None,221.35,0,None
+Area 2,2/21/2025,Yellow Vein,218,58,Acetamiprid 250 grams
+Area 3,2/21/2025,None,224.75,0,None
+Area 4,2/21/2025,Early Blight,228.5,42,Sulfur dust 300 grams
+Area 5,2/21/2025,Leaf Curl,221.15,49,Carbaryl 250 grams
+Area 1,2/22/2025,Early Blight,225.8,51,Sulfur dust 300 grams
+Area 2,2/22/2025,None,222.45,0,None
+Area 3,2/22/2025,None,229.2,0,None
+Area 4,2/22/2025,Yellow Vein,232.95,59,Acetamiprid 250 grams
+Area 5,2/22/2025,None,225.6,0,None
+Area 1,2/23/2025,None,226.9,0,None
+Area 2,2/23/2025,Leaf Curl,233.65,47,Carbaryl 250 grams
+Area 3,2/23/2025,None,237.4,0,None
+Area 4,2/23/2025,Yellow Vein,230.05,53,Acetamiprid 250 grams
+Area 5,2/23/2025,Early Blight,234.7,45,Sulfur dust 300 grams
+Area 1,2/24/2025,Yellow Vein,231.35,60,Acetamiprid 250 grams
+Area 2,2/24/2025,None,238.1,0,None
+Area 3,2/24/2025,Early Blight,241.85,49,Sulfur dust 300 grams
+Area 4,2/24/2025,None,234.5,0,None
+Area 5,2/24/2025,Leaf Curl,239.15,51,Carbaryl 250 grams
+Area 1,2/25/2025,Early Blight,235.8,48,Sulfur dust 300 grams
+Area 2,2/25/2025,Yellow Vein,242.55,55,Acetamiprid 250 grams
+Area 3,2/25/2025,None,246.3,0,None
+Area 4,2/25/2025,Leaf Curl,238.95,43,Carbaryl 250 grams
+Area 5,2/25/2025,None,243.6,0,None
+Area 1,2/26/2025,None,240.25,0,None
+Area 2,2/26/2025,None,247,0,None
+Area 3,2/26/2025,Leaf Curl,250.75,46,Carbaryl 250 grams
+Area 4,2/26/2025,Early Blight,243.4,50,Sulfur dust 300 grams
+Area 5,2/26/2025,None,248.05,0,None
+Area 1,2/27/2025,Yellow Vein,244.7,61,Acetamiprid 250 grams
+Area 2,2/27/2025,None,251.45,0,None
+Area 3,2/27/2025,None,255.2,0,None
+Area 4,2/27/2025,Yellow Vein,247.85,58,Acetamiprid 250 grams
+Area 5,2/27/2025,None,252.5,0,None
+Area 1,2/28/2025,Early Blight,249.15,47,Sulfur dust 300 grams
+Area 2,2/28/2025,None,255.9,0,None
+Area 3,2/28/2025,Leaf Curl,259.65,44,Carbaryl 250 grams
+Area 4,2/28/2025,None,252.3,0,None
+Area 5,2/28/2025,Yellow Vein,256.95,55,Acetamiprid 250 grams
+Area 1,3/1/2025,Leaf Curl,260.35,44,Carbaryl 250 grams
+Area 2,3/1/2025,None,264.1,0,None
+Area 3,3/1/2025,Yellow Vein,256.75,57,Acetamiprid 250 grams
+Area 4,3/1/2025,None,261.4,0,None
+Area 5,3/1/2025,Early Blight,258.05,46,Sulfur dust 300 grams
+Area 1,3/2/2025,None,264.8,0,None
+Area 2,3/2/2025,Early Blight,268.55,50,Sulfur dust 300 grams
+Area 3,3/2/2025,None,261.2,0,None
+Area 4,3/2/2025,Leaf Curl,265.85,43,Carbaryl 250 grams
+Area 5,3/2/2025,Yellow Vein,262.5,60,Acetamiprid 250 grams
+Area 1,3/3/2025,Yellow Vein,269.25,63,Acetamiprid 250 grams
+Area 2,3/3/2025,None,273,0,None
+Area 3,3/3/2025,Early Blight,265.65,47,Sulfur dust 300 grams
+Area 4,3/3/2025,None,270.3,0,None
+Area 5,3/3/2025,Leaf Curl,266.95,45,Carbaryl 250 grams
+Area 1,3/4/2025,None,273.7,0,None
+Area 2,3/4/2025,None,277.45,0,None
+Area 3,3/4/2025,Yellow Vein,270.1,59,Acetamiprid 250 grams
+Area 4,3/4/2025,None,274.75,0,None
+Area 5,3/4/2025,Early Blight,271.4,48,Sulfur dust 300 grams
+Area 1,3/5/2025,Leaf Curl,278.15,42,Carbaryl 250 grams
+Area 2,3/5/2025,Early Blight,281.9,46,Sulfur dust 300 grams
+Area 3,3/5/2025,None,274.55,0,None
+Area 4,3/5/2025,Yellow Vein,279.2,61,Acetamiprid 250 grams
+Area 5,3/5/2025,None,275.85,0,None
+Area 1,3/6/2025,None,286.35,0,None
+Area 2,3/6/2025,Leaf Curl,279,44,Carbaryl 250 grams
+Area 3,3/6/2025,Early Blight,283.65,49,Sulfur dust 300 grams
+Area 4,3/6/2025,None,280.3,0,None
+Area 5,3/6/2025,Yellow Vein,287.05,62,Acetamiprid 250 grams
+Area 1,3/7/2025,Early Blight,290.8,47,Sulfur dust 300 grams
+Area 2,3/7/2025,None,283.45,0,None
+Area 3,3/7/2025,Leaf Curl,288.1,41,Carbaryl 250 grams
+Area 4,3/7/2025,Yellow Vein,284.75,64,Acetamiprid 250 grams
+Area 5,3/7/2025,None,291.5,0,None
+Area 1,3/8/2025,Yellow Vein,295.25,60,Acetamiprid 250 grams
+Area 2,3/8/2025,None,287.9,0,None
+Area 3,3/8/2025,None,292.55,0,None
+Area 4,3/8/2025,Early Blight,289.2,48,Sulfur dust 300 grams
+Area 5,3/8/2025,Leaf Curl,295.95,43,Carbaryl 250 grams
+Area 1,3/9/2025,None,299.7,0,None
+Area 2,3/9/2025,Early Blight,292.35,50,Sulfur dust 300 grams
+Area 3,3/9/2025,Yellow Vein,297,65,Acetamiprid 250 grams
+Area 4,3/9/2025,None,293.65,0,None
+Area 5,3/9/2025,Leaf Curl,300.4,45,Carbaryl 250 grams
+Area 1,3/10/2025,Yellow Vein,304.15,67,Acetamiprid 250 grams
+Area 2,3/10/2025,Leaf Curl,296.8,42,Carbaryl 250 grams
+Area 3,3/10/2025,Early Blight,301.45,46,Sulfur dust 300 grams
+Area 4,3/10/2025,None,298.1,0,None
+Area 5,3/10/2025,None,304.85,0,None
+Area 1,3/11/2025,None,301.25,0,None
+Area 2,3/11/2025,Yellow Vein,305.9,68,Acetamiprid 250 grams
+Area 3,3/11/2025,None,302.55,0,None
+Area 4,3/11/2025,Early Blight,309.3,47,Sulfur dust 300 grams
+Area 5,3/11/2025,Leaf Curl,313.05,44,Carbaryl 250 grams
+Area 1,3/12/2025,Yellow Vein,305.7,69,Acetamiprid 250 grams
+Area 2,3/12/2025,Early Blight,310.35,49,Sulfur dust 300 grams
+Area 3,3/12/2025,None,307,0,None
+Area 4,3/12/2025,Leaf Curl,313.75,41,Carbaryl 250 grams
+Area 5,3/12/2025,None,317.5,0,None
+Area 1,3/13/2025,None,310.15,0,None
+Area 2,3/13/2025,Leaf Curl,314.8,43,Carbaryl 250 grams
+Area 3,3/13/2025,Early Blight,311.45,46,Sulfur dust 300 grams
+Area 4,3/13/2025,None,318.2,0,None
+Area 5,3/13/2025,Yellow Vein,321.95,66,Acetamiprid 250 grams
+Area 1,3/14/2025,Leaf Curl,314.6,42,Carbaryl 250 grams
+Area 2,3/14/2025,None,319.25,0,None
+Area 3,3/14/2025,Yellow Vein,315.9,63,Acetamiprid 250 grams
+Area 4,3/14/2025,Early Blight,322.65,50,Sulfur dust 300 grams
+Area 5,3/14/2025,None,326.4,0,None
+Area 1,3/15/2025,None,319.05,0,None
+Area 2,3/15/2025,Early Blight,323.7,48,Sulfur dust 300 grams
+Area 3,3/15/2025,Leaf Curl,320.35,45,Carbaryl 250 grams
+Area 4,3/15/2025,Yellow Vein,327.1,67,Acetamiprid 250 grams
+Area 5,3/15/2025,None,330.85,0,None
+Area 1,3/16/2025,Yellow Vein,328.15,70,Acetamiprid 250 grams
+Area 2,3/16/2025,None,324.8,0,None
+Area 3,3/16/2025,Leaf Curl,331.55,43,Carbaryl 250 grams
+Area 4,3/16/2025,None,335.3,0,None
+Area 5,3/16/2025,Early Blight,327.95,49,Sulfur dust 300 grams
+Area 1,3/17/2025,None,332.6,0,None
+Area 2,3/17/2025,Leaf Curl,329.25,42,Carbaryl 250 grams
+Area 3,3/17/2025,Early Blight,336,46,Sulfur dust 300 grams
+Area 4,3/17/2025,Yellow Vein,339.75,68,Acetamiprid 250 grams
+Area 5,3/17/2025,None,332.4,0,None
+Area 1,3/18/2025,Early Blight,337.05,48,Sulfur dust 300 grams
+Area 2,3/18/2025,Yellow Vein,333.7,67,Acetamiprid 250 grams
+Area 3,3/18/2025,None,340.45,0,None
+Area 4,3/18/2025,Leaf Curl,344.2,44,Carbaryl 250 grams
+Area 5,3/18/2025,None,336.85,0,None
+Area 1,3/19/2025,Leaf Curl,341.5,41,Carbaryl 250 grams
+Area 2,3/19/2025,None,338.15,0,None
+Area 3,3/19/2025,Yellow Vein,344.9,66,Acetamiprid 250 grams
+Area 4,3/19/2025,Early Blight,348.65,50,Sulfur dust 300 grams
+Area 5,3/19/2025,None,341.3,0,None
+Area 1,3/20/2025,None,345.95,0,None
+Area 2,3/20/2025,Early Blight,342.6,49,Sulfur dust 300 grams
+Area 3,3/20/2025,Leaf Curl,349.35,45,Carbaryl 250 grams
+Area 4,3/20/2025,Yellow Vein,353.1,69,Acetamiprid 250 grams
+Area 5,3/20/2025,None,345.75,0,None
+Area 1,3/21/2025,Yellow Vein,347.05,70,Acetamiprid 250 grams
+Area 2,3/21/2025,None,353.8,0,None
+Area 3,3/21/2025,Leaf Curl,357.55,43,Carbaryl 250 grams
+Area 4,3/21/2025,None,350.2,0,None
+Area 5,3/21/2025,Early Blight,354.85,49,Sulfur dust 300 grams
+Area 1,3/22/2025,None,351.5,0,None
+Area 2,3/22/2025,Leaf Curl,358.25,42,Carbaryl 250 grams
+Area 3,3/22/2025,Early Blight,362,46,Sulfur dust 300 grams
+Area 4,3/22/2025,Yellow Vein,354.65,68,Acetamiprid 250 grams
+Area 5,3/22/2025,None,359.3,0,None
+Area 1,3/23/2025,Early Blight,355.95,48,Sulfur dust 300 grams
+Area 2,3/23/2025,Yellow Vein,362.7,67,Acetamiprid 250 grams
+Area 3,3/23/2025,None,366.45,0,None
+Area 4,3/23/2025,Leaf Curl,359.1,44,Carbaryl 250 grams
+Area 5,3/23/2025,None,363.75,0,None
+Area 1,3/24/2025,Leaf Curl,360.4,41,Carbaryl 250 grams
+Area 2,3/24/2025,None,367.15,0,None
+Area 3,3/24/2025,Yellow Vein,370.9,66,Acetamiprid 250 grams
+Area 4,3/24/2025,Early Blight,363.55,50,Sulfur dust 300 grams
+Area 5,3/24/2025,None,368.2,0,None
+Area 1,3/25/2025,None,364.85,0,None
+Area 2,3/25/2025,Early Blight,371.6,49,Sulfur dust 300 grams
+Area 3,3/25/2025,Leaf Curl,375.35,45,Carbaryl 250 grams
+Area 4,3/25/2025,Yellow Vein,368,69,Acetamiprid 250 grams
+Area 5,3/25/2025,None,372.65,0,None
+Area 1,3/26/2025,Yellow Vein,376.05,68,Acetamiprid 250 grams
+Area 2,3/26/2025,None,379.8,0,None
+Area 3,3/26/2025,Early Blight,372.45,46,Sulfur dust 300 grams
+Area 4,3/26/2025,Leaf Curl,377.1,43,Carbaryl 250 grams
+Area 5,3/26/2025,None,373.75,0,None
+Area 1,3/27/2025,None,380.5,0,None
+Area 2,3/27/2025,Leaf Curl,384.25,42,Carbaryl 250 grams
+Area 3,3/27/2025,None,376.9,0,None
+Area 4,3/27/2025,Yellow Vein,381.55,70,Acetamiprid 250 grams
+Area 5,3/27/2025,Early Blight,378.2,48,Sulfur dust 300 grams
+Area 1,3/28/2025,Early Blight,384.95,47,Sulfur dust 300 grams
+Area 2,3/28/2025,Yellow Vein,388.7,66,Acetamiprid 250 grams
+Area 3,3/28/2025,None,381.35,0,None
+Area 4,3/28/2025,Leaf Curl,386,41,Carbaryl 250 grams
+Area 5,3/28/2025,None,382.65,0,None
+Area 1,3/29/2025,None,389.4,0,None
+Area 2,3/29/2025,Early Blight,393.15,50,Sulfur dust 300 grams
+Area 3,3/29/2025,Yellow Vein,385.8,67,Acetamiprid 250 grams
+Area 4,3/29/2025,None,390.45,0,None
+Area 5,3/29/2025,Leaf Curl,387.1,45,Carbaryl 250 grams
+Area 1,3/30/2025,Yellow Vein,393.85,69,Acetamiprid 250 grams
+Area 2,3/30/2025,None,397.6,0,None
+Area 3,3/30/2025,Early Blight,390.25,46,Sulfur dust 300 grams
+Area 4,3/30/2025,None,394.9,0,None
+Area 5,3/30/2025,Leaf Curl,391.55,44,Carbaryl 250 grams
+Area 1,4/1/2025,None,402.05,0,None
+Area 2,4/1/2025,Yellow Vein,394.7,66,Acetamiprid 250 grams
+Area 3,4/1/2025,Leaf Curl,399.35,43,Carbaryl 250 grams
+Area 4,4/1/2025,Early Blight,396,47,Sulfur dust 300 grams
+Area 5,4/1/2025,None,402.75,0,None
+Area 1,4/2/2025,Early Blight,406.5,48,Sulfur dust 300 grams
+Area 2,4/2/2025,None,399.15,0,None
+Area 3,4/2/2025,Leaf Curl,403.8,42,Carbaryl 250 grams
+Area 4,4/2/2025,Yellow Vein,400.45,68,Acetamiprid 250 grams
+Area 5,4/2/2025,None,407.2,0,None
+Area 1,4/3/2025,Yellow Vein,410.95,70,Acetamiprid 250 grams
+Area 2,4/3/2025,Leaf Curl,403.6,44,Carbaryl 250 grams
+Area 3,4/3/2025,None,408.25,0,None
+Area 4,4/3/2025,Early Blight,404.9,49,Sulfur dust 300 grams
+Area 5,4/3/2025,None,411.65,0,None
+Area 1,4/4/2025,None,415.4,0,None
+Area 2,4/4/2025,None,408.05,0,None
+Area 3,4/4/2025,Yellow Vein,412.7,66,Acetamiprid 250 grams
+Area 4,4/4/2025,None,409.35,0,None
+Area 5,4/4/2025,Leaf Curl,416.1,45,Carbaryl 250 grams
+Area 1,4/5/2025,Early Blight,419.85,50,Sulfur dust 300 grams
+Area 2,4/5/2025,Yellow Vein,412.5,67,Acetamiprid 250 grams
+Area 3,4/5/2025,None,417.15,0,None
+Area 4,4/5/2025,None,413.8,0,None
+Area 5,4/5/2025,Leaf Curl,420.55,43,Carbaryl 250 grams
+Area 1,4/6/2025,Yellow Vein,416.95,65,Acetamiprid 250 grams
+Area 2,4/6/2025,None,421.6,0,None
+Area 3,4/6/2025,Early Blight,418.25,46,Sulfur dust 300 grams
+Area 4,4/6/2025,Leaf Curl,425,42,Carbaryl 250 grams
+Area 5,4/6/2025,None,428.75,0,None
+Area 1,4/7/2025,None,421.4,0,None
+Area 2,4/7/2025,Early Blight,426.05,45,Sulfur dust 300 grams
+Area 3,4/7/2025,None,422.7,0,None
+Area 4,4/7/2025,Yellow Vein,429.45,64,Acetamiprid 250 grams
+Area 5,4/7/2025,Leaf Curl,433.2,41,Carbaryl 250 grams
+Area 1,4/8/2025,Leaf Curl,425.85,40,Carbaryl 250 grams
+Area 2,4/8/2025,Yellow Vein,430.5,63,Acetamiprid 250 grams
+Area 3,4/8/2025,None,427.15,0,None
+Area 4,4/8/2025,Early Blight,433.9,44,Sulfur dust 300 grams
+Area 5,4/8/2025,None,437.65,0,None
+Area 1,4/9/2025,None,430.3,0,None
+Area 2,4/9/2025,Leaf Curl,434.95,39,Carbaryl 250 grams
+Area 3,4/9/2025,Early Blight,431.6,43,Sulfur dust 300 grams
+Area 4,4/9/2025,Yellow Vein,438.35,62,Acetamiprid 250 grams
+Area 5,4/9/2025,None,442.1,0,None
+Area 1,4/10/2025,Early Blight,434.75,42,Sulfur dust 300 grams
+Area 2,4/10/2025,None,439.4,0,None
+Area 3,4/10/2025,Yellow Vein,436.05,61,Acetamiprid 250 grams
+Area 4,4/10/2025,Leaf Curl,442.8,38,Carbaryl 250 grams
+Area 5,4/10/2025,None,446.55,0,None
+Area 1,4/11/2025,None,443.85,0,None
+Area 2,4/11/2025,Yellow Vein,440.5,60,Acetamiprid 250 grams
+Area 3,4/11/2025,Leaf Curl,447.25,37,Carbaryl 250 grams
+Area 4,4/11/2025,Early Blight,451,41,Sulfur dust 300 grams
+Area 5,4/11/2025,None,443.65,0,None
+Area 1,4/12/2025,Yellow Vein,448.3,59,Acetamiprid 250 grams
+Area 2,4/12/2025,None,444.95,0,None
+Area 3,4/12/2025,Early Blight,451.7,40,Sulfur dust 300 grams
+Area 4,4/12/2025,Leaf Curl,455.45,36,Carbaryl 250 grams
+Area 5,4/12/2025,None,448.1,0,None
+Area 1,4/13/2025,None,452.75,0,None
+Area 2,4/13/2025,Early Blight,449.4,39,Sulfur dust 300 grams
+Area 3,4/13/2025,None,456.15,0,None
+Area 4,4/13/2025,Yellow Vein,459.9,58,Acetamiprid 250 grams
+Area 5,4/13/2025,Leaf Curl,452.55,35,Carbaryl 250 grams
+Area 1,4/14/2025,Early Blight,457.2,38,Sulfur dust 300 grams
+Area 2,4/14/2025,None,453.85,0,None
+Area 3,4/14/2025,Yellow Vein,460.6,57,Acetamiprid 250 grams
+Area 4,4/14/2025,None,464.35,0,None
+Area 5,4/14/2025,Leaf Curl,457,34,Carbaryl 250 grams
+Area 1,4/15/2025,None,461.65,0,None
+Area 2,4/15/2025,Leaf Curl,458.3,33,Carbaryl 250 grams
+Area 3,4/15/2025,None,465.05,0,None
+Area 4,4/15/2025,Early Blight,468.8,37,Sulfur dust 300 grams
+Area 5,4/15/2025,Yellow Vein,461.45,56,Acetamiprid 250 grams
+Area 1,4/16/2025,Yellow Vein,457.2,52,Acetamiprid 250 grams
+Area 2,4/16/2025,None,453.85,0,None
+Area 3,4/16/2025,Leaf Curl,460.6,44,Carbaryl 250 grams
+Area 4,4/16/2025,Early Blight,464.35,48,Sulfur dust 300 grams
+Area 5,4/16/2025,None,457,0,None
+Area 1,4/17/2025,None,461.65,0,None
+Area 2,4/17/2025,Early Blight,458.3,47,Sulfur dust 300 grams
+Area 3,4/17/2025,Yellow Vein,465.05,51,Acetamiprid 250 grams
+Area 4,4/17/2025,None,468.8,0,None
+Area 5,4/17/2025,Leaf Curl,461.45,43,Carbaryl 250 grams
+Area 1,4/18/2025,Leaf Curl,462.75,42,Carbaryl 250 grams
+Area 2,4/18/2025,None,469.5,0,None
+Area 3,4/18/2025,Yellow Vein,473.25,50,Acetamiprid 250 grams
+Area 4,4/18/2025,Early Blight,465.9,46,Sulfur dust 300 grams
+Area 5,4/18/2025,None,470.55,0,None
+Area 1,4/19/2025,None,467.2,0,None
+Area 2,4/19/2025,Leaf Curl,473.95,41,Carbaryl 250 grams
+Area 3,4/19/2025,Early Blight,477.7,45,Sulfur dust 300 grams
+Area 4,4/19/2025,None,470.35,0,None
+Area 5,4/19/2025,Yellow Vein,475,49,Acetamiprid 250 grams
+Area 1,4/20/2025,Early Blight,471.65,44,Sulfur dust 300 grams
+Area 2,4/20/2025,None,478.4,0,None
+Area 3,4/20/2025,Yellow Vein,482.15,48,Acetamiprid 250 grams
+Area 4,4/20/2025,None,474.8,0,None
+Area 5,4/20/2025,Leaf Curl,479.45,40,Carbaryl 250 grams
+Area 1,4/21/2025,None,476.1,0,None
+Area 2,4/21/2025,Leaf Curl,482.85,39,Carbaryl 250 grams
+Area 3,4/21/2025,Yellow Vein,486.6,47,Acetamiprid 250 grams
+Area 4,4/21/2025,Early Blight,479.25,43,Sulfur dust 300 grams
+Area 5,4/21/2025,None,483.9,0,None
+Area 1,4/22/2025,Early Blight,480.55,42,Sulfur dust 300 grams
+Area 2,4/22/2025,Yellow Vein,487.3,46,Acetamiprid 250 grams
+Area 3,4/22/2025,None,491.05,0,None
+Area 4,4/22/2025,Leaf Curl,483.7,38,Carbaryl 250 grams
+Area 5,4/22/2025,None,488.35,0,None
+Area 1,4/23/2025,None,485,0,None
+Area 2,4/23/2025,Leaf Curl,491.75,37,Carbaryl 250 grams
+Area 3,4/23/2025,Yellow Vein,495.5,45,Acetamiprid 250 grams
+Area 4,4/23/2025,None,488.15,0,None
+Area 5,4/23/2025,Early Blight,492.8,41,Sulfur dust 300 grams
+Area 1,4/24/2025,Yellow Vein,489.45,44,Acetamiprid 250 grams
+Area 2,4/24/2025,None,496.2,0,None
+Area 3,4/24/2025,Early Blight,499.95,40,Sulfur dust 300 grams
+Area 4,4/24/2025,Leaf Curl,492.6,36,Carbaryl 250 grams
+Area 5,4/24/2025,None,497.25,0,None
+Area 1,4/25/2025,None,493.9,0,None
+Area 2,4/25/2025,Yellow Vein,500.65,43,Acetamiprid 250 grams
+Area 3,4/25/2025,Leaf Curl,504.4,35,Carbaryl 250 grams
+Area 4,4/25/2025,None,497.05,0,None
+Area 5,4/25/2025,Early Blight,501.7,39,Sulfur dust 300 grams
+Area 1,4/26/2025,Leaf Curl,498.35,34,Carbaryl 250 grams
+Area 2,4/26/2025,None,505.1,0,None
+Area 3,4/26/2025,Yellow Vein,508.85,42,Acetamiprid 250 grams
+Area 4,4/26/2025,Early Blight,501.5,38,Sulfur dust 300 grams
+Area 5,4/26/2025,None,506.15,0,None
+Area 1,4/27/2025,Early Blight,502.8,17,Sulfur dust 300 grams
+Area 2,4/27/2025,Leaf Curl,509.55,13,Carbaryl 250 grams
+Area 3,4/27/2025,None,513.3,0,None
+Area 4,4/27/2025,Yellow Vein,505.95,21,Acetamiprid 250 grams
+Area 5,4/27/2025,None,510.6,0,None
+Area 1,4/28/2025,Yellow Vein,507.25,20,Acetamiprid 250 grams
+Area 2,4/28/2025,None,514,0,None
+Area 3,4/28/2025,Early Blight,517.75,26,Sulfur dust 300 grams
+Area 4,4/28/2025,Leaf Curl,510.4,22,Carbaryl 250 grams
+Area 5,4/28/2025,None,515.05,0,None
+Area 1,4/29/2025,None,511.7,0,None
+Area 2,4/29/2025,Yellow Vein,518.45,19,Acetamiprid 250 grams
+Area 3,4/29/2025,Leaf Curl,522.2,10,Carbaryl 250 grams
+Area 4,4/29/2025,None,514.85,0,None
+Area 5,4/29/2025,Early Blight,519.5,15,Sulfur dust 300 grams
+Area 1,4/30/2025,Leaf Curl,516.15,3,Carbaryl 250 grams
+Area 2,4/30/2025,None,522.9,0,None
+Area 3,4/30/2025,Yellow Vein,526.65,8,Acetamiprid 250 grams
+Area 4,4/30/2025,Early Blight,519.3,4,Sulfur dust 300 grams
+Area 5,4/30/2025,None,523.95,0,None
+Area 1,5/1/2025,None,520.6,0,None
+Area 2,5/1/2025,None,527.35,0,None
+Area 3,5/1/2025,None,531.1,0,None
+Area 4,5/1/2025,None,523.75,0,None
+Area 5,5/1/2025,None,528.4,0,None
+Area 1,5/2/2025,None,525.05,0,None
+Area 2,5/2/2025,None,531.8,0,None
+Area 3,5/2/2025,None,535.55,0,None
+Area 4,5/2/2025,None,528.2,0,None
+Area 5,5/2/2025,None,532.85,0,None
+Area 1,5/3/2025,None,536.25,0,None
+Area 2,5/3/2025,None,540,0,None
+Area 3,5/3/2025,None,532.65,0,None
+Area 4,5/3/2025,None,537.3,0,None
+Area 5,5/3/2025,None,533.95,0,None
+Area 1,5/4/2025,None,540.7,0,None
+Area 2,5/4/2025,None,544.45,0,None
+Area 3,5/4/2025,None,537.1,0,None
+Area 4,5/4/2025,None,541.75,0,None
+Area 5,5/4/2025,None,538.4,0,None
+Area 1,5/5/2025,None,545.15,0,None
+Area 2,5/5/2025,None,548.9,0,None
+Area 3,5/5/2025,None,541.55,0,None
+Area 4,5/5/2025,None,546.2,0,None
+Area 5,5/5/2025,None,542.85,0,None

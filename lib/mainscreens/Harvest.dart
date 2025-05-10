@@ -323,12 +323,14 @@ void _showInsertHarvestDialog() {
       return StatefulBuilder(
         builder: (context, setState) {
           bool isInputComplete() {
-            return date.isNotEmpty &&
-                area.isNotEmpty &&
-                disease.isNotEmpty &&
-                numberOfDiseases.isNotEmpty &&
-                pesticides.isNotEmpty &&
-                harvest.isNotEmpty;
+             return date.isNotEmpty &&
+      area.isNotEmpty &&
+      disease.isNotEmpty &&
+      pesticides.isNotEmpty &&
+      numberOfDiseases.trim().isNotEmpty &&
+      harvest.trim().isNotEmpty &&
+      int.tryParse(numberOfDiseases) != null &&
+      int.tryParse(harvest) != null;
           }
 
           Future<bool> isOnline() async {

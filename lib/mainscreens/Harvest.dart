@@ -25,7 +25,10 @@ bool isOnline = false;
     super.initState();
     _initializeConnectivity();
     _listenToConnectivityChanges();
+
   }
+
+
 
  void _initializeConnectivity() async {
   try {
@@ -307,8 +310,8 @@ void _updateStatus(ConnectivityResult connectivityResult) {
 }
 
 
-void _showInsertHarvestDialog() {
-  showDialog(
+void _showInsertHarvestDialog() async {
+  final result = await showDialog<bool>(
     context: context,
     builder: (BuildContext context) {
       String date = "";
@@ -318,19 +321,19 @@ void _showInsertHarvestDialog() {
       String pesticides = "";
       String harvest = "";
       List<String> areaOptions = ["Area 1", "Area 2", "Area 3", "Area 4", "Area 5"];
-      List<String> diseaseOptions = ["Yellow Vein", "Leaf Curl", "Early Blight","None"];
+      List<String> diseaseOptions = ["Yellow Vein", "Leaf Curl", "Early Blight", "None"];
 
       return StatefulBuilder(
         builder: (context, setState) {
           bool isInputComplete() {
-             return date.isNotEmpty &&
-      area.isNotEmpty &&
-      disease.isNotEmpty &&
-      pesticides.isNotEmpty &&
-      numberOfDiseases.trim().isNotEmpty &&
-      harvest.trim().isNotEmpty &&
-      int.tryParse(numberOfDiseases) != null &&
-      int.tryParse(harvest) != null;
+            return date.isNotEmpty &&
+                area.isNotEmpty &&
+                disease.isNotEmpty &&
+                pesticides.isNotEmpty &&
+                numberOfDiseases.trim().isNotEmpty &&
+                harvest.trim().isNotEmpty &&
+                int.tryParse(numberOfDiseases) != null &&
+                int.tryParse(harvest) != null;
           }
 
           Future<bool> isOnline() async {
@@ -358,13 +361,12 @@ void _showInsertHarvestDialog() {
                       );
                       if (pickedDate != null) {
                         setState(() {
-                          date = "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}";
+                          date = "${pickedDate.month}/${pickedDate.day}/${pickedDate.year}";
                         });
                       }
                     },
                     controller: TextEditingController(text: date),
                   ),
-
                   const SizedBox(height: 10),
 
                   // Area Dropdown
@@ -403,7 +405,7 @@ void _showInsertHarvestDialog() {
                   ),
                   const SizedBox(height: 10),
 
-                  // Number of Encountered Diseases (Number Input)
+                  // Number of Encountered Diseases
                   TextField(
                     keyboardType: TextInputType.number,
                     decoration: const InputDecoration(labelText: "No. Encountered Diseases"),
@@ -415,7 +417,7 @@ void _showInsertHarvestDialog() {
                   ),
                   const SizedBox(height: 10),
 
-                  // Pesticides TextField
+                  // Pesticides
                   TextField(
                     decoration: const InputDecoration(labelText: "Pesticides"),
                     onChanged: (value) {
@@ -426,7 +428,7 @@ void _showInsertHarvestDialog() {
                   ),
                   const SizedBox(height: 10),
 
-                  // Harvest (Number Input)
+                  // Harvest
                   TextField(
                     keyboardType: TextInputType.number,
                     decoration: const InputDecoration(labelText: "Harvest (kg)"),
@@ -441,14 +443,13 @@ void _showInsertHarvestDialog() {
             ),
             actions: [
               TextButton(
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: () => Navigator.of(context).pop(false),
                 child: const Text("Cancel"),
               ),
               ElevatedButton(
                 onPressed: isInputComplete()
                     ? () async {
                         if (await isOnline()) {
-                          // Save the harvest data to Firestore
                           try {
                             await FirebaseFirestore.instance.collection('harvests').add({
                               'date': date,
@@ -459,12 +460,11 @@ void _showInsertHarvestDialog() {
                               'harvest': int.parse(harvest),
                             });
                             print("Harvest data saved successfully.");
-                            Navigator.of(context).pop();
+                            Navigator.of(context).pop(true); // Return true on success
                           } catch (e) {
                             print("Failed to save harvest data: $e");
                           }
                         } else {
-                          // Show snackbar for no internet
                           setState(() {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
@@ -479,7 +479,7 @@ void _showInsertHarvestDialog() {
                           });
                         }
                       }
-                    : null, // Disable button if inputs are incomplete
+                    : null,
                 child: const Text("Save"),
               ),
             ],
@@ -488,7 +488,19 @@ void _showInsertHarvestDialog() {
       );
     },
   );
+
+  // Show success Snackbar after the dialog is closed and if result is true
+  if (result == true) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Successfully added harvest"),
+        backgroundColor: Colors.green,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
 }
+
 
 
 // Define the static temporary data

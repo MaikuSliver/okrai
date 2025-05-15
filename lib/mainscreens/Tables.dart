@@ -55,44 +55,50 @@ void _updateStatus(ConnectivityResult connectivityResult) {
         connectivityResult == ConnectivityResult.wifi;
   });
 }
-  Future<void> _fetchData({bool loadNextPage = false, bool loadPreviousPage = false}) async {
-    if (_isLoading) return;
+ Future<void> _fetchData({bool loadNextPage = false, bool loadPreviousPage = false}) async {
+  if (_isLoading) return;
 
+  setState(() {
+    _isLoading = true;
+  });
+
+  Query query = _firestore
+      .collection('harvests')
+      .orderBy('date', descending: true);
+
+  // Area filter
+  if (_searchFilter.isNotEmpty) {
+    query = query.where('date', isEqualTo: _searchFilter);
+  }
+
+
+
+  // Apply pagination
+  if (loadNextPage && _lastDocument != null) {
+    query = query.startAfterDocument(_lastDocument!);
+  } else if (loadPreviousPage && _firstDocument != null) {
+    query = query.endBeforeDocument(_firstDocument!);
+  }
+
+  // Limit the number of results
+  query = query.limit(_limit);
+
+  // Fetch data
+  final querySnapshot = await query.get();
+
+  if (querySnapshot.docs.isNotEmpty) {
     setState(() {
-      _isLoading = true;
-    });
-
-    Query query = _firestore
-        .collection('harvests')
-        .orderBy('date', descending: true)
-        .limit(_limit);
-
-    if (loadNextPage && _lastDocument != null) {
-      query = query.startAfterDocument(_lastDocument!);
-    } else if (loadPreviousPage && _firstDocument != null) {
-      query = query.endBeforeDocument(_firstDocument!);
-    }
-
-    if (_searchFilter.isNotEmpty) {
-      query = _firestore
-          .collection('harvests')
-          .where('area', isEqualTo: _searchFilter);
-    }
-
-    final querySnapshot = await query.get();
-
-    if (querySnapshot.docs.isNotEmpty) {
-      setState(() {
-        _firstDocument = querySnapshot.docs.first;
-        _lastDocument = querySnapshot.docs.last;
-        _documents = querySnapshot.docs;
-      });
-    }
-
-    setState(() {
-      _isLoading = false;
+      _firstDocument = querySnapshot.docs.first;
+      _lastDocument = querySnapshot.docs.last;
+      _documents = querySnapshot.docs;
     });
   }
+
+  setState(() {
+    _isLoading = false;
+  });
+}
+
 
   Future<void> _exportToCsv() async {
   try {
@@ -351,7 +357,7 @@ void _deleteDocument(String docId) async {
               padding: const EdgeInsets.symmetric(vertical: 10.0),
               child: TextField(
                 decoration: const InputDecoration(
-                  labelText: 'Search Area No.',
+                  labelText: 'Search Date',
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.search),
                 ),
